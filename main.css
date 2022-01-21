@@ -1,0 +1,67 @@
+:root {
+	--bg: #e0fedf;
+	--fg: #080907 ;
+
+	--box-bg: #1e2226;
+	--box-fg: #e0fedf;
+    
+    --emp-bg: #909219;
+    --emp-fg: #080907;
+
+}
+/* Sidebar Style */
+html, body{
+    display: flex;
+    height: 100%;
+    flex-direction:column;
+}
+
+.navbar {
+	float: left;
+	background-color: var(--box-bg);
+    overflow: hidden;
+    color: var(--box-fg);
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: #e0fedf;
+    text-align: center;
+    padding: 10px 10px;
+    text-decoration: none;
+}
+
+.navbar a:hover{
+    color: var(--emp-fg);
+    background-color: var(--emp-bg);
+    height: 100%;
+}
+
+/* Content Style */
+
+.content {
+    padding-left: 20px;
+	overflow-y: auto;
+	float: left;
+    background-color: var(--bg);
+    color: var(--fg);
+    flex-grow: 1;
+}
+
+a {
+    color: var(--emp-bg);
+}
+
+a:hover {
+    color: var(--emp-fg);
+    background-color: var(--emp-bg);
+}
+
+table {
+	text-align: left;
+	vertical-align: center;
+}
+th, td{
+	padding: 5px;
+}

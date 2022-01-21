@@ -1,0 +1,109 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-09-13-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+
+
+Recall quantum numbers, etc, from hydrogen atom. We care about the twofold degenerate case.
+
+We noted that if we have the perturbation $H_1=-e\varepsilon\hat z$, we have $[H_1,L_z]=0$, so we get the matrix from the previous lecture.
+
+We need to calculate this integral: $\bra{2,1,0}H_1\ket{2,0,0}$. We can do this integral as, with $R,Y$ as the radial component and spherical harmonic of the wavefunction.\footnote{TODO: Go understand where $Y$ comes from. Haeffner didn't have enough time to get through this. Maybe check during OH?}
+\begin{equation}
+	\int_0^\infty r^2dr\int_0^\pi d\theta\sin\theta\int_0^{2\pi}d\varphi R^*_{21}(r)Y^*_{1,0}(\theta,\varphi)r\cos\theta R_{2,0}(r)Y_{0,0}(\theta,\varphi)=-3e\varepsilon a_0
+\end{equation}
+This gives splitting of degeneracies.
+
+Perturbations we'd like to to include: spin-orbit coupling (omg!!!).
+
+\subsubsection{Relativistic Corrections to the Hamiltonian}
+Our normal hamiltonian is just $H=\frac{p^2}{2m}$. But, if we want the kinetic energy of a relativstic particle (classically), we have $K=\sqrt{p^2c^2+(mc^2)^2}-mc^2$.
+
+If we try in the limit where $\frac{v}{c}\ll 1$, we can expand the above kinetic energy
+\begin{equation}
+	K\approx \frac{p^2}{2m}-\frac{p^4}{8m^3c^2}+\dots=\frac{p^2}{2m}\left(1-\frac{1}{4}\frac{v^2}{c^2}\right)
+\end{equation}
+If we only account for this perturbation, we should have for some atom that 
+\begin{align}
+	H_0=\frac{p^2}{2m}-\frac{ze^2}{r}
+	&&
+	H_1=-\frac{p^4}{8m^3c^2}
+\end{align}
+The first question we can ask is whether or not this still commutes with angular momentum? The answer is yes. We can ask whether this is invariant under rotation, and since it only depends on the magnitude of $p$, we find that $\bra{n,\ell,m}p^4\ket{n,\ell,m}$  can nonly be nonvanishing for matchin $\ell,m$, so
+\begin{equation}
+	\bra{n,\ell,m}p^4\ket{n',\ell',m'}=A(n,\ell,m)\delta_{\ell\ell'}\delta_{mm'}
+\end{equation}
+We can compute this as
+\begin{equation}
+	E_{n\ell}^{(1)}=-\bra{n,\ell,m}\frac{p^4}{8m^3c^2}\ket{n,\ell,m}
+\end{equation}
+Rather than integrate this expectation value explicitly, we will use one of altmans big trix, by writing
+\begin{equation}
+	\frac{p^2}{8m^3c^2}=\frac{1}{2mc^2}\left(\frac{p^2}{2m}\right)^2
+\end{equation}
+Now, we take advantage of the fact that kinetic energy is just the unperturbed hamiltonian minus the potential energy, so we write
+\begin{equation}
+	\frac{p^2}{8m^3c^2}
+	=
+	\frac{1}{2mc^2}\left[H_0-\left(-\frac{e^2}{r}\right)\right]^2
+	=
+	\frac{1}{2mc^2}\left[
+		H_0^2+H_0\frac{e^2}{r}+\frac{e^2}{r}H_0+\frac{e^4}{r^2}
+		\right]
+\end{equation}
+We put this into the expectation value to get
+\begin{align}
+	E_{n\ell}^{(1)}=\frac{1}{2mc^2}\bra{n,\ell,m}
+	\left[
+		H_0^2+H_0\frac{e^2}{r}+\frac{e^2}{r}H_0+\frac{e^4}{r^2}
+	\right]
+	\ket{n,\ell,m}
+	\\
+	\frac{1}{2mc^2}\left[
+		(E_n^{(0)})^2+2E_n^{(0)}\langle\frac{e^2}{\hat r}\rangle_{n\ell m}+\langle\frac{e^4}{\hat r^2}\rangle_{n\ell m}
+		\right]
+\end{align}
+We then want to take advantage of the virial theorem for quantum mechanics. Specifically, for the hydrogen atom, we have
+\begin{equation}
+	\langle K\rangle_{n\ell m}+\frac{1}{2}\langle V\rangle_{n\ell m}=0
+\end{equation}
+We take the above equaiton, along with
+\begin{equation}
+	\langle K\rangle_{n\ell m}+\langle V\rangle_{n\ell m}=E_n^{(0)}
+\end{equation}
+
+We have now two equations with two unknowns, so we get
+\begin{equation}
+	\langle\frac{ze^2}{r}\rangle=-2E_n^{(0)}
+\end{equation}
+
+We're out of time, but we can write down the first order correction as
+\begin{equation}
+	\frac{-E_n^{(0)}}{2mc^2}\left(-3+\frac{4n}{\ell+\frac{1}{2}}\right)
+	=
+	\frac{1}{2}mc^2z^4\alpha^4\left[-3+\frac{4n}{\ell+\frac{1}{2}}\right]
+\end{equation}
+where $\alpha$ is the fine structure constant.
+\begin{equation}
+	\alpha=\frac{e^2}{\hbar c}=\frac{1}{137}
+\end{equation}
+
+\end{document}

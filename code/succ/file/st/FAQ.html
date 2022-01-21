@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>FAQ - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> FAQ (7158B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> ## Why does st not handle utmp entries?
+<a href="#l2" class="line" id="l2">      2</a> 
+<a href="#l3" class="line" id="l3">      3</a> Use the excellent tool of [utmp](http://git.suckless.org/utmp/) for this task.
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> ## Some _random program_ complains that st is unknown/not recognised/unsupported/whatever!
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> It means that st doesn’t have any terminfo entry on your system. Chances are
+<a href="#l8" class="line" id="l8">      8</a> you did not `make install`. If you just want to test it without installing it,
+<a href="#l9" class="line" id="l9">      9</a> you can manually run `tic -sx st.info`.
+<a href="#l10" class="line" id="l10">     10</a> 
+<a href="#l11" class="line" id="l11">     11</a> ## Nothing works, and nothing is said about an unknown terminal!
+<a href="#l12" class="line" id="l12">     12</a> 
+<a href="#l13" class="line" id="l13">     13</a> * Some programs just assume they’re running in xterm i.e. they don’t rely on
+<a href="#l14" class="line" id="l14">     14</a>   terminfo. What you see is the current state of the “xterm compliance”.
+<a href="#l15" class="line" id="l15">     15</a> * Some programs don’t complain about the lacking st description and default to
+<a href="#l16" class="line" id="l16">     16</a>   another terminal. In that case see the question about terminfo.
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> ## I get some weird glitches/visual bug on _random program_!
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a> Try launching it with a different TERM: $ TERM=xterm myapp. toe(1) will give
+<a href="#l21" class="line" id="l21">     21</a> you a list of available terminals, but you’ll most likely switch between xterm,
+<a href="#l22" class="line" id="l22">     22</a> st or st-256color. The default value for TERM can be changed in config.h
+<a href="#l23" class="line" id="l23">     23</a> (TNAME).
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> ## How do I scroll back up?
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> Using a terminal multiplexer.
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a> * `st -e tmux` using C-b [
+<a href="#l30" class="line" id="l30">     30</a> * `st -e screen` using C-a ESC
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> ## Why doesn&#39;t the Del key work in some programs?
+<a href="#l33" class="line" id="l33">     33</a> 
+<a href="#l34" class="line" id="l34">     34</a> Taken from the terminfo manpage:
+<a href="#l35" class="line" id="l35">     35</a> 
+<a href="#l36" class="line" id="l36">     36</a> 	If the terminal has a keypad that transmits codes when the keys
+<a href="#l37" class="line" id="l37">     37</a> 	are pressed, this information can be given. Note that it is not
+<a href="#l38" class="line" id="l38">     38</a> 	possible to handle terminals where the keypad only works in
+<a href="#l39" class="line" id="l39">     39</a> 	local (this applies, for example, to the unshifted HP 2621 keys).
+<a href="#l40" class="line" id="l40">     40</a> 	If the keypad can be set to transmit or not transmit, give these
+<a href="#l41" class="line" id="l41">     41</a> 	codes as smkx and rmkx. Otherwise the keypad is assumed to
+<a href="#l42" class="line" id="l42">     42</a> 	always transmit.
+<a href="#l43" class="line" id="l43">     43</a> 
+<a href="#l44" class="line" id="l44">     44</a> In the st case smkx=E[?1hE= and rmkx=E[?1lE&gt;, so it is mandatory that
+<a href="#l45" class="line" id="l45">     45</a> applications which want to test against keypad keys send these
+<a href="#l46" class="line" id="l46">     46</a> sequences.
+<a href="#l47" class="line" id="l47">     47</a> 
+<a href="#l48" class="line" id="l48">     48</a> But buggy applications (like bash and irssi, for example) don&#39;t do this. A fast
+<a href="#l49" class="line" id="l49">     49</a> solution for them is to use the following command:
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> 	$ printf &#39;\033[?1h\033=&#39; &gt;/dev/tty
+<a href="#l52" class="line" id="l52">     52</a> 
+<a href="#l53" class="line" id="l53">     53</a> or
+<a href="#l54" class="line" id="l54">     54</a> 	$ tput smkx
+<a href="#l55" class="line" id="l55">     55</a> 
+<a href="#l56" class="line" id="l56">     56</a> In the case of bash, readline is used. Readline has a different note in its
+<a href="#l57" class="line" id="l57">     57</a> manpage about this issue:
+<a href="#l58" class="line" id="l58">     58</a> 
+<a href="#l59" class="line" id="l59">     59</a> 	enable-keypad (Off)
+<a href="#l60" class="line" id="l60">     60</a> 		When set to On, readline will try to enable the
+<a href="#l61" class="line" id="l61">     61</a> 		application keypad when it is called. Some systems
+<a href="#l62" class="line" id="l62">     62</a> 		need this to enable arrow keys.
+<a href="#l63" class="line" id="l63">     63</a> 
+<a href="#l64" class="line" id="l64">     64</a> Adding this option to your .inputrc will fix the keypad problem for all
+<a href="#l65" class="line" id="l65">     65</a> applications using readline.
+<a href="#l66" class="line" id="l66">     66</a> 
+<a href="#l67" class="line" id="l67">     67</a> If you are using zsh, then read the zsh FAQ
+<a href="#l68" class="line" id="l68">     68</a> &lt;http://zsh.sourceforge.net/FAQ/zshfaq03.html#l25&gt;:
+<a href="#l69" class="line" id="l69">     69</a> 
+<a href="#l70" class="line" id="l70">     70</a> 	It should be noted that the O / [ confusion can occur with other keys
+<a href="#l71" class="line" id="l71">     71</a> 	such as Home and End. Some systems let you query the key sequences
+<a href="#l72" class="line" id="l72">     72</a> 	sent by these keys from the system&#39;s terminal database, terminfo.
+<a href="#l73" class="line" id="l73">     73</a> 	Unfortunately, the key sequences given there typically apply to the
+<a href="#l74" class="line" id="l74">     74</a> 	mode that is not the one zsh uses by default (it&#39;s the &quot;application&quot;
+<a href="#l75" class="line" id="l75">     75</a> 	mode rather than the &quot;raw&quot; mode). Explaining the use of terminfo is
+<a href="#l76" class="line" id="l76">     76</a> 	outside of the scope of this FAQ, but if you wish to use the key
+<a href="#l77" class="line" id="l77">     77</a> 	sequences given there you can tell the line editor to turn on
+<a href="#l78" class="line" id="l78">     78</a> 	&quot;application&quot; mode when it starts and turn it off when it stops:
+<a href="#l79" class="line" id="l79">     79</a> 
+<a href="#l80" class="line" id="l80">     80</a> 		function zle-line-init () { echoti smkx }
+<a href="#l81" class="line" id="l81">     81</a> 		function zle-line-finish () { echoti rmkx }
+<a href="#l82" class="line" id="l82">     82</a> 		zle -N zle-line-init
+<a href="#l83" class="line" id="l83">     83</a> 		zle -N zle-line-finish
+<a href="#l84" class="line" id="l84">     84</a> 
+<a href="#l85" class="line" id="l85">     85</a> Putting these lines into your .zshrc will fix the problems.
+<a href="#l86" class="line" id="l86">     86</a> 
+<a href="#l87" class="line" id="l87">     87</a> ## How can I use meta in 8bit mode?
+<a href="#l88" class="line" id="l88">     88</a> 
+<a href="#l89" class="line" id="l89">     89</a> St supports meta in 8bit mode, but the default terminfo entry doesn&#39;t
+<a href="#l90" class="line" id="l90">     90</a> use this capability. If you want it, you have to use the &#39;st-meta&#39; value
+<a href="#l91" class="line" id="l91">     91</a> in TERM.
+<a href="#l92" class="line" id="l92">     92</a> 
+<a href="#l93" class="line" id="l93">     93</a> ## I cannot compile st in OpenBSD
+<a href="#l94" class="line" id="l94">     94</a> 
+<a href="#l95" class="line" id="l95">     95</a> OpenBSD lacks librt, despite it being mandatory in POSIX
+<a href="#l96" class="line" id="l96">     96</a> &lt;http://pubs.opengroup.org/onlinepubs/9699919799/utilities/c99.html#tag_20_11_13&gt;.
+<a href="#l97" class="line" id="l97">     97</a> If you want to compile st for OpenBSD you have to remove -lrt from config.mk, and
+<a href="#l98" class="line" id="l98">     98</a> st will compile without any loss of functionality, because all the functions are
+<a href="#l99" class="line" id="l99">     99</a> included in libc on this platform.
+<a href="#l100" class="line" id="l100">    100</a> 
+<a href="#l101" class="line" id="l101">    101</a> ## The Backspace Case
+<a href="#l102" class="line" id="l102">    102</a> 
+<a href="#l103" class="line" id="l103">    103</a> St is emulating the Linux way of handling backspace being delete and delete being
+<a href="#l104" class="line" id="l104">    104</a> backspace.
+<a href="#l105" class="line" id="l105">    105</a> 
+<a href="#l106" class="line" id="l106">    106</a> This is an issue that was discussed in suckless mailing list
+<a href="#l107" class="line" id="l107">    107</a> &lt;http://lists.suckless.org/dev/1404/20697.html&gt;. Here is why some old grumpy
+<a href="#l108" class="line" id="l108">    108</a> terminal users wants its backspace to be how he feels it:
+<a href="#l109" class="line" id="l109">    109</a> 
+<a href="#l110" class="line" id="l110">    110</a> 	Well, I am going to comment why I want to change the behaviour
+<a href="#l111" class="line" id="l111">    111</a> 	of this key. When ASCII was defined in 1968, communication
+<a href="#l112" class="line" id="l112">    112</a> 	with computers was done using punched cards, or hardcopy
+<a href="#l113" class="line" id="l113">    113</a> 	terminals (basically a typewriter machine connected with the
+<a href="#l114" class="line" id="l114">    114</a> 	computer using a serial port).  ASCII defines DELETE as 7F,
+<a href="#l115" class="line" id="l115">    115</a> 	because, in punched-card terms, it means all the holes of the
+<a href="#l116" class="line" id="l116">    116</a> 	card punched; it is thus a kind of &#39;physical delete&#39;. In the
+<a href="#l117" class="line" id="l117">    117</a> 	same way, the BACKSPACE key was a non-destructive backspace,
+<a href="#l118" class="line" id="l118">    118</a> 	as on a typewriter.  So, if you wanted to delete a character,
+<a href="#l119" class="line" id="l119">    119</a> 	you had to BACKSPACE and then DELETE.  Another use of BACKSPACE
+<a href="#l120" class="line" id="l120">    120</a> 	was to type accented characters, for example &#39;a BACKSPACE `&#39;.
+<a href="#l121" class="line" id="l121">    121</a> 	The VT100 had no BACKSPACE key; it was generated using the
+<a href="#l122" class="line" id="l122">    122</a> 	CONTROL key as another control character (CONTROL key sets to
+<a href="#l123" class="line" id="l123">    123</a> 	0 b7 b6 b5, so it converts H (code 0x48) into BACKSPACE (code
+<a href="#l124" class="line" id="l124">    124</a> 	0x08)), but it had a DELETE key in a similar position where
+<a href="#l125" class="line" id="l125">    125</a> 	the BACKSPACE key is located today on common PC keyboards.
+<a href="#l126" class="line" id="l126">    126</a> 	All the terminal emulators emulated the difference between
+<a href="#l127" class="line" id="l127">    127</a> 	these keys correctly: the backspace key generated a BACKSPACE
+<a href="#l128" class="line" id="l128">    128</a> 	(^H) and delete key generated a DELETE (^?).
+<a href="#l129" class="line" id="l129">    129</a> 
+<a href="#l130" class="line" id="l130">    130</a> 	But a problem arose when Linus Torvalds wrote Linux. Unlike
+<a href="#l131" class="line" id="l131">    131</a> 	earlier terminals, the Linux virtual terminal (the terminal
+<a href="#l132" class="line" id="l132">    132</a> 	emulator integrated in the kernel) returned a DELETE when
+<a href="#l133" class="line" id="l133">    133</a> 	backspace was pressed, due to the VT100 having a DELETE key in
+<a href="#l134" class="line" id="l134">    134</a> 	the same position.  This created a lot of problems (see [1]
+<a href="#l135" class="line" id="l135">    135</a> 	and [2]). Since Linux has become the king, a lot of terminal
+<a href="#l136" class="line" id="l136">    136</a> 	emulators today generate a DELETE when the backspace key is
+<a href="#l137" class="line" id="l137">    137</a> 	pressed in order to avoid problems with Linux. The result is
+<a href="#l138" class="line" id="l138">    138</a> 	that the only way of generating a BACKSPACE on these systems
+<a href="#l139" class="line" id="l139">    139</a> 	is by using CONTROL + H. (I also think that emacs had an
+<a href="#l140" class="line" id="l140">    140</a> 	important point here because the CONTROL + H prefix is used
+<a href="#l141" class="line" id="l141">    141</a> 	in emacs in some commands (help commands).)
+<a href="#l142" class="line" id="l142">    142</a> 
+<a href="#l143" class="line" id="l143">    143</a> 	From point of view of the kernel, you can change the key
+<a href="#l144" class="line" id="l144">    144</a> 	for deleting a previous character with stty erase. When you
+<a href="#l145" class="line" id="l145">    145</a> 	connect a real terminal into a machine you describe the type
+<a href="#l146" class="line" id="l146">    146</a> 	of terminal, so getty configures the correct value of stty
+<a href="#l147" class="line" id="l147">    147</a> 	erase for this terminal. In the case of terminal emulators,
+<a href="#l148" class="line" id="l148">    148</a> 	however, you don&#39;t have any getty that can set the correct
+<a href="#l149" class="line" id="l149">    149</a> 	value of stty erase, so you always get the default value.
+<a href="#l150" class="line" id="l150">    150</a> 	For this reason, it is necessary to add &#39;stty erase ^H&#39; to your
+<a href="#l151" class="line" id="l151">    151</a> 	profile if you have changed the value of the backspace key.
+<a href="#l152" class="line" id="l152">    152</a> 	Of course, another solution is for st itself to modify the
+<a href="#l153" class="line" id="l153">    153</a> 	value of stty erase.  I usually have the inverse problem:
+<a href="#l154" class="line" id="l154">    154</a> 	when I connect to non-Unix machines, I have to press CONTROL +
+<a href="#l155" class="line" id="l155">    155</a> 	h to get a BACKSPACE. The inverse problem occurs when a user
+<a href="#l156" class="line" id="l156">    156</a> 	connects to my Unix machines from a different system with a
+<a href="#l157" class="line" id="l157">    157</a> 	correct backspace key.
+<a href="#l158" class="line" id="l158">    158</a> 
+<a href="#l159" class="line" id="l159">    159</a> 	[1] http://www.ibb.net/~anne/keyboard.html
+<a href="#l160" class="line" id="l160">    160</a> 	[2] http://www.tldp.org/HOWTO/Keyboard-and-Console-HOWTO-5.html
+<a href="#l161" class="line" id="l161">    161</a> 
+<a href="#l162" class="line" id="l162">    162</a> ## But I really want the old grumpy behaviour of my terminal
+<a href="#l163" class="line" id="l163">    163</a> 
+<a href="#l164" class="line" id="l164">    164</a> Apply [1].
+<a href="#l165" class="line" id="l165">    165</a> 
+<a href="#l166" class="line" id="l166">    166</a> [1] http://st.suckless.org/patches/delkey
+<a href="#l167" class="line" id="l167">    167</a> 
+</pre>
+</div>
+</body>
+</html>

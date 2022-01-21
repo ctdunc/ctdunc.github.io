@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>added symbols to window layout - succ - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/4db1d76b62ef922022e3a62f76f35ac913fccbcf.html">4db1d76b62ef922022e3a62f76f35ac913fccbcf</a>
+<b>parent</b> <a href="../commit/7bda5e69896a1adf651b8c1261fe86a5be78ae19.html">7bda5e69896a1adf651b8c1261fe86a5be78ae19</a>
+<b>Author:</b> Connor Duncan &lt;<a href="mailto:connor.t.duncan@gmail.com">connor.t.duncan@gmail.com</a>&gt;
+<b>Date:</b>   Mon, 15 Jul 2019 09:47:41 -0700
+
+added symbols to window layout
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">dwm/config.h</a></td><td> | </td><td class="num">10</td><td><span class="i">+++++</span><span class="d">-----</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">dwm/dwm</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">dwm/dwm.c</a></td><td> | </td><td class="num">6</td><td><span class="i">++++</span><span class="d">--</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h3">dwm/dwm.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+</table></pre><pre>4 files changed, 9 insertions(+), 7 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/dwm/config.h.html">dwm/config.h</a> b/<a href="../file/dwm/config.h.html">dwm/config.h</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -40,11 +40,11 @@ static const int resizehints = 1;    /* 1 means respect size hints in tiled resi
+</a> 
+ static const Layout layouts[] = {
+ 	/* symbol     arrange function */
+<a href="#h0-0-3" id="h0-0-3" class="d">-	{ &quot;til&quot;,	tile },    /* first entry is default */
+</a><a href="#h0-0-4" id="h0-0-4" class="d">-	{ &quot;flt&quot;,	NULL },    /* no layout function means floating behavior */
+</a><a href="#h0-0-5" id="h0-0-5" class="d">-	{ &quot;mnc&quot;,	monocle },
+</a><a href="#h0-0-6" id="h0-0-6" class="d">-	{ &quot;bst&quot;,	bstack	},
+</a><a href="#h0-0-7" id="h0-0-7" class="d">-	{ &quot;bsh&quot;,	bstackhoriz },
+</a><a href="#h0-0-8" id="h0-0-8" class="i">+	{ &quot;[\ufa6f]&quot;,	tile },    /* first entry is default */
+</a><a href="#h0-0-9" id="h0-0-9" class="i">+	{ &quot;[\ufce0]&quot;,	NULL },    /* no layout function means floating behavior */
+</a><a href="#h0-0-10" id="h0-0-10" class="i">+	{ &quot;[\uf848]&quot;,	monocle },
+</a><a href="#h0-0-11" id="h0-0-11" class="i">+	{ &quot;[\uf6d8]&quot;,	bstack	},
+</a><a href="#h0-0-12" id="h0-0-12" class="i">+	{ &quot;[\uf6d7]&quot;,	bstackhoriz },
+</a> };
+ 
+ /* key definitions */
+<b>diff --git a/<a id="h1" href="../file/dwm/dwm.html">dwm/dwm</a> b/<a href="../file/dwm/dwm.html">dwm/dwm</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h2" href="../file/dwm/dwm.c.html">dwm/dwm.c</a> b/<a href="../file/dwm/dwm.c.html">dwm/dwm.c</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -1111,8 +1111,10 @@ monocle(Monitor *m)
+</a> 	for (c = m-&gt;clients; c; c = c-&gt;next)
+ 		if (ISVISIBLE(c))
+ 			n++;
+<a href="#h2-0-3" id="h2-0-3" class="d">-	if (n &gt; 0) /* override layout symbol */
+</a><a href="#h2-0-4" id="h2-0-4" class="d">-		snprintf(m-&gt;ltsymbol, sizeof m-&gt;ltsymbol, &quot;[%d]&quot;, n);
+</a><a href="#h2-0-5" id="h2-0-5" class="i">+	/* stop override layout symbol! 
+</a><a href="#h2-0-6" id="h2-0-6" class="i">+	*if (n &gt; 0) override layout symbol
+</a><a href="#h2-0-7" id="h2-0-7" class="i">+	*	snprintf(m-&gt;ltsymbol, sizeof m-&gt;ltsymbol, &quot;[%d]&quot;, n);
+</a><a href="#h2-0-8" id="h2-0-8" class="i">+	*/
+</a> 	for (c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next))
+ 		resize(c, m-&gt;wx, m-&gt;wy, m-&gt;ww - 2 * c-&gt;bw, m-&gt;wh - 2 * c-&gt;bw, 0);
+ }
+<b>diff --git a/<a id="h3" href="../file/dwm/dwm.o.html">dwm/dwm.o</a> b/<a href="../file/dwm/dwm.o.html">dwm/dwm.o</a></b>
+Binary files differ.
+</pre>
+</div>
+</body>
+</html>

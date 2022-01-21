@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>new colors - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/7c7cb165c81fe21c7f340f0590af529ded9928e2.html">7c7cb165c81fe21c7f340f0590af529ded9928e2</a>
+<b>parent</b> <a href="../commit/cb6a7ea493a419b0a8ee9441a6e764240ad0b144.html">cb6a7ea493a419b0a8ee9441a6e764240ad0b144</a>
+<b>Author:</b> Connor Duncan &lt;<a href="mailto:connor@connorduncan.xyz">connor@connorduncan.xyz</a>&gt;
+<b>Date:</b>   Wed, 15 Jan 2020 10:29:35 -0800
+
+new colors
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">dwm/config.h</a></td><td> | </td><td class="num">10</td><td><span class="i">+++++</span><span class="d">-----</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">dwm/dwm</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">dwm/dwm.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h3">st/config.h</a></td><td> | </td><td class="num">41</td><td><span class="i">+++++++++++++++++++++</span><span class="d">--------------------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h4">st/st</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h5">st/x.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+</table></pre><pre>6 files changed, 26 insertions(+), 25 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/dwm/config.h.html">dwm/config.h</a> b/<a href="../file/dwm/config.h.html">dwm/config.h</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -10,11 +10,11 @@ static const int showbar            = 1;        /* 0 means no bar */
+</a> static const int topbar             = 1;        /* 0 means bottom bar */
+ static const char *fonts[]          = { &quot;Fura Code Nerd Font:size=12&quot;  };
+ static const char dmenufont[]       = &quot;Fura Code Nerd Font:size=12&quot;;
+<a href="#h0-0-3" id="h0-0-3" class="d">-static const char col_gray1[]       = &quot;#000000&quot;; //background normal
+</a><a href="#h0-0-4" id="h0-0-4" class="d">-static const char col_gray2[]       = &quot;#000000&quot;; //border normal
+</a><a href="#h0-0-5" id="h0-0-5" class="d">-static const char col_gray3[]       = &quot;#ffffff&quot;; //foreground normal
+</a><a href="#h0-0-6" id="h0-0-6" class="d">-static const char col_gray4[]       = &quot;#000000&quot;; //foreground selected
+</a><a href="#h0-0-7" id="h0-0-7" class="d">-static const char col_cyan[]        = &quot;#009900&quot;; //background/border selected
+</a><a href="#h0-0-8" id="h0-0-8" class="i">+static const char col_gray1[]       = &quot;#101010&quot;; //background normal
+</a><a href="#h0-0-9" id="h0-0-9" class="i">+static const char col_gray2[]       = &quot;#101010&quot;; //border normal
+</a><a href="#h0-0-10" id="h0-0-10" class="i">+static const char col_gray3[]       = &quot;#66ff66&quot;; //foreground normal
+</a><a href="#h0-0-11" id="h0-0-11" class="i">+static const char col_gray4[]       = &quot;#d81860&quot;; //foreground selected
+</a><a href="#h0-0-12" id="h0-0-12" class="i">+static const char col_cyan[]        = &quot;#1c1c1c&quot;; //background/border selected
+</a> static const char *colors[][3]      = {
+ 	/*               fg         bg         border   */
+ 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+<b>diff --git a/<a id="h1" href="../file/dwm/dwm.html">dwm/dwm</a> b/<a href="../file/dwm/dwm.html">dwm/dwm</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h2" href="../file/dwm/dwm.o.html">dwm/dwm.o</a> b/<a href="../file/dwm/dwm.o.html">dwm/dwm.o</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h3" href="../file/st/config.h.html">st/config.h</a> b/<a href="../file/st/config.h.html">st/config.h</a></b>
+<a href="#h3-0" id="h3-0" class="h">@@ -80,36 +80,37 @@ char *termname = &quot;st-256color&quot;;
+</a>  *
+  *	stty tabs
+  */
+<a href="#h3-0-3" id="h3-0-3" class="d">-unsigned int tabspaces = 8;
+</a><a href="#h3-0-4" id="h3-0-4" class="i">+unsigned int tabspaces = 4;
+</a><a href="#h3-0-5" id="h3-0-5" class="i">+/* Terminal colors (16 first used in escape sequence) */
+</a> /* Terminal colors (16 first used in escape sequence) */
+ static const char *colorname[] = {
+ 
+ 	/* 8 normal colors */
+<a href="#h3-0-10" id="h3-0-10" class="d">-	[0] = &quot;#000000&quot;, /* black   */
+</a><a href="#h3-0-11" id="h3-0-11" class="d">-	[1] = &quot;#b797f0&quot;, /* red     */
+</a><a href="#h3-0-12" id="h3-0-12" class="d">-	[2] = &quot;#14db49&quot;, /* green   */
+</a><a href="#h3-0-13" id="h3-0-13" class="d">-	[3] = &quot;#403d70&quot;, /* yellow  */
+</a><a href="#h3-0-14" id="h3-0-14" class="d">-	[4] = &quot;#385a70&quot;, /* blue    */
+</a><a href="#h3-0-15" id="h3-0-15" class="d">-	[5] = &quot;#869bff&quot;, /* magenta */
+</a><a href="#h3-0-16" id="h3-0-16" class="d">-	[6] = &quot;#8d33cd&quot;, /* cyan    */
+</a><a href="#h3-0-17" id="h3-0-17" class="d">-	[7] = &quot;#999999&quot;, /* white   */
+</a><a href="#h3-0-18" id="h3-0-18" class="i">+	[0] = &quot;#1c1c1c&quot;, /* black   */
+</a><a href="#h3-0-19" id="h3-0-19" class="i">+	[1] = &quot;#d81860&quot;, /* red     */
+</a><a href="#h3-0-20" id="h3-0-20" class="i">+	[2] = &quot;#60ff60&quot;, /* green   */
+</a><a href="#h3-0-21" id="h3-0-21" class="i">+	[3] = &quot;#f9fd75&quot;, /* yellow  */
+</a><a href="#h3-0-22" id="h3-0-22" class="i">+	[4] = &quot;#4695c8&quot;, /* blue    */
+</a><a href="#h3-0-23" id="h3-0-23" class="i">+	[5] = &quot;#a78edb&quot;, /* magenta */
+</a><a href="#h3-0-24" id="h3-0-24" class="i">+	[6] = &quot;#43afce&quot;, /* cyan    */
+</a><a href="#h3-0-25" id="h3-0-25" class="i">+	[7] = &quot;#f3ebe2&quot;, /* white   */
+</a> 
+ 	/* 8 bright colors */
+<a href="#h3-0-28" id="h3-0-28" class="d">-	[8]  = &quot;#38372c&quot;, /* black   */
+</a><a href="#h3-0-29" id="h3-0-29" class="d">-	[9]  = &quot;#7c54b0&quot;, /* red     */
+</a><a href="#h3-0-30" id="h3-0-30" class="d">-	[10] = &quot;#a2e655&quot;, /* green   */
+</a><a href="#h3-0-31" id="h3-0-31" class="d">-	[11] = &quot;#9c6f59&quot;, /* yellow  */
+</a><a href="#h3-0-32" id="h3-0-32" class="d">-	[12] = &quot;#323f5c&quot;, /* blue    */
+</a><a href="#h3-0-33" id="h3-0-33" class="d">-	[13] = &quot;#5e6c99&quot;, /* magenta */
+</a><a href="#h3-0-34" id="h3-0-34" class="d">-	[14] = &quot;#667d77&quot;, /* cyan    */
+</a><a href="#h3-0-35" id="h3-0-35" class="d">-	[15] = &quot;#ffffff&quot;, /* white   */
+</a><a href="#h3-0-36" id="h3-0-36" class="i">+	[8]  = &quot;#4d4d4d&quot;, /* black   */
+</a><a href="#h3-0-37" id="h3-0-37" class="i">+	[9]  = &quot;#f00060&quot;, /* red     */
+</a><a href="#h3-0-38" id="h3-0-38" class="i">+	[10] = &quot;#70ff70&quot;, /* green   */
+</a><a href="#h3-0-39" id="h3-0-39" class="i">+	[11] = &quot;#f9fd80&quot;, /* yellow  */
+</a><a href="#h3-0-40" id="h3-0-40" class="i">+	[12] = &quot;#5a9dc8&quot;, /* blue    */
+</a><a href="#h3-0-41" id="h3-0-41" class="i">+	[13] = &quot;#b29fdb&quot;, /* magenta */
+</a><a href="#h3-0-42" id="h3-0-42" class="i">+	[14] = &quot;#69b8ce&quot;, /* cyan    */
+</a><a href="#h3-0-43" id="h3-0-43" class="i">+	[15] = &quot;#eeeeee&quot;, /* white   */
+</a> 
+ 	/* special colors */
+<a href="#h3-0-46" id="h3-0-46" class="d">-	[256] = &quot;#000000&quot;, /* background */
+</a><a href="#h3-0-47" id="h3-0-47" class="d">-	[257] = &quot;#ffffff&quot;, /* foreground */
+</a><a href="#h3-0-48" id="h3-0-48" class="i">+	[256] = &quot;#101010&quot;, /* background */
+</a><a href="#h3-0-49" id="h3-0-49" class="i">+	[257] = &quot;#66ff66&quot;, /* foreground */
+</a> };
+ 
+<a href="#h3-0-52" id="h3-0-52" class="d">-unsigned int alpha = 0xaa;
+</a><a href="#h3-0-53" id="h3-0-53" class="i">+unsigned int alpha = 0xff;
+</a> unsigned int defaultfg = 257;
+ unsigned int defaultbg = 256;
+ static unsigned int defaultcs = 257;
+<b>diff --git a/<a id="h4" href="../file/st/st.html">st/st</a> b/<a href="../file/st/st.html">st/st</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h5" href="../file/st/x.o.html">st/x.o</a> b/<a href="../file/st/x.o.html">st/x.o</a></b>
+Binary files differ.
+</pre>
+</div>
+</body>
+</html>

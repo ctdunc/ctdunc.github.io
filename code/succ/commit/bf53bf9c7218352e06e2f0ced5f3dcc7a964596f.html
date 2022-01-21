@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>added sync option to mod+s - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/bf53bf9c7218352e06e2f0ced5f3dcc7a964596f.html">bf53bf9c7218352e06e2f0ced5f3dcc7a964596f</a>
+<b>parent</b> <a href="../commit/f0dc862396c9b5ca4342f9311026c3a6109b8688.html">f0dc862396c9b5ca4342f9311026c3a6109b8688</a>
+<b>Author:</b> Connor &lt;<a href="mailto:connor.t.duncan@gmail.com">connor.t.duncan@gmail.com</a>&gt;
+<b>Date:</b>   Sun,  8 Sep 2019 11:52:16 -0700
+
+added sync option to mod+s
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">dwm/config.h</a></td><td> | </td><td class="num">2</td><td><span class="i">++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">dwm/dwm</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h2">dwm/dwm.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h3">slock/explicit_bzero.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h4">slock/slock</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+</table></pre><pre>5 files changed, 2 insertions(+), 0 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/dwm/config.h.html">dwm/config.h</a> b/<a href="../file/dwm/config.h.html">dwm/config.h</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -63,11 +63,13 @@ static char dmenumon[2] = &quot;0&quot;; /* component of dmenucmd, manipulated in spawn() 
+</a> static const char *dmenucmd[] = { &quot;dmenu_run&quot;, &quot;-m&quot;, dmenumon, &quot;-fn&quot;, dmenufont, &quot;-nb&quot;, col_gray1, &quot;-nf&quot;, col_gray3, &quot;-sb&quot;, col_cyan, &quot;-sf&quot;, col_gray4, NULL };
+ static const char *termcmd[]  = { &quot;st&quot;, NULL };
+ static const char *lockcmd[] = {&quot;slock&quot;, NULL };
+<a href="#h0-0-3" id="h0-0-3" class="i">+static const char *synccmd[] = {&quot;$HOME/.scripts/sync/$(\\ls $HOME/.scripts/sync | dmenu&quot;, &quot;-m&quot;, dmenumon, &quot;-fn&quot;, dmenufont, &quot;-nb&quot;, col_gray1, &quot;-nf&quot;, col_gray3, &quot;-sb&quot;, col_cyan, &quot;-sf&quot;, col_gray4,&quot;)&quot;, NULL };
+</a> 
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+ 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
+ 	{ MODKEY,			XK_Return, spawn,          {.v = termcmd } },
+<a href="#h0-0-9" id="h0-0-9" class="i">+	{ MODKEY,			XK_s,	   spawn,	   {.v = synccmd } },
+</a> 	{ MODKEY,                       XK_space,  togglebar,      {0} },
+ 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+ 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+<b>diff --git a/<a id="h1" href="../file/dwm/dwm.html">dwm/dwm</a> b/<a href="../file/dwm/dwm.html">dwm/dwm</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h2" href="../file/dwm/dwm.o.html">dwm/dwm.o</a> b/<a href="../file/dwm/dwm.o.html">dwm/dwm.o</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h3" href="../file/slock/explicit_bzero.o.html">slock/explicit_bzero.o</a> b/<a href="../file/slock/explicit_bzero.o.html">slock/explicit_bzero.o</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h4" href="../file/slock/slock.html">slock/slock</a> b/<a href="../file/slock/slock.html">slock/slock</a></b>
+Binary files differ.
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-09-30-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+\subsection{Physical Effects of Particle Statistics} \subsubsection{Effect on Spectrum} Take some example hamiltonian \begin{equation} H=\frac{p_1^2}{2m}+\frac{p^2_2}{2m}+V(x_1)+V(x_2) \end{equation} or $H=H_1+H_2$. Naiveley, we could just solve the schrodinger equation by looking at wavefunctions that are products of eigenstates of $H_1,H_2$. If we restrict to a square potential of finite magnitude, we have \begin{equation} \psi_n(x)=\sqrt{\frac{2}{a}}\sin(\frac{\pi}{a}nx) \end{equation} or, we can let \begin{equation} E_n=Kn^2;n=\frac{\pi^2\hbar^2}{2ma^2} \end{equation} In the distinguishable case, we get then that \begin{equation} E_0^D=E_1+E_1=\frac{\pi^2\hbar^2}{ma^2} \end{equation} If we look at $E_1^D$, there's a double degeneracy. Maybe it's useful to put this in a table \begin{center} \begin{tabular}{c|c|c} Energy & Degeneracy & WF\\ \hline $E_0=2K$& 1 & $\psi_1\psi_1$\\ $E_1=5K$& 2 & $\psi_2\psi_1;\psi_1\psi_2$ \end{tabular} \end{center} If we have two \textbf{bosons}, however, we're going to get indistinguishable particles We're going to end up with \begin{center} \begin{tabular}{c|c|c} Energy & Degeneracy & WF\\ \hline $E_0=2K$& 1 & $\psi_1\psi_1$\\ $E_1=5K$& 1 & $\frac{1}{\sqrt{2}}(\psi_1\psi_2+\psi_2\psi_1)$ \end{tabular} \end{center} \textbf{Fermions} have yet a different spectrum. The lowest allowed energy level for a fermion is $5K$, since it must be antisymmetric. Wild stuff! \subsubsection{``Exchange Forces''} The effect of this statistics manifests itself as an inability of fermions to fill the same state, which causes them to space out more. It's NOT a force.\footnote{TODO: Anyons are particles that have special statistics under the 2d operator called braiding. This sounds hella cool.} We want to check in on $\langle(x_1-x_2)^2\rangle_{(1,2)}$. Basically, we want to know what the expecation value of distinguishable particles, fermions, and bosons are when $E=5K$. \paragraph{Distinguishable Particles} We can take \begin{equation} \bra{1,2}(x_1-x_2)^2\ket{1,2}=\bra{1}x_1^2\ket{1}+\bra{2}x_2^2\ket{x}-2\bra{1}x_1\ket{1}\bra{2}x_2\ket{2} \end{equation} Since the final term contains the product of two odd integrals squared, it goes to zero, so we'll get \begin{equation} \bra{1,2}(x_1-x_2)^2\ket{1,2}=\bra{1}x_1^2\ket{1}+\bra{2}x_2^2\ket{x} \end{equation} \paragraph{Bosons, Fermions} This changes the calculation to be, collecting terms \begin{align} \frac{1}{2}\left(\bra{1,2}\pm\bra{2,1}\right)(x_1-x_2)^2\left(\ket{1,2}\pm\ket{1,2}\right)\\ = \frac{1}{2}\left[ \bra{1}x_1^2\ket{1}+\bra{2}x_2^2\ket{2}+\bra{2}x_1^2\ket{2}+\bra{1}x_2^2\ket{1}\pm\bra{1}x^2\ket{2}\pm\bra{2}x_2^2\ket{1}\mp\bra{1}x_1\ket{2}\bra{2}x_2\ket{1}\pm\bra{2}x_1^2\ket{1}\pm \right] \end{align} Just a whole bunch of shit. Altman is going to write it down after cancelling, and what the heCK this is a lot of algebra. Cancels to (after noting $x_1-x_2$ is really just $\hat x\otimes I-I\otimes\hat x$, so that our integrals cancel out) \begin{equation} \frac{1}{2}\left(\bra{1,2}\pm\bra{2,1}\right)(x_1-x_2)^2\left(\ket{1,2}\pm\ket{1,2}\right)\\=I_1+I_2\mp|\bra{1}x\ket{2}|^2 \end{equation} where the minus corresponds to bosons. <++>
+\end{document}

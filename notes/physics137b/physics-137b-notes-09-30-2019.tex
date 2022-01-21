@@ -1,0 +1,24 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-09-30-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+\subsection{Systems of $N$ Particles} Consider a system of $N$ particles. We can arrange this in terms of $M$ single particle basis states. We need to count such systems using our 112 Memes. \begin{itemize} \item Distinguishable particles: $M^N$ possible arrangements of states. \end{itemize} For fermions and bosons, things behave a bit differently. \paragraph{Bosons} The idea is that for our basis states $n_i=\{a,b,\dots,\}$, we need to hav $P_{ij}\psi(n_1,\dots,n_N)=\alpha\psi(n_1,\dots,n_N)$ where $\alpha=\pm1$. We need to give our particle state some symmetry, so that \begin{equation} \ket{n_1,\dots,n_N}=\frac{1}{\sqrt{N!}}\sum_{P_N}\ket{P(n_1,\dots,n_N)} \end{equation} where $P_N$ is the action of taking all possible permutations of group $N$. \paragraph{Fermions} Again, we have to sum over all possible permutations, but then we need \begin{equation} \ket{n_1,\dots,n_N}=\frac{1}{\sqrt{N!}}\sum_{P_N}\chi(P)\ket{P(n_1,\dots,n_N)} \end{equation} where $\chi(P)$ is the parity of the permutation, where parity is the number of single particle permutations necessary to achieve a given state. This seems really complicated, but there's actually a trick. Let's try writing in the position basis \begin{align} \bra{x_1x_2x_3}\ket{n_1n_2n_3}=\psi_{n_1n_2n_3}(x_1,x_2,x_3)\\ \psi_{n_1n_2n_3}^{B}(x_1,x_2,x_3)=\frac{1}{\sqrt{3!}}\sum_P\varphi_{P(n_1)}(x_1)\varphi_{P(n_2)}(x_2)\varphi_{P(n_3)}(x_3)\\ \psi_{n_1n_2n_3}^{F}(x_1,x_2,x_3)=\frac{1}{\sqrt{3!}}\sum_P\chi_P\varphi_{P(n_1)}(x_1)\varphi_{P(n_2)}(x_2)\varphi_{P(n_3)}(x_3) \end{align} The trick for fermions is to take the \textbf{slater determinant}, \begin{equation} =\frac{1}{\sqrt{3!}}=\det\left| \begin{bmatrix} \varphi_{n_1}(x_1) & \varphi_{n_2}(x_1) & \varphi_{n_3}(x_1) \\ \varphi_{n_1}(x_2) & \varphi_{n_2}(x_2) & \varphi_{n_3}(x_2) \\ \varphi_{n_1}(x_3) & \varphi_{n_2}(x_3) & \varphi_{n_3}(x_3) \end{bmatrix} \right| \end{equation} The slater determinant actually spits out exactly the correct permutations and their signs for a fermion, because of the way signs work when taking the determinant. This allows us to return to our original challenge: \textbf{counting of Bosonic/Fermionic States}. Consider $M$ orbitals, with $N$ particles. For fermions, this is actually pretty easy. First off, there is no fermionic system with $N>M$. This should come out for $N<M$, there are $M\choose N$ states. For bosons, we get a stars and bars problem, which gives there should be $M+N-1\choose N-1$ states.\footnote{THIS IS A GUESS, but im like 90\% sure this is correct. Thank you math 55.} \subsubsection{When does particle statistics matter?} Really only matters when we have a high probability of particle exchange.\footnote{is there a way to calculate the probability of exchange?} The example Altman ggives is of a particle in a German lab, and in Haeffners lab. We probably don't need to apply a symmetrization requirement because they're unlikely to exchange. Here's the mathy example. Consider two particles, $\psi_E$ the ``earth'' hydrogen atom, and $\psi_M$ is the ``moon'' hydrogen atom. Then, we apply the properly antisymmetric state \begin{equation} \psi_A(x_1,x_2)=\frac{1}{\sqrt{2}}(\psi_E(x_1)\psi_M(x_2)-\psi_E(x_2)\psi_M(x_1)) \end{equation} and the distinguishable state \begin{equation} \psi(x_1,x_2)\frac{1}{\sqrt{2}}\psi_E(x_1)\psi_M(x_2) \end{equation} For the distinguishable case, what we find is \begin{equation} P(x)=\int dx_2|\psi_E(x)|^2|\psi_M(x_2)|^2+\int dx_1|\psi_E(x_1)|^2|\psi_M(x)|^2=|\psi_E(x)^2 \end{equation} because the integral over $x_1$ is just obscenely tiny. For the antisymmetric case, we're going to find \begin{equation} P(x)=\int dx_2|\psi_A|(x_1,x_2)|^2+\int dx_1|\psi_A(x_1,x_2)|^2=\int dx_2|\psi_E(x)\psi_M(x_2)-\psi_E(x_2)\psi_M(x)|^2 \end{equation} Basically, the exponentially decaying tails kind of disappear. It can be shown these come out to be the same.
+\end{document}

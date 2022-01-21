@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>added quark, updated colorscheme and patched dwm - succ - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/c45bd102d08fd1b8403e4f2aef8f71126a9970cb.html">c45bd102d08fd1b8403e4f2aef8f71126a9970cb</a>
+<b>parent</b> <a href="../commit/4db1d76b62ef922022e3a62f76f35ac913fccbcf.html">4db1d76b62ef922022e3a62f76f35ac913fccbcf</a>
+<b>Author:</b> Connor Duncan &lt;<a href="mailto:connor.t.duncan@gmail.com">connor.t.duncan@gmail.com</a>&gt;
+<b>Date:</b>   Wed, 14 Aug 2019 07:43:27 -0700
+
+added quark, updated colorscheme and patched dwm
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">dwm/config.def.h</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">dwm/config.def.h.orig</a></td><td> | </td><td class="num">6</td><td><span class="i">++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h2">dwm/config.def.h.rej</a></td><td> | </td><td class="num">10</td><td><span class="i">++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h3">dwm/config.h</a></td><td> | </td><td class="num">16</td><td><span class="i">+++++++</span><span class="d">---------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h4">dwm/dwm</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h5">dwm/dwm-alternativetags-6.2.diff</a></td><td> | </td><td class="num">93</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h6">dwm/dwm-centered-windowname.diff</a></td><td> | </td><td class="num">27</td><td><span class="i">+++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h7">dwm/dwm-fullgaps-6.2.diff</a></td><td> | </td><td class="num">95</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h8">dwm/dwm-uselessgap-6.2.diff</a></td><td> | </td><td class="num">81</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h9">dwm/dwm-warp-git-20160626-7af4d43.diff</a></td><td> | </td><td class="num">58</td><td><span class="i">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h10">dwm/dwm.c</a></td><td> | </td><td class="num">62</td><td><span class="i">++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h11">dwm/dwm.c.orig</a></td><td> | </td><td class="num">96</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d">--</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h12">dwm/dwm.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h13">quark</a></td><td> | </td><td class="num">1</td><td><span class="i">+</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h14">st/config.h</a></td><td> | </td><td class="num">6</td><td><span class="i">+++</span><span class="d">---</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h15">st/st</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h16">st/x.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="A">A</td><td><a href="#h17">surf/chromebar.diff</a></td><td> | </td><td class="num">321</td><td><span class="i">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="D">D</td><td><a href="#h18">surf/common.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="D">D</td><td><a href="#h19">surf/config.def.h.rej</a></td><td> | </td><td class="num">8</td><td><span class="i"></span><span class="d">--------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h20">surf/config.h</a></td><td> | </td><td class="num">9</td><td><span class="i">++</span><span class="d">-------</span></td></tr>
+<tr><td class="R">R</td><td><a href="#h21">surf/surf-patches/surf-homepage.diff -&gt; surf/homepage.diff</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="D">D</td><td><a href="#h22">surf/libsurf-webext.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="D">D</td><td><a href="#h23">surf/libsurf-webext.so</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="R">R</td><td><a href="#h24">surf/surf-patches/searchengines.diff -&gt; surf/searchengines.diff</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="D">D</td><td><a href="#h25">surf/surf</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h26">surf/surf.c</a></td><td> | </td><td class="num">22</td><td><span class="i"></span><span class="d">----------------------</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h27">surf/surf.c.orig</a></td><td> | </td><td class="num">22</td><td><span class="i">++++++++++++++++++++++</span><span class="d"></span></td></tr>
+<tr><td class="M">M</td><td><a href="#h28">surf/surf.c.rej</a></td><td> | </td><td class="num">19</td><td><span class="i">++++++++</span><span class="d">-----------</span></td></tr>
+<tr><td class="D">D</td><td><a href="#h29">surf/surf.o</a></td><td> | </td><td class="num">0</td><td><span class="i"></span><span class="d"></span></td></tr>
+</table></pre><pre>30 files changed, 885 insertions(+), 68 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/dwm/config.def.h.html">dwm/config.def.h</a> b/<a href="../file/dwm/config.def.h.html">dwm/config.def.h</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -2,6 +2,7 @@
+</a> 
+ /* appearance */
+ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+<a href="#h0-0-3" id="h0-0-3" class="i">+static const unsigned int gappx     = 6;        /* gaps between windows */
+</a> static const unsigned int snap      = 32;       /* snap pixel */
+ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
+<b>diff --git a/<a id="h1" href="../file/dwm/config.def.h.orig.html">dwm/config.def.h.orig</a> b/<a href="../file/dwm/config.def.h.orig.html">dwm/config.def.h.orig</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -20,6 +20,7 @@ static const char *colors[][3]      = {
+</a> 
+ /* tagging */
+ static const char *tags[] = { &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot; };
+<a href="#h1-0-3" id="h1-0-3" class="i">+static const char *tagsalt[] = { &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot; };
+</a> 
+ static const Rule rules[] = {
+ 	/* xprop(1):
+<a href="#h1-1" id="h1-1" class="h">@@ -41,6 +42,8 @@ static const Layout layouts[] = {
+</a> 	{ &quot;[]=&quot;,      tile },    /* first entry is default */
+ 	{ &quot;&gt;&lt;&gt;&quot;,      NULL },    /* no layout function means floating behavior */
+ 	{ &quot;[M]&quot;,      monocle },
+<a href="#h1-1-3" id="h1-1-3" class="i">+	{ &quot;TTT&quot;,      bstack },
+</a><a href="#h1-1-4" id="h1-1-4" class="i">+	{ &quot;===&quot;,      bstackhoriz },
+</a> };
+ 
+ /* key definitions */
+<a href="#h1-2" id="h1-2" class="h">@@ -76,6 +79,8 @@ static Key keys[] = {
+</a> 	{ MODKEY,                       XK_t,      setlayout,      {.v = &amp;layouts[0]} },
+ 	{ MODKEY,                       XK_f,      setlayout,      {.v = &amp;layouts[1]} },
+ 	{ MODKEY,                       XK_m,      setlayout,      {.v = &amp;layouts[2]} },
+<a href="#h1-2-3" id="h1-2-3" class="i">+	{ MODKEY,                       XK_u,      setlayout,      {.v = &amp;layouts[3]} },
+</a><a href="#h1-2-4" id="h1-2-4" class="i">+	{ MODKEY,                       XK_o,      setlayout,      {.v = &amp;layouts[4]} },
+</a> 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+ 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+ 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+<a href="#h1-3" id="h1-3" class="h">@@ -84,6 +89,7 @@ static Key keys[] = {
+</a> 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+<a href="#h1-3-3" id="h1-3-3" class="i">+	{ MODKEY,                       XK_n,      togglealttag,   {0} },
+</a> 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+<b>diff --git a/<a id="h2" href="../file/dwm/config.def.h.rej.html">dwm/config.def.h.rej</a> b/<a href="../file/dwm/config.def.h.rej.html">dwm/config.def.h.rej</a></b>
+<a href="#h2-0" id="h2-0" class="h">@@ -0,0 +1,10 @@
+</a><a href="#h2-0-0" id="h2-0-0" class="i">+--- config.def.h
+</a><a href="#h2-0-1" id="h2-0-1" class="i">++++ config.def.h
+</a><a href="#h2-0-2" id="h2-0-2" class="i">+@@ -84,7 +83,6 @@ static Key keys[] = {
+</a><a href="#h2-0-3" id="h2-0-3" class="i">+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+</a><a href="#h2-0-4" id="h2-0-4" class="i">+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+</a><a href="#h2-0-5" id="h2-0-5" class="i">+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+</a><a href="#h2-0-6" id="h2-0-6" class="i">+-	{ MODKEY,                       XK_n,      togglealttag,   {0} },
+</a><a href="#h2-0-7" id="h2-0-7" class="i">+ 	TAGKEYS(                        XK_1,                      0)
+</a><a href="#h2-0-8" id="h2-0-8" class="i">+ 	TAGKEYS(                        XK_2,                      1)
+</a><a href="#h2-0-9" id="h2-0-9" class="i">+ 	TAGKEYS(                        XK_3,                      2)
+</a><b>diff --git a/<a id="h3" href="../file/dwm/config.h.html">dwm/config.h</a> b/<a href="../file/dwm/config.h.html">dwm/config.h</a></b>
+<a href="#h3-0" id="h3-0" class="h">@@ -5,13 +5,13 @@ static const unsigned int borderpx  = 2;        /* border pixel of windows */
+</a> static const unsigned int snap      = 32;       /* snap pixel */
+ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
+<a href="#h3-0-3" id="h3-0-3" class="d">-static const char *fonts[]          = { &quot;UbuntuMono Nerd Font:size=12&quot;  };
+</a><a href="#h3-0-4" id="h3-0-4" class="d">-static const char dmenufont[]       = &quot;monospace:size=12&quot;;
+</a><a href="#h3-0-5" id="h3-0-5" class="i">+static const char *fonts[]          = { &quot;Fura Code Nerd Font:size=12&quot;  };
+</a><a href="#h3-0-6" id="h3-0-6" class="i">+static const char dmenufont[]       = &quot;Fura Code Nerd Font:size=12&quot;;
+</a> static const char col_gray1[]       = &quot;#000000&quot;; //background normal
+ static const char col_gray2[]       = &quot;#000000&quot;; //border normal
+ static const char col_gray3[]       = &quot;#ababab&quot;; //foreground normal
+<a href="#h3-0-10" id="h3-0-10" class="d">-static const char col_gray4[]       = &quot;#dddd13&quot;; //foreground selected
+</a><a href="#h3-0-11" id="h3-0-11" class="d">-static const char col_cyan[]        = &quot;#3b48e3&quot;; //background/border selected
+</a><a href="#h3-0-12" id="h3-0-12" class="i">+static const char col_gray4[]       = &quot;#3c7db3&quot;; //foreground selected
+</a><a href="#h3-0-13" id="h3-0-13" class="i">+static const char col_cyan[]        = &quot;#3CB371&quot;; //background/border selected
+</a> static const char *colors[][3]      = {
+ 	/*               fg         bg         border   */
+ 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+<a href="#h3-1" id="h3-1" class="h">@@ -21,14 +21,14 @@ static const char *colors[][3]      = {
+</a> /* tagging */
+ /* { code, pdf, admin, paused, research, processing, spotify, web} */
+ static const char *tags[] = { &quot;\ue62b&quot;, &quot;\uf02d&quot;, &quot;\uf303&quot;,&quot;\uf8e6&quot;, &quot;\uf848&quot;, &quot;\ufcc1&quot;, &quot;\uf6ed&quot;, &quot;\uf1bc&quot;, &quot;\ufa9e&quot; };
+<a href="#h3-1-3" id="h3-1-3" class="d">-
+</a><a href="#h3-1-4" id="h3-1-4" class="i">+static const unsigned int gappx = 10;        /* gap pixel between windows */
+</a> static const Rule rules[] = {
+ 	/* xprop(1):
+ 	 *	WM_CLASS(STRING) = instance, class
+ 	 *	WM_NAME(STRING) = title
+ 	 */
+ 	/* class      instance    title       tags mask     isfloating   monitor */
+<a href="#h3-1-11" id="h3-1-11" class="d">-	{ &quot;Spotify&quot;,  NULL,  NULL,       1 &lt;&lt; 7,       0,		 -1 },
+</a><a href="#h3-1-12" id="h3-1-12" class="i">+	{ &quot;Spotify&quot;,  NULL,  NULL,            1 &lt;&lt; 7,       0,		 -1 },
+</a> 	{ &quot;Firefox&quot;,  NULL,       NULL,       1 &lt;&lt; 8,       0,           -1 },
+ 	{ &quot;Surf&quot;,     NULL,	  NULL,	      1 &lt;&lt; 8,	    0,		 -1 },
+ };
+<a href="#h3-2" id="h3-2" class="h">@@ -63,18 +63,16 @@ static char dmenumon[2] = &quot;0&quot;; /* component of dmenucmd, manipulated in spawn() 
+</a> static const char *dmenucmd[] = { &quot;dmenu_run&quot;, &quot;-m&quot;, dmenumon, &quot;-fn&quot;, dmenufont, &quot;-nb&quot;, col_gray1, &quot;-nf&quot;, col_gray3, &quot;-sb&quot;, col_cyan, &quot;-sf&quot;, col_gray4, NULL };
+ static const char *termcmd[]  = { &quot;st&quot;, NULL };
+ static const char *lockcmd[] = {&quot;slock&quot;, NULL };
+<a href="#h3-2-3" id="h3-2-3" class="d">-static const char *surfcmd[] = { &quot;surf&quot;, NULL}; 
+</a> 
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+ 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
+ 	{ MODKEY,			XK_Return, spawn,          {.v = termcmd } },
+<a href="#h3-2-9" id="h3-2-9" class="d">-	{ MODKEY,			XK_s,	   spawn,	   {.v = surfcmd } },
+</a> 	{ MODKEY,                       XK_space,  togglebar,      {0} },
+ 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+ 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+ 	{ MODKEY,                       XK_c,      incnmaster,     {.i = +1 } }, //increment no. in master
+<a href="#h3-2-14" id="h3-2-14" class="d">-	{ MODKEY|ShiftMask,		XK_v,      incnmaster,     {.i = -1 } }, //decrement no. in master
+</a><a href="#h3-2-15" id="h3-2-15" class="i">+	{ MODKEY,			XK_v,      incnmaster,     {.i = -1 } }, //decrement no. in master
+</a> 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+ 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+ 	{ MODKEY,                       XK_z, zoom,           {0} },
+<b>diff --git a/<a id="h4" href="../file/dwm/dwm.html">dwm/dwm</a> b/<a href="../file/dwm/dwm.html">dwm/dwm</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h5" href="../file/dwm/dwm-alternativetags-6.2.diff.html">dwm/dwm-alternativetags-6.2.diff</a> b/<a href="../file/dwm/dwm-alternativetags-6.2.diff.html">dwm/dwm-alternativetags-6.2.diff</a></b>
+<a href="#h5-0" id="h5-0" class="h">@@ -0,0 +1,93 @@
+</a><a href="#h5-0-0" id="h5-0-0" class="i">+From 25aa44b5998a2aac840a0eecf9d8a479695b2577 Mon Sep 17 00:00:00 2001
+</a><a href="#h5-0-1" id="h5-0-1" class="i">+From: Piyush Pangtey &lt;gokuvsvegita@gmail.com&gt;
+</a><a href="#h5-0-2" id="h5-0-2" class="i">+Date: Sat, 13 Apr 2019 00:24:23 +0530
+</a><a href="#h5-0-3" id="h5-0-3" class="i">+Subject: [PATCH] alternative tags
+</a><a href="#h5-0-4" id="h5-0-4" class="i">+
+</a><a href="#h5-0-5" id="h5-0-5" class="i">+Having icons as tags sure makes dwm look awesome, but having tags number
+</a><a href="#h5-0-6" id="h5-0-6" class="i">+simplifies tags related operations. This patch introduces alternative
+</a><a href="#h5-0-7" id="h5-0-7" class="i">+tags which can be switched on the fly for the sole purpose of providing
+</a><a href="#h5-0-8" id="h5-0-8" class="i">+visual aid.
+</a><a href="#h5-0-9" id="h5-0-9" class="i">+
+</a><a href="#h5-0-10" id="h5-0-10" class="i">+Signed-off-by: Piyush Pangtey &lt;gokuvsvegita@gmail.com&gt;
+</a><a href="#h5-0-11" id="h5-0-11" class="i">+---
+</a><a href="#h5-0-12" id="h5-0-12" class="i">+ config.def.h |  2 ++
+</a><a href="#h5-0-13" id="h5-0-13" class="i">+ dwm.c        | 14 ++++++++++++--
+</a><a href="#h5-0-14" id="h5-0-14" class="i">+ 2 files changed, 14 insertions(+), 2 deletions(-)
+</a><a href="#h5-0-15" id="h5-0-15" class="i">+
+</a><a href="#h5-0-16" id="h5-0-16" class="i">+diff --git a/config.def.h b/config.def.h
+</a><a href="#h5-0-17" id="h5-0-17" class="i">+index 1c0b587..e6c2565 100644
+</a><a href="#h5-0-18" id="h5-0-18" class="i">+--- a/config.def.h
+</a><a href="#h5-0-19" id="h5-0-19" class="i">++++ b/config.def.h
+</a><a href="#h5-0-20" id="h5-0-20" class="i">+@@ -20,6 +20,7 @@ static const char *colors[][3]      = {
+</a><a href="#h5-0-21" id="h5-0-21" class="i">+ 
+</a><a href="#h5-0-22" id="h5-0-22" class="i">+ /* tagging */
+</a><a href="#h5-0-23" id="h5-0-23" class="i">+ static const char *tags[] = { &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot; };
+</a><a href="#h5-0-24" id="h5-0-24" class="i">++static const char *tagsalt[] = { &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot; };
+</a><a href="#h5-0-25" id="h5-0-25" class="i">+ 
+</a><a href="#h5-0-26" id="h5-0-26" class="i">+ static const Rule rules[] = {
+</a><a href="#h5-0-27" id="h5-0-27" class="i">+ 	/* xprop(1):
+</a><a href="#h5-0-28" id="h5-0-28" class="i">+@@ -84,6 +85,7 @@ static Key keys[] = {
+</a><a href="#h5-0-29" id="h5-0-29" class="i">+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+</a><a href="#h5-0-30" id="h5-0-30" class="i">+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+</a><a href="#h5-0-31" id="h5-0-31" class="i">+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+</a><a href="#h5-0-32" id="h5-0-32" class="i">++	{ MODKEY,                       XK_n,      togglealttag,   {0} },
+</a><a href="#h5-0-33" id="h5-0-33" class="i">+ 	TAGKEYS(                        XK_1,                      0)
+</a><a href="#h5-0-34" id="h5-0-34" class="i">+ 	TAGKEYS(                        XK_2,                      1)
+</a><a href="#h5-0-35" id="h5-0-35" class="i">+ 	TAGKEYS(                        XK_3,                      2)
+</a><a href="#h5-0-36" id="h5-0-36" class="i">+diff --git a/dwm.c b/dwm.c
+</a><a href="#h5-0-37" id="h5-0-37" class="i">+index 4465af1..ee292e1 100644
+</a><a href="#h5-0-38" id="h5-0-38" class="i">+--- a/dwm.c
+</a><a href="#h5-0-39" id="h5-0-39" class="i">++++ b/dwm.c
+</a><a href="#h5-0-40" id="h5-0-40" class="i">+@@ -130,6 +130,7 @@ struct Monitor {
+</a><a href="#h5-0-41" id="h5-0-41" class="i">+ 	Monitor *next;
+</a><a href="#h5-0-42" id="h5-0-42" class="i">+ 	Window barwin;
+</a><a href="#h5-0-43" id="h5-0-43" class="i">+ 	const Layout *lt[2];
+</a><a href="#h5-0-44" id="h5-0-44" class="i">++	unsigned int alttag;
+</a><a href="#h5-0-45" id="h5-0-45" class="i">+ };
+</a><a href="#h5-0-46" id="h5-0-46" class="i">+ 
+</a><a href="#h5-0-47" id="h5-0-47" class="i">+ typedef struct {
+</a><a href="#h5-0-48" id="h5-0-48" class="i">+@@ -209,6 +210,7 @@ static void spawn(const Arg *arg);
+</a><a href="#h5-0-49" id="h5-0-49" class="i">+ static void tag(const Arg *arg);
+</a><a href="#h5-0-50" id="h5-0-50" class="i">+ static void tagmon(const Arg *arg);
+</a><a href="#h5-0-51" id="h5-0-51" class="i">+ static void tile(Monitor *);
+</a><a href="#h5-0-52" id="h5-0-52" class="i">++static void togglealttag();
+</a><a href="#h5-0-53" id="h5-0-53" class="i">+ static void togglebar(const Arg *arg);
+</a><a href="#h5-0-54" id="h5-0-54" class="i">+ static void togglefloating(const Arg *arg);
+</a><a href="#h5-0-55" id="h5-0-55" class="i">+ static void toggletag(const Arg *arg);
+</a><a href="#h5-0-56" id="h5-0-56" class="i">+@@ -695,7 +697,7 @@ dirtomon(int dir)
+</a><a href="#h5-0-57" id="h5-0-57" class="i">+ void
+</a><a href="#h5-0-58" id="h5-0-58" class="i">+ drawbar(Monitor *m)
+</a><a href="#h5-0-59" id="h5-0-59" class="i">+ {
+</a><a href="#h5-0-60" id="h5-0-60" class="i">+-	int x, w, sw = 0;
+</a><a href="#h5-0-61" id="h5-0-61" class="i">++	int x, w, wdelta, sw = 0;
+</a><a href="#h5-0-62" id="h5-0-62" class="i">+ 	int boxs = drw-&gt;fonts-&gt;h / 9;
+</a><a href="#h5-0-63" id="h5-0-63" class="i">+ 	int boxw = drw-&gt;fonts-&gt;h / 6 + 2;
+</a><a href="#h5-0-64" id="h5-0-64" class="i">+ 	unsigned int i, occ = 0, urg = 0;
+</a><a href="#h5-0-65" id="h5-0-65" class="i">+@@ -716,8 +718,9 @@ drawbar(Monitor *m)
+</a><a href="#h5-0-66" id="h5-0-66" class="i">+ 	x = 0;
+</a><a href="#h5-0-67" id="h5-0-67" class="i">+ 	for (i = 0; i &lt; LENGTH(tags); i++) {
+</a><a href="#h5-0-68" id="h5-0-68" class="i">+ 		w = TEXTW(tags[i]);
+</a><a href="#h5-0-69" id="h5-0-69" class="i">++		wdelta = selmon-&gt;alttag ? abs(TEXTW(tags[i]) - TEXTW(tagsalt[i])) / 2 : 0;
+</a><a href="#h5-0-70" id="h5-0-70" class="i">+ 		drw_setscheme(drw, scheme[m-&gt;tagset[m-&gt;seltags] &amp; 1 &lt;&lt; i ? SchemeSel : SchemeNorm]);
+</a><a href="#h5-0-71" id="h5-0-71" class="i">+-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg &amp; 1 &lt;&lt; i);
+</a><a href="#h5-0-72" id="h5-0-72" class="i">++		drw_text(drw, x, 0, w, bh, wdelta + lrpad / 2, (selmon-&gt;alttag ? tagsalt[i] : tags[i]), urg &amp; 1 &lt;&lt; i);
+</a><a href="#h5-0-73" id="h5-0-73" class="i">+ 		if (occ &amp; 1 &lt;&lt; i)
+</a><a href="#h5-0-74" id="h5-0-74" class="i">+ 			drw_rect(drw, x + boxs, boxs, boxw, boxw,
+</a><a href="#h5-0-75" id="h5-0-75" class="i">+ 				m == selmon &amp;&amp; selmon-&gt;sel &amp;&amp; selmon-&gt;sel-&gt;tags &amp; 1 &lt;&lt; i,
+</a><a href="#h5-0-76" id="h5-0-76" class="i">+@@ -1696,6 +1699,13 @@ tile(Monitor *m)
+</a><a href="#h5-0-77" id="h5-0-77" class="i">+ 		}
+</a><a href="#h5-0-78" id="h5-0-78" class="i">+ }
+</a><a href="#h5-0-79" id="h5-0-79" class="i">+ 
+</a><a href="#h5-0-80" id="h5-0-80" class="i">++void
+</a><a href="#h5-0-81" id="h5-0-81" class="i">++togglealttag()
+</a><a href="#h5-0-82" id="h5-0-82" class="i">++{
+</a><a href="#h5-0-83" id="h5-0-83" class="i">++	selmon-&gt;alttag = !selmon-&gt;alttag;
+</a><a href="#h5-0-84" id="h5-0-84" class="i">++	drawbar(selmon);
+</a><a href="#h5-0-85" id="h5-0-85" class="i">++}
+</a><a href="#h5-0-86" id="h5-0-86" class="i">++
+</a><a href="#h5-0-87" id="h5-0-87" class="i">+ void
+</a><a href="#h5-0-88" id="h5-0-88" class="i">+ togglebar(const Arg *arg)
+</a><a href="#h5-0-89" id="h5-0-89" class="i">+ {
+</a><a href="#h5-0-90" id="h5-0-90" class="i">+-- 
+</a><a href="#h5-0-91" id="h5-0-91" class="i">+2.21.0
+</a><a href="#h5-0-92" id="h5-0-92" class="i">+
+</a><b>diff --git a/<a id="h6" href="../file/dwm/dwm-centered-windowname.diff.html">dwm/dwm-centered-windowname.diff</a> b/<a href="../file/dwm/dwm-centered-windowname.diff.html">dwm/dwm-centered-windowname.diff</a></b>
+<a href="#h6-0" id="h6-0" class="h">@@ -0,0 +1,27 @@
+</a><a href="#h6-0-0" id="h6-0-0" class="i">+From bd6efd81eabab77c91a3e95b528b19db2d58525b Mon Sep 17 00:00:00 2001
+</a><a href="#h6-0-1" id="h6-0-1" class="i">+From: Sacules &lt;leociancalucas@gmail.com&gt;
+</a><a href="#h6-0-2" id="h6-0-2" class="i">+Date: Sun, 9 Sep 2018 17:12:58 -0300
+</a><a href="#h6-0-3" id="h6-0-3" class="i">+Subject: [PATCH] Centers windows names on status bar.
+</a><a href="#h6-0-4" id="h6-0-4" class="i">+
+</a><a href="#h6-0-5" id="h6-0-5" class="i">+---
+</a><a href="#h6-0-6" id="h6-0-6" class="i">+ dwm.c | 3 ++-
+</a><a href="#h6-0-7" id="h6-0-7" class="i">+ 1 file changed, 2 insertions(+), 1 deletion(-)
+</a><a href="#h6-0-8" id="h6-0-8" class="i">+
+</a><a href="#h6-0-9" id="h6-0-9" class="i">+diff --git a/dwm.c b/dwm.c
+</a><a href="#h6-0-10" id="h6-0-10" class="i">+index 4465af1..9d5ef7a 100644
+</a><a href="#h6-0-11" id="h6-0-11" class="i">+--- a/dwm.c
+</a><a href="#h6-0-12" id="h6-0-12" class="i">++++ b/dwm.c
+</a><a href="#h6-0-13" id="h6-0-13" class="i">+@@ -730,8 +730,9 @@ drawbar(Monitor *m)
+</a><a href="#h6-0-14" id="h6-0-14" class="i">+ 
+</a><a href="#h6-0-15" id="h6-0-15" class="i">+ 	if ((w = m-&gt;ww - sw - x) &gt; bh) {
+</a><a href="#h6-0-16" id="h6-0-16" class="i">+ 		if (m-&gt;sel) {
+</a><a href="#h6-0-17" id="h6-0-17" class="i">++			int mid = (m-&gt;ww - TEXTW(m-&gt;sel-&gt;name)) / 2 - x;
+</a><a href="#h6-0-18" id="h6-0-18" class="i">+ 			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
+</a><a href="#h6-0-19" id="h6-0-19" class="i">+-			drw_text(drw, x, 0, w, bh, lrpad / 2, m-&gt;sel-&gt;name, 0);
+</a><a href="#h6-0-20" id="h6-0-20" class="i">++			drw_text(drw, x, 0, w, bh, mid, m-&gt;sel-&gt;name, 0);
+</a><a href="#h6-0-21" id="h6-0-21" class="i">+ 			if (m-&gt;sel-&gt;isfloating)
+</a><a href="#h6-0-22" id="h6-0-22" class="i">+ 				drw_rect(drw, x + boxs, boxs, boxw, boxw, m-&gt;sel-&gt;isfixed, 0);
+</a><a href="#h6-0-23" id="h6-0-23" class="i">+ 		} else {
+</a><a href="#h6-0-24" id="h6-0-24" class="i">+-- 
+</a><a href="#h6-0-25" id="h6-0-25" class="i">+2.18.0
+</a><a href="#h6-0-26" id="h6-0-26" class="i">+
+</a><b>diff --git a/<a id="h7" href="../file/dwm/dwm-fullgaps-6.2.diff.html">dwm/dwm-fullgaps-6.2.diff</a> b/<a href="../file/dwm/dwm-fullgaps-6.2.diff.html">dwm/dwm-fullgaps-6.2.diff</a></b>
+<a href="#h7-0" id="h7-0" class="h">@@ -0,0 +1,95 @@
+</a><a href="#h7-0-0" id="h7-0-0" class="i">+diff --git a/config.def.h b/config.def.h
+</a><a href="#h7-0-1" id="h7-0-1" class="i">+index 1c0b587..38d2f6c 100644
+</a><a href="#h7-0-2" id="h7-0-2" class="i">+--- a/config.def.h
+</a><a href="#h7-0-3" id="h7-0-3" class="i">++++ b/config.def.h
+</a><a href="#h7-0-4" id="h7-0-4" class="i">+@@ -2,6 +2,7 @@
+</a><a href="#h7-0-5" id="h7-0-5" class="i">+ 
+</a><a href="#h7-0-6" id="h7-0-6" class="i">+ /* appearance */
+</a><a href="#h7-0-7" id="h7-0-7" class="i">+ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+</a><a href="#h7-0-8" id="h7-0-8" class="i">++static const unsigned int gappx     = 5;        /* gaps between windows */
+</a><a href="#h7-0-9" id="h7-0-9" class="i">+ static const unsigned int snap      = 32;       /* snap pixel */
+</a><a href="#h7-0-10" id="h7-0-10" class="i">+ static const int showbar            = 1;        /* 0 means no bar */
+</a><a href="#h7-0-11" id="h7-0-11" class="i">+ static const int topbar             = 1;        /* 0 means bottom bar */
+</a><a href="#h7-0-12" id="h7-0-12" class="i">+@@ -84,6 +85,9 @@ static Key keys[] = {
+</a><a href="#h7-0-13" id="h7-0-13" class="i">+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+</a><a href="#h7-0-14" id="h7-0-14" class="i">+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+</a><a href="#h7-0-15" id="h7-0-15" class="i">+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+</a><a href="#h7-0-16" id="h7-0-16" class="i">++	{ MODKEY,                       XK_minus,  setgaps,        {.i = -1 } },
+</a><a href="#h7-0-17" id="h7-0-17" class="i">++	{ MODKEY,                       XK_equal,  setgaps,        {.i = +1 } },
+</a><a href="#h7-0-18" id="h7-0-18" class="i">++	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
+</a><a href="#h7-0-19" id="h7-0-19" class="i">+ 	TAGKEYS(                        XK_1,                      0)
+</a><a href="#h7-0-20" id="h7-0-20" class="i">+ 	TAGKEYS(                        XK_2,                      1)
+</a><a href="#h7-0-21" id="h7-0-21" class="i">+ 	TAGKEYS(                        XK_3,                      2)
+</a><a href="#h7-0-22" id="h7-0-22" class="i">+diff --git a/dwm.c b/dwm.c
+</a><a href="#h7-0-23" id="h7-0-23" class="i">+index 4465af1..4363627 100644
+</a><a href="#h7-0-24" id="h7-0-24" class="i">+--- a/dwm.c
+</a><a href="#h7-0-25" id="h7-0-25" class="i">++++ b/dwm.c
+</a><a href="#h7-0-26" id="h7-0-26" class="i">+@@ -119,6 +119,7 @@ struct Monitor {
+</a><a href="#h7-0-27" id="h7-0-27" class="i">+ 	int by;               /* bar geometry */
+</a><a href="#h7-0-28" id="h7-0-28" class="i">+ 	int mx, my, mw, mh;   /* screen size */
+</a><a href="#h7-0-29" id="h7-0-29" class="i">+ 	int wx, wy, ww, wh;   /* window area  */
+</a><a href="#h7-0-30" id="h7-0-30" class="i">++	int gappx;            /* gaps between windows */
+</a><a href="#h7-0-31" id="h7-0-31" class="i">+ 	unsigned int seltags;
+</a><a href="#h7-0-32" id="h7-0-32" class="i">+ 	unsigned int sellt;
+</a><a href="#h7-0-33" id="h7-0-33" class="i">+ 	unsigned int tagset[2];
+</a><a href="#h7-0-34" id="h7-0-34" class="i">+@@ -199,6 +200,7 @@ static void sendmon(Client *c, Monitor *m);
+</a><a href="#h7-0-35" id="h7-0-35" class="i">+ static void setclientstate(Client *c, long state);
+</a><a href="#h7-0-36" id="h7-0-36" class="i">+ static void setfocus(Client *c);
+</a><a href="#h7-0-37" id="h7-0-37" class="i">+ static void setfullscreen(Client *c, int fullscreen);
+</a><a href="#h7-0-38" id="h7-0-38" class="i">++static void setgaps(const Arg *arg);
+</a><a href="#h7-0-39" id="h7-0-39" class="i">+ static void setlayout(const Arg *arg);
+</a><a href="#h7-0-40" id="h7-0-40" class="i">+ static void setmfact(const Arg *arg);
+</a><a href="#h7-0-41" id="h7-0-41" class="i">+ static void setup(void);
+</a><a href="#h7-0-42" id="h7-0-42" class="i">+@@ -638,6 +640,7 @@ createmon(void)
+</a><a href="#h7-0-43" id="h7-0-43" class="i">+ 	m-&gt;nmaster = nmaster;
+</a><a href="#h7-0-44" id="h7-0-44" class="i">+ 	m-&gt;showbar = showbar;
+</a><a href="#h7-0-45" id="h7-0-45" class="i">+ 	m-&gt;topbar = topbar;
+</a><a href="#h7-0-46" id="h7-0-46" class="i">++	m-&gt;gappx = gappx;
+</a><a href="#h7-0-47" id="h7-0-47" class="i">+ 	m-&gt;lt[0] = &amp;layouts[0];
+</a><a href="#h7-0-48" id="h7-0-48" class="i">+ 	m-&gt;lt[1] = &amp;layouts[1 % LENGTH(layouts)];
+</a><a href="#h7-0-49" id="h7-0-49" class="i">+ 	strncpy(m-&gt;ltsymbol, layouts[0].symbol, sizeof m-&gt;ltsymbol);
+</a><a href="#h7-0-50" id="h7-0-50" class="i">+@@ -1497,6 +1500,16 @@ setfullscreen(Client *c, int fullscreen)
+</a><a href="#h7-0-51" id="h7-0-51" class="i">+ 	}
+</a><a href="#h7-0-52" id="h7-0-52" class="i">+ }
+</a><a href="#h7-0-53" id="h7-0-53" class="i">+ 
+</a><a href="#h7-0-54" id="h7-0-54" class="i">++void
+</a><a href="#h7-0-55" id="h7-0-55" class="i">++setgaps(const Arg *arg)
+</a><a href="#h7-0-56" id="h7-0-56" class="i">++{
+</a><a href="#h7-0-57" id="h7-0-57" class="i">++	if ((arg-&gt;i == 0) || (selmon-&gt;gappx + arg-&gt;i &lt; 0))
+</a><a href="#h7-0-58" id="h7-0-58" class="i">++		selmon-&gt;gappx = 0;
+</a><a href="#h7-0-59" id="h7-0-59" class="i">++	else
+</a><a href="#h7-0-60" id="h7-0-60" class="i">++		selmon-&gt;gappx += arg-&gt;i;
+</a><a href="#h7-0-61" id="h7-0-61" class="i">++	arrange(selmon);
+</a><a href="#h7-0-62" id="h7-0-62" class="i">++}
+</a><a href="#h7-0-63" id="h7-0-63" class="i">++
+</a><a href="#h7-0-64" id="h7-0-64" class="i">+ void
+</a><a href="#h7-0-65" id="h7-0-65" class="i">+ setlayout(const Arg *arg)
+</a><a href="#h7-0-66" id="h7-0-66" class="i">+ {
+</a><a href="#h7-0-67" id="h7-0-67" class="i">+@@ -1683,16 +1696,16 @@ tile(Monitor *m)
+</a><a href="#h7-0-68" id="h7-0-68" class="i">+ 	if (n &gt; m-&gt;nmaster)
+</a><a href="#h7-0-69" id="h7-0-69" class="i">+ 		mw = m-&gt;nmaster ? m-&gt;ww * m-&gt;mfact : 0;
+</a><a href="#h7-0-70" id="h7-0-70" class="i">+ 	else
+</a><a href="#h7-0-71" id="h7-0-71" class="i">+-		mw = m-&gt;ww;
+</a><a href="#h7-0-72" id="h7-0-72" class="i">+-	for (i = my = ty = 0, c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next), i++)
+</a><a href="#h7-0-73" id="h7-0-73" class="i">++		mw = m-&gt;ww - m-&gt;gappx;
+</a><a href="#h7-0-74" id="h7-0-74" class="i">++	for (i = 0, my = ty = m-&gt;gappx, c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next), i++)
+</a><a href="#h7-0-75" id="h7-0-75" class="i">+ 		if (i &lt; m-&gt;nmaster) {
+</a><a href="#h7-0-76" id="h7-0-76" class="i">+-			h = (m-&gt;wh - my) / (MIN(n, m-&gt;nmaster) - i);
+</a><a href="#h7-0-77" id="h7-0-77" class="i">+-			resize(c, m-&gt;wx, m-&gt;wy + my, mw - (2*c-&gt;bw), h - (2*c-&gt;bw), 0);
+</a><a href="#h7-0-78" id="h7-0-78" class="i">+-			my += HEIGHT(c);
+</a><a href="#h7-0-79" id="h7-0-79" class="i">++			h = (m-&gt;wh - my) / (MIN(n, m-&gt;nmaster) - i) - m-&gt;gappx;
+</a><a href="#h7-0-80" id="h7-0-80" class="i">++			resize(c, m-&gt;wx + m-&gt;gappx, m-&gt;wy + my, mw - (2*c-&gt;bw) - m-&gt;gappx, h - (2*c-&gt;bw), 0);
+</a><a href="#h7-0-81" id="h7-0-81" class="i">++			my += HEIGHT(c) + m-&gt;gappx;
+</a><a href="#h7-0-82" id="h7-0-82" class="i">+ 		} else {
+</a><a href="#h7-0-83" id="h7-0-83" class="i">+-			h = (m-&gt;wh - ty) / (n - i);
+</a><a href="#h7-0-84" id="h7-0-84" class="i">+-			resize(c, m-&gt;wx + mw, m-&gt;wy + ty, m-&gt;ww - mw - (2*c-&gt;bw), h - (2*c-&gt;bw), 0);
+</a><a href="#h7-0-85" id="h7-0-85" class="i">+-			ty += HEIGHT(c);
+</a><a href="#h7-0-86" id="h7-0-86" class="i">++			h = (m-&gt;wh - ty) / (n - i) - m-&gt;gappx;
+</a><a href="#h7-0-87" id="h7-0-87" class="i">++			resize(c, m-&gt;wx + mw + m-&gt;gappx, m-&gt;wy + ty, m-&gt;ww - mw - (2*c-&gt;bw) - 2*m-&gt;gappx, h - (2*c-&gt;bw), 0);
+</a><a href="#h7-0-88" id="h7-0-88" class="i">++			ty += HEIGHT(c) + m-&gt;gappx;
+</a><a href="#h7-0-89" id="h7-0-89" class="i">+ 		}
+</a><a href="#h7-0-90" id="h7-0-90" class="i">+ }
+</a><a href="#h7-0-91" id="h7-0-91" class="i">+ 
+</a><a href="#h7-0-92" id="h7-0-92" class="i">+-- 
+</a><a href="#h7-0-93" id="h7-0-93" class="i">+2.20.1
+</a><a href="#h7-0-94" id="h7-0-94" class="i">+
+</a><b>diff --git a/<a id="h8" href="../file/dwm/dwm-uselessgap-6.2.diff.html">dwm/dwm-uselessgap-6.2.diff</a> b/<a href="../file/dwm/dwm-uselessgap-6.2.diff.html">dwm/dwm-uselessgap-6.2.diff</a></b>
+<a href="#h8-0" id="h8-0" class="h">@@ -0,0 +1,81 @@
+</a><a href="#h8-0-0" id="h8-0-0" class="i">+From 58a5ece9406ca6c90dc362617c065e4aac19417f Mon Sep 17 00:00:00 2001
+</a><a href="#h8-0-1" id="h8-0-1" class="i">+From: Cyril Cressent &lt;cyril@cressent.org&gt;
+</a><a href="#h8-0-2" id="h8-0-2" class="i">+Date: Wed, 3 Jul 2019 21:33:45 -0700
+</a><a href="#h8-0-3" id="h8-0-3" class="i">+Subject: [PATCH] Port the uselessgap patch to 6.2
+</a><a href="#h8-0-4" id="h8-0-4" class="i">+
+</a><a href="#h8-0-5" id="h8-0-5" class="i">+---
+</a><a href="#h8-0-6" id="h8-0-6" class="i">+ config.def.h |  1 +
+</a><a href="#h8-0-7" id="h8-0-7" class="i">+ dwm.c        | 36 ++++++++++++++++++++++++++++++------
+</a><a href="#h8-0-8" id="h8-0-8" class="i">+ 2 files changed, 31 insertions(+), 6 deletions(-)
+</a><a href="#h8-0-9" id="h8-0-9" class="i">+
+</a><a href="#h8-0-10" id="h8-0-10" class="i">+diff --git a/config.def.h b/config.def.h
+</a><a href="#h8-0-11" id="h8-0-11" class="i">+index 1c0b587..b11471d 100644
+</a><a href="#h8-0-12" id="h8-0-12" class="i">+--- a/config.def.h
+</a><a href="#h8-0-13" id="h8-0-13" class="i">++++ b/config.def.h
+</a><a href="#h8-0-14" id="h8-0-14" class="i">+@@ -2,6 +2,7 @@
+</a><a href="#h8-0-15" id="h8-0-15" class="i">+ 
+</a><a href="#h8-0-16" id="h8-0-16" class="i">+ /* appearance */
+</a><a href="#h8-0-17" id="h8-0-17" class="i">+ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+</a><a href="#h8-0-18" id="h8-0-18" class="i">++static const unsigned int gappx     = 6;        /* gaps between windows */
+</a><a href="#h8-0-19" id="h8-0-19" class="i">+ static const unsigned int snap      = 32;       /* snap pixel */
+</a><a href="#h8-0-20" id="h8-0-20" class="i">+ static const int showbar            = 1;        /* 0 means no bar */
+</a><a href="#h8-0-21" id="h8-0-21" class="i">+ static const int topbar             = 1;        /* 0 means bottom bar */
+</a><a href="#h8-0-22" id="h8-0-22" class="i">+diff --git a/dwm.c b/dwm.c
+</a><a href="#h8-0-23" id="h8-0-23" class="i">+index 4465af1..4545e05 100644
+</a><a href="#h8-0-24" id="h8-0-24" class="i">+--- a/dwm.c
+</a><a href="#h8-0-25" id="h8-0-25" class="i">++++ b/dwm.c
+</a><a href="#h8-0-26" id="h8-0-26" class="i">+@@ -52,8 +52,8 @@
+</a><a href="#h8-0-27" id="h8-0-27" class="i">+ #define ISVISIBLE(C)            ((C-&gt;tags &amp; C-&gt;mon-&gt;tagset[C-&gt;mon-&gt;seltags]))
+</a><a href="#h8-0-28" id="h8-0-28" class="i">+ #define LENGTH(X)               (sizeof X / sizeof X[0])
+</a><a href="#h8-0-29" id="h8-0-29" class="i">+ #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
+</a><a href="#h8-0-30" id="h8-0-30" class="i">+-#define WIDTH(X)                ((X)-&gt;w + 2 * (X)-&gt;bw)
+</a><a href="#h8-0-31" id="h8-0-31" class="i">+-#define HEIGHT(X)               ((X)-&gt;h + 2 * (X)-&gt;bw)
+</a><a href="#h8-0-32" id="h8-0-32" class="i">++#define WIDTH(X)                ((X)-&gt;w + 2 * (X)-&gt;bw + gappx)
+</a><a href="#h8-0-33" id="h8-0-33" class="i">++#define HEIGHT(X)               ((X)-&gt;h + 2 * (X)-&gt;bw + gappx)
+</a><a href="#h8-0-34" id="h8-0-34" class="i">+ #define TAGMASK                 ((1 &lt;&lt; LENGTH(tags)) - 1)
+</a><a href="#h8-0-35" id="h8-0-35" class="i">+ #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+</a><a href="#h8-0-36" id="h8-0-36" class="i">+ 
+</a><a href="#h8-0-37" id="h8-0-37" class="i">+@@ -1276,12 +1276,36 @@ void
+</a><a href="#h8-0-38" id="h8-0-38" class="i">+ resizeclient(Client *c, int x, int y, int w, int h)
+</a><a href="#h8-0-39" id="h8-0-39" class="i">+ {
+</a><a href="#h8-0-40" id="h8-0-40" class="i">+ 	XWindowChanges wc;
+</a><a href="#h8-0-41" id="h8-0-41" class="i">++	unsigned int n;
+</a><a href="#h8-0-42" id="h8-0-42" class="i">++	unsigned int gapoffset;
+</a><a href="#h8-0-43" id="h8-0-43" class="i">++	unsigned int gapincr;
+</a><a href="#h8-0-44" id="h8-0-44" class="i">++	Client *nbc;
+</a><a href="#h8-0-45" id="h8-0-45" class="i">+ 
+</a><a href="#h8-0-46" id="h8-0-46" class="i">+-	c-&gt;oldx = c-&gt;x; c-&gt;x = wc.x = x;
+</a><a href="#h8-0-47" id="h8-0-47" class="i">+-	c-&gt;oldy = c-&gt;y; c-&gt;y = wc.y = y;
+</a><a href="#h8-0-48" id="h8-0-48" class="i">+-	c-&gt;oldw = c-&gt;w; c-&gt;w = wc.width = w;
+</a><a href="#h8-0-49" id="h8-0-49" class="i">+-	c-&gt;oldh = c-&gt;h; c-&gt;h = wc.height = h;
+</a><a href="#h8-0-50" id="h8-0-50" class="i">+ 	wc.border_width = c-&gt;bw;
+</a><a href="#h8-0-51" id="h8-0-51" class="i">++
+</a><a href="#h8-0-52" id="h8-0-52" class="i">++	/* Get number of clients for the selected monitor */
+</a><a href="#h8-0-53" id="h8-0-53" class="i">++	for (n = 0, nbc = nexttiled(selmon-&gt;clients); nbc; nbc = nexttiled(nbc-&gt;next), n++);
+</a><a href="#h8-0-54" id="h8-0-54" class="i">++
+</a><a href="#h8-0-55" id="h8-0-55" class="i">++	/* Do nothing if layout is floating */
+</a><a href="#h8-0-56" id="h8-0-56" class="i">++	if (c-&gt;isfloating || selmon-&gt;lt[selmon-&gt;sellt]-&gt;arrange == NULL) {
+</a><a href="#h8-0-57" id="h8-0-57" class="i">++		gapincr = gapoffset = 0;
+</a><a href="#h8-0-58" id="h8-0-58" class="i">++	} else {
+</a><a href="#h8-0-59" id="h8-0-59" class="i">++		/* Remove border and gap if layout is monocle or only one client */
+</a><a href="#h8-0-60" id="h8-0-60" class="i">++		if (selmon-&gt;lt[selmon-&gt;sellt]-&gt;arrange == monocle || n == 1) {
+</a><a href="#h8-0-61" id="h8-0-61" class="i">++			gapoffset = 0;
+</a><a href="#h8-0-62" id="h8-0-62" class="i">++			gapincr = -2 * borderpx;
+</a><a href="#h8-0-63" id="h8-0-63" class="i">++			wc.border_width = 0;
+</a><a href="#h8-0-64" id="h8-0-64" class="i">++		} else {
+</a><a href="#h8-0-65" id="h8-0-65" class="i">++			gapoffset = gappx;
+</a><a href="#h8-0-66" id="h8-0-66" class="i">++			gapincr = 2 * gappx;
+</a><a href="#h8-0-67" id="h8-0-67" class="i">++		}
+</a><a href="#h8-0-68" id="h8-0-68" class="i">++	}
+</a><a href="#h8-0-69" id="h8-0-69" class="i">++
+</a><a href="#h8-0-70" id="h8-0-70" class="i">++	c-&gt;oldx = c-&gt;x; c-&gt;x = wc.x = x + gapoffset;
+</a><a href="#h8-0-71" id="h8-0-71" class="i">++	c-&gt;oldy = c-&gt;y; c-&gt;y = wc.y = y + gapoffset;
+</a><a href="#h8-0-72" id="h8-0-72" class="i">++	c-&gt;oldw = c-&gt;w; c-&gt;w = wc.width = w - gapincr;
+</a><a href="#h8-0-73" id="h8-0-73" class="i">++	c-&gt;oldh = c-&gt;h; c-&gt;h = wc.height = h - gapincr;
+</a><a href="#h8-0-74" id="h8-0-74" class="i">++
+</a><a href="#h8-0-75" id="h8-0-75" class="i">+ 	XConfigureWindow(dpy, c-&gt;win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &amp;wc);
+</a><a href="#h8-0-76" id="h8-0-76" class="i">+ 	configure(c);
+</a><a href="#h8-0-77" id="h8-0-77" class="i">+ 	XSync(dpy, False);
+</a><a href="#h8-0-78" id="h8-0-78" class="i">+-- 
+</a><a href="#h8-0-79" id="h8-0-79" class="i">+2.22.0
+</a><a href="#h8-0-80" id="h8-0-80" class="i">+
+</a><b>diff --git a/<a id="h9" href="../file/dwm/dwm-warp-git-20160626-7af4d43.diff.html">dwm/dwm-warp-git-20160626-7af4d43.diff</a> b/<a href="../file/dwm/dwm-warp-git-20160626-7af4d43.diff.html">dwm/dwm-warp-git-20160626-7af4d43.diff</a></b>
+<a href="#h9-0" id="h9-0" class="h">@@ -0,0 +1,58 @@
+</a><a href="#h9-0-0" id="h9-0-0" class="i">+diff --git a/dwm.c b/dwm.c
+</a><a href="#h9-0-1" id="h9-0-1" class="i">+index b2bc9bd..0329e1f 100644
+</a><a href="#h9-0-2" id="h9-0-2" class="i">+--- a/dwm.c
+</a><a href="#h9-0-3" id="h9-0-3" class="i">++++ b/dwm.c
+</a><a href="#h9-0-4" id="h9-0-4" class="i">+@@ -228,6 +228,7 @@ static void updatewindowtype(Client *c);
+</a><a href="#h9-0-5" id="h9-0-5" class="i">+ static void updatetitle(Client *c);
+</a><a href="#h9-0-6" id="h9-0-6" class="i">+ static void updatewmhints(Client *c);
+</a><a href="#h9-0-7" id="h9-0-7" class="i">+ static void view(const Arg *arg);
+</a><a href="#h9-0-8" id="h9-0-8" class="i">++static void warp(const Client *c);
+</a><a href="#h9-0-9" id="h9-0-9" class="i">+ static Client *wintoclient(Window w);
+</a><a href="#h9-0-10" id="h9-0-10" class="i">+ static Monitor *wintomon(Window w);
+</a><a href="#h9-0-11" id="h9-0-11" class="i">+ static int xerror(Display *dpy, XErrorEvent *ee);
+</a><a href="#h9-0-12" id="h9-0-12" class="i">+@@ -842,6 +843,7 @@ focusmon(const Arg *arg)
+</a><a href="#h9-0-13" id="h9-0-13" class="i">+ 					in gedit and anjuta */
+</a><a href="#h9-0-14" id="h9-0-14" class="i">+ 	selmon = m;
+</a><a href="#h9-0-15" id="h9-0-15" class="i">+ 	focus(NULL);
+</a><a href="#h9-0-16" id="h9-0-16" class="i">++	warp(selmon-&gt;sel);
+</a><a href="#h9-0-17" id="h9-0-17" class="i">+ }
+</a><a href="#h9-0-18" id="h9-0-18" class="i">+ 
+</a><a href="#h9-0-19" id="h9-0-19" class="i">+ void
+</a><a href="#h9-0-20" id="h9-0-20" class="i">+@@ -1387,6 +1389,8 @@ restack(Monitor *m)
+</a><a href="#h9-0-21" id="h9-0-21" class="i">+ 	}
+</a><a href="#h9-0-22" id="h9-0-22" class="i">+ 	XSync(dpy, False);
+</a><a href="#h9-0-23" id="h9-0-23" class="i">+ 	while (XCheckMaskEvent(dpy, EnterWindowMask, &amp;ev));
+</a><a href="#h9-0-24" id="h9-0-24" class="i">++	if (m == selmon &amp;&amp; (m-&gt;tagset[m-&gt;seltags] &amp; m-&gt;sel-&gt;tags) &amp;&amp; selmon-&gt;lt[selmon-&gt;sellt] != &amp;layouts[2])
+</a><a href="#h9-0-25" id="h9-0-25" class="i">++		warp(m-&gt;sel);
+</a><a href="#h9-0-26" id="h9-0-26" class="i">+ }
+</a><a href="#h9-0-27" id="h9-0-27" class="i">+ 
+</a><a href="#h9-0-28" id="h9-0-28" class="i">+ void
+</a><a href="#h9-0-29" id="h9-0-29" class="i">+@@ -2039,6 +2043,28 @@ view(const Arg *arg)
+</a><a href="#h9-0-30" id="h9-0-30" class="i">+ 	arrange(selmon);
+</a><a href="#h9-0-31" id="h9-0-31" class="i">+ }
+</a><a href="#h9-0-32" id="h9-0-32" class="i">+ 
+</a><a href="#h9-0-33" id="h9-0-33" class="i">++void
+</a><a href="#h9-0-34" id="h9-0-34" class="i">++warp(const Client *c)
+</a><a href="#h9-0-35" id="h9-0-35" class="i">++{
+</a><a href="#h9-0-36" id="h9-0-36" class="i">++	int x, y;
+</a><a href="#h9-0-37" id="h9-0-37" class="i">++
+</a><a href="#h9-0-38" id="h9-0-38" class="i">++	if (!c) {
+</a><a href="#h9-0-39" id="h9-0-39" class="i">++		XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon-&gt;wx + selmon-&gt;ww/2, selmon-&gt;wy + selmon-&gt;wh/2);
+</a><a href="#h9-0-40" id="h9-0-40" class="i">++		return;
+</a><a href="#h9-0-41" id="h9-0-41" class="i">++	}
+</a><a href="#h9-0-42" id="h9-0-42" class="i">++
+</a><a href="#h9-0-43" id="h9-0-43" class="i">++	if (!getrootptr(&amp;x, &amp;y) ||
+</a><a href="#h9-0-44" id="h9-0-44" class="i">++	    (x &gt; c-&gt;x - c-&gt;bw &amp;&amp;
+</a><a href="#h9-0-45" id="h9-0-45" class="i">++	     y &gt; c-&gt;y - c-&gt;bw &amp;&amp;
+</a><a href="#h9-0-46" id="h9-0-46" class="i">++	     x &lt; c-&gt;x + c-&gt;w + c-&gt;bw*2 &amp;&amp;
+</a><a href="#h9-0-47" id="h9-0-47" class="i">++	     y &lt; c-&gt;y + c-&gt;h + c-&gt;bw*2) ||
+</a><a href="#h9-0-48" id="h9-0-48" class="i">++	    (y &gt; c-&gt;mon-&gt;by &amp;&amp; y &lt; c-&gt;mon-&gt;by + bh) ||
+</a><a href="#h9-0-49" id="h9-0-49" class="i">++	    (c-&gt;mon-&gt;topbar &amp;&amp; !y))
+</a><a href="#h9-0-50" id="h9-0-50" class="i">++		return;
+</a><a href="#h9-0-51" id="h9-0-51" class="i">++
+</a><a href="#h9-0-52" id="h9-0-52" class="i">++	XWarpPointer(dpy, None, c-&gt;win, 0, 0, 0, 0, c-&gt;w / 2, c-&gt;h / 2);
+</a><a href="#h9-0-53" id="h9-0-53" class="i">++}
+</a><a href="#h9-0-54" id="h9-0-54" class="i">++
+</a><a href="#h9-0-55" id="h9-0-55" class="i">+ Client *
+</a><a href="#h9-0-56" id="h9-0-56" class="i">+ wintoclient(Window w)
+</a><a href="#h9-0-57" id="h9-0-57" class="i">+ {
+</a><b>diff --git a/<a id="h10" href="../file/dwm/dwm.c.html">dwm/dwm.c</a> b/<a href="../file/dwm/dwm.c.html">dwm/dwm.c</a></b>
+<a href="#h10-0" id="h10-0" class="h">@@ -52,8 +52,8 @@
+</a> #define ISVISIBLE(C)            ((C-&gt;tags &amp; C-&gt;mon-&gt;tagset[C-&gt;mon-&gt;seltags]))
+ #define LENGTH(X)               (sizeof X / sizeof X[0])
+ #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
+<a href="#h10-0-3" id="h10-0-3" class="d">-#define WIDTH(X)                ((X)-&gt;w + 2 * (X)-&gt;bw)
+</a><a href="#h10-0-4" id="h10-0-4" class="d">-#define HEIGHT(X)               ((X)-&gt;h + 2 * (X)-&gt;bw)
+</a><a href="#h10-0-5" id="h10-0-5" class="i">+#define WIDTH(X)                ((X)-&gt;w + 2 * (X)-&gt;bw + gappx)
+</a><a href="#h10-0-6" id="h10-0-6" class="i">+#define HEIGHT(X)               ((X)-&gt;h + 2 * (X)-&gt;bw + gappx)
+</a> #define TAGMASK                 ((1 &lt;&lt; LENGTH(tags)) - 1)
+ #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+ 
+<a href="#h10-1" id="h10-1" class="h">@@ -227,6 +227,7 @@ static void updatetitle(Client *c);
+</a> static void updatewindowtype(Client *c);
+ static void updatewmhints(Client *c);
+ static void view(const Arg *arg);
+<a href="#h10-1-3" id="h10-1-3" class="i">+static void warp(const Client *c);
+</a> static Client *wintoclient(Window w);
+ static Monitor *wintomon(Window w);
+ static int xerror(Display *dpy, XErrorEvent *ee);
+<a href="#h10-2" id="h10-2" class="h">@@ -829,6 +830,7 @@ focusmon(const Arg *arg)
+</a> 	unfocus(selmon-&gt;sel, 0);
+ 	selmon = m;
+ 	focus(NULL);
+<a href="#h10-2-3" id="h10-2-3" class="i">+	warp(selmon-&gt;sel);
+</a> }
+ 
+ void
+<a href="#h10-3" id="h10-3" class="h">@@ -1280,12 +1282,36 @@ void
+</a> resizeclient(Client *c, int x, int y, int w, int h)
+ {
+ 	XWindowChanges wc;
+<a href="#h10-3-3" id="h10-3-3" class="i">+	unsigned int n;
+</a><a href="#h10-3-4" id="h10-3-4" class="i">+	unsigned int gapoffset;
+</a><a href="#h10-3-5" id="h10-3-5" class="i">+	unsigned int gapincr;
+</a><a href="#h10-3-6" id="h10-3-6" class="i">+	Client *nbc;
+</a> 
+<a href="#h10-3-8" id="h10-3-8" class="d">-	c-&gt;oldx = c-&gt;x; c-&gt;x = wc.x = x;
+</a><a href="#h10-3-9" id="h10-3-9" class="d">-	c-&gt;oldy = c-&gt;y; c-&gt;y = wc.y = y;
+</a><a href="#h10-3-10" id="h10-3-10" class="d">-	c-&gt;oldw = c-&gt;w; c-&gt;w = wc.width = w;
+</a><a href="#h10-3-11" id="h10-3-11" class="d">-	c-&gt;oldh = c-&gt;h; c-&gt;h = wc.height = h;
+</a> 	wc.border_width = c-&gt;bw;
+<a href="#h10-3-13" id="h10-3-13" class="i">+
+</a><a href="#h10-3-14" id="h10-3-14" class="i">+	/* Get number of clients for the selected monitor */
+</a><a href="#h10-3-15" id="h10-3-15" class="i">+	for (n = 0, nbc = nexttiled(selmon-&gt;clients); nbc; nbc = nexttiled(nbc-&gt;next), n++);
+</a><a href="#h10-3-16" id="h10-3-16" class="i">+
+</a><a href="#h10-3-17" id="h10-3-17" class="i">+	/* Do nothing if layout is floating */
+</a><a href="#h10-3-18" id="h10-3-18" class="i">+	if (c-&gt;isfloating || selmon-&gt;lt[selmon-&gt;sellt]-&gt;arrange == NULL) {
+</a><a href="#h10-3-19" id="h10-3-19" class="i">+		gapincr = gapoffset = 0;
+</a><a href="#h10-3-20" id="h10-3-20" class="i">+	} else {
+</a><a href="#h10-3-21" id="h10-3-21" class="i">+		/* Remove border and gap if layout is monocle or only one client */
+</a><a href="#h10-3-22" id="h10-3-22" class="i">+		if (selmon-&gt;lt[selmon-&gt;sellt]-&gt;arrange == monocle || n == 1) {
+</a><a href="#h10-3-23" id="h10-3-23" class="i">+			gapoffset = 0;
+</a><a href="#h10-3-24" id="h10-3-24" class="i">+			gapincr = -2 * borderpx;
+</a><a href="#h10-3-25" id="h10-3-25" class="i">+			wc.border_width = 0;
+</a><a href="#h10-3-26" id="h10-3-26" class="i">+		} else {
+</a><a href="#h10-3-27" id="h10-3-27" class="i">+			gapoffset = gappx;
+</a><a href="#h10-3-28" id="h10-3-28" class="i">+			gapincr = 2 * gappx;
+</a><a href="#h10-3-29" id="h10-3-29" class="i">+		}
+</a><a href="#h10-3-30" id="h10-3-30" class="i">+	}
+</a><a href="#h10-3-31" id="h10-3-31" class="i">+
+</a><a href="#h10-3-32" id="h10-3-32" class="i">+	c-&gt;oldx = c-&gt;x; c-&gt;x = wc.x = x + gapoffset;
+</a><a href="#h10-3-33" id="h10-3-33" class="i">+	c-&gt;oldy = c-&gt;y; c-&gt;y = wc.y = y + gapoffset;
+</a><a href="#h10-3-34" id="h10-3-34" class="i">+	c-&gt;oldw = c-&gt;w; c-&gt;w = wc.width = w - gapincr;
+</a><a href="#h10-3-35" id="h10-3-35" class="i">+	c-&gt;oldh = c-&gt;h; c-&gt;h = wc.height = h - gapincr;
+</a><a href="#h10-3-36" id="h10-3-36" class="i">+
+</a> 	XConfigureWindow(dpy, c-&gt;win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &amp;wc);
+ 	configure(c);
+ 	XSync(dpy, False);
+<a href="#h10-4" id="h10-4" class="h">@@ -1371,6 +1397,8 @@ restack(Monitor *m)
+</a> 	}
+ 	XSync(dpy, False);
+ 	while (XCheckMaskEvent(dpy, EnterWindowMask, &amp;ev));
+<a href="#h10-4-3" id="h10-4-3" class="i">+	if (m == selmon &amp;&amp; (m-&gt;tagset[m-&gt;seltags] &amp; m-&gt;sel-&gt;tags) &amp;&amp; selmon-&gt;lt[selmon-&gt;sellt] != &amp;layouts[2])
+</a><a href="#h10-4-4" id="h10-4-4" class="i">+		warp(m-&gt;sel);
+</a> }
+ 
+ void
+<a href="#h10-5" id="h10-5" class="h">@@ -2048,6 +2076,28 @@ view(const Arg *arg)
+</a> 	arrange(selmon);
+ }
+ 
+<a href="#h10-5-3" id="h10-5-3" class="i">+void
+</a><a href="#h10-5-4" id="h10-5-4" class="i">+warp(const Client *c)
+</a><a href="#h10-5-5" id="h10-5-5" class="i">+{
+</a><a href="#h10-5-6" id="h10-5-6" class="i">+	int x, y;
+</a><a href="#h10-5-7" id="h10-5-7" class="i">+
+</a><a href="#h10-5-8" id="h10-5-8" class="i">+	if (!c) {
+</a><a href="#h10-5-9" id="h10-5-9" class="i">+		XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon-&gt;wx + selmon-&gt;ww/2, selmon-&gt;wy + selmon-&gt;wh/2);
+</a><a href="#h10-5-10" id="h10-5-10" class="i">+		return;
+</a><a href="#h10-5-11" id="h10-5-11" class="i">+	}
+</a><a href="#h10-5-12" id="h10-5-12" class="i">+
+</a><a href="#h10-5-13" id="h10-5-13" class="i">+	if (!getrootptr(&amp;x, &amp;y) ||
+</a><a href="#h10-5-14" id="h10-5-14" class="i">+	    (x &gt; c-&gt;x - c-&gt;bw &amp;&amp;
+</a><a href="#h10-5-15" id="h10-5-15" class="i">+	     y &gt; c-&gt;y - c-&gt;bw &amp;&amp;
+</a><a href="#h10-5-16" id="h10-5-16" class="i">+	     x &lt; c-&gt;x + c-&gt;w + c-&gt;bw*2 &amp;&amp;
+</a><a href="#h10-5-17" id="h10-5-17" class="i">+	     y &lt; c-&gt;y + c-&gt;h + c-&gt;bw*2) ||
+</a><a href="#h10-5-18" id="h10-5-18" class="i">+	    (y &gt; c-&gt;mon-&gt;by &amp;&amp; y &lt; c-&gt;mon-&gt;by + bh) ||
+</a><a href="#h10-5-19" id="h10-5-19" class="i">+	    (c-&gt;mon-&gt;topbar &amp;&amp; !y))
+</a><a href="#h10-5-20" id="h10-5-20" class="i">+		return;
+</a><a href="#h10-5-21" id="h10-5-21" class="i">+
+</a><a href="#h10-5-22" id="h10-5-22" class="i">+	XWarpPointer(dpy, None, c-&gt;win, 0, 0, 0, 0, c-&gt;w / 2, c-&gt;h / 2);
+</a><a href="#h10-5-23" id="h10-5-23" class="i">+}
+</a><a href="#h10-5-24" id="h10-5-24" class="i">+
+</a> Client *
+ wintoclient(Window w)
+ {
+<b>diff --git a/<a id="h11" href="../file/dwm/dwm.c.orig.html">dwm/dwm.c.orig</a> b/<a href="../file/dwm/dwm.c.orig.html">dwm/dwm.c.orig</a></b>
+<a href="#h11-0" id="h11-0" class="h">@@ -227,12 +227,15 @@ static void updatetitle(Client *c);
+</a> static void updatewindowtype(Client *c);
+ static void updatewmhints(Client *c);
+ static void view(const Arg *arg);
+<a href="#h11-0-3" id="h11-0-3" class="i">+static void warp(const Client *c);
+</a> static Client *wintoclient(Window w);
+ static Monitor *wintomon(Window w);
+ static int xerror(Display *dpy, XErrorEvent *ee);
+ static int xerrordummy(Display *dpy, XErrorEvent *ee);
+ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+ static void zoom(const Arg *arg);
+<a href="#h11-0-10" id="h11-0-10" class="i">+static void bstack(Monitor *m);
+</a><a href="#h11-0-11" id="h11-0-11" class="i">+static void bstackhoriz(Monitor *m);
+</a> 
+ /* variables */
+ static const char broken[] = &quot;broken&quot;;
+<a href="#h11-1" id="h11-1" class="h">@@ -827,6 +830,7 @@ focusmon(const Arg *arg)
+</a> 	unfocus(selmon-&gt;sel, 0);
+ 	selmon = m;
+ 	focus(NULL);
+<a href="#h11-1-3" id="h11-1-3" class="i">+	warp(selmon-&gt;sel);
+</a> }
+ 
+ void
+<a href="#h11-2" id="h11-2" class="h">@@ -1109,8 +1113,10 @@ monocle(Monitor *m)
+</a> 	for (c = m-&gt;clients; c; c = c-&gt;next)
+ 		if (ISVISIBLE(c))
+ 			n++;
+<a href="#h11-2-3" id="h11-2-3" class="d">-	if (n &gt; 0) /* override layout symbol */
+</a><a href="#h11-2-4" id="h11-2-4" class="d">-		snprintf(m-&gt;ltsymbol, sizeof m-&gt;ltsymbol, &quot;[%d]&quot;, n);
+</a><a href="#h11-2-5" id="h11-2-5" class="i">+	/* stop override layout symbol! 
+</a><a href="#h11-2-6" id="h11-2-6" class="i">+	*if (n &gt; 0) override layout symbol
+</a><a href="#h11-2-7" id="h11-2-7" class="i">+	*	snprintf(m-&gt;ltsymbol, sizeof m-&gt;ltsymbol, &quot;[%d]&quot;, n);
+</a><a href="#h11-2-8" id="h11-2-8" class="i">+	*/
+</a> 	for (c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next))
+ 		resize(c, m-&gt;wx, m-&gt;wy, m-&gt;ww - 2 * c-&gt;bw, m-&gt;wh - 2 * c-&gt;bw, 0);
+ }
+<a href="#h11-3" id="h11-3" class="h">@@ -1367,6 +1373,8 @@ restack(Monitor *m)
+</a> 	}
+ 	XSync(dpy, False);
+ 	while (XCheckMaskEvent(dpy, EnterWindowMask, &amp;ev));
+<a href="#h11-3-3" id="h11-3-3" class="i">+	if (m == selmon &amp;&amp; (m-&gt;tagset[m-&gt;seltags] &amp; m-&gt;sel-&gt;tags) &amp;&amp; selmon-&gt;lt[selmon-&gt;sellt] != &amp;layouts[2])
+</a><a href="#h11-3-4" id="h11-3-4" class="i">+		warp(m-&gt;sel);
+</a> }
+ 
+ void
+<a href="#h11-4" id="h11-4" class="h">@@ -2044,6 +2052,28 @@ view(const Arg *arg)
+</a> 	arrange(selmon);
+ }
+ 
+<a href="#h11-4-3" id="h11-4-3" class="i">+void
+</a><a href="#h11-4-4" id="h11-4-4" class="i">+warp(const Client *c)
+</a><a href="#h11-4-5" id="h11-4-5" class="i">+{
+</a><a href="#h11-4-6" id="h11-4-6" class="i">+	int x, y;
+</a><a href="#h11-4-7" id="h11-4-7" class="i">+
+</a><a href="#h11-4-8" id="h11-4-8" class="i">+	if (!c) {
+</a><a href="#h11-4-9" id="h11-4-9" class="i">+		XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon-&gt;wx + selmon-&gt;ww/2, selmon-&gt;wy + selmon-&gt;wh/2);
+</a><a href="#h11-4-10" id="h11-4-10" class="i">+		return;
+</a><a href="#h11-4-11" id="h11-4-11" class="i">+	}
+</a><a href="#h11-4-12" id="h11-4-12" class="i">+
+</a><a href="#h11-4-13" id="h11-4-13" class="i">+	if (!getrootptr(&amp;x, &amp;y) ||
+</a><a href="#h11-4-14" id="h11-4-14" class="i">+	    (x &gt; c-&gt;x - c-&gt;bw &amp;&amp;
+</a><a href="#h11-4-15" id="h11-4-15" class="i">+	     y &gt; c-&gt;y - c-&gt;bw &amp;&amp;
+</a><a href="#h11-4-16" id="h11-4-16" class="i">+	     x &lt; c-&gt;x + c-&gt;w + c-&gt;bw*2 &amp;&amp;
+</a><a href="#h11-4-17" id="h11-4-17" class="i">+	     y &lt; c-&gt;y + c-&gt;h + c-&gt;bw*2) ||
+</a><a href="#h11-4-18" id="h11-4-18" class="i">+	    (y &gt; c-&gt;mon-&gt;by &amp;&amp; y &lt; c-&gt;mon-&gt;by + bh) ||
+</a><a href="#h11-4-19" id="h11-4-19" class="i">+	    (c-&gt;mon-&gt;topbar &amp;&amp; !y))
+</a><a href="#h11-4-20" id="h11-4-20" class="i">+		return;
+</a><a href="#h11-4-21" id="h11-4-21" class="i">+
+</a><a href="#h11-4-22" id="h11-4-22" class="i">+	XWarpPointer(dpy, None, c-&gt;win, 0, 0, 0, 0, c-&gt;w / 2, c-&gt;h / 2);
+</a><a href="#h11-4-23" id="h11-4-23" class="i">+}
+</a><a href="#h11-4-24" id="h11-4-24" class="i">+
+</a> Client *
+ wintoclient(Window w)
+ {
+<a href="#h11-5" id="h11-5" class="h">@@ -2147,3 +2177,65 @@ main(int argc, char *argv[])
+</a> 	XCloseDisplay(dpy);
+ 	return EXIT_SUCCESS;
+ }
+<a href="#h11-5-3" id="h11-5-3" class="i">+
+</a><a href="#h11-5-4" id="h11-5-4" class="i">+static void
+</a><a href="#h11-5-5" id="h11-5-5" class="i">+bstack(Monitor *m) {
+</a><a href="#h11-5-6" id="h11-5-6" class="i">+	int w, h, mh, mx, tx, ty, tw;
+</a><a href="#h11-5-7" id="h11-5-7" class="i">+	unsigned int i, n;
+</a><a href="#h11-5-8" id="h11-5-8" class="i">+	Client *c;
+</a><a href="#h11-5-9" id="h11-5-9" class="i">+
+</a><a href="#h11-5-10" id="h11-5-10" class="i">+	for (n = 0, c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next), n++);
+</a><a href="#h11-5-11" id="h11-5-11" class="i">+	if (n == 0)
+</a><a href="#h11-5-12" id="h11-5-12" class="i">+		return;
+</a><a href="#h11-5-13" id="h11-5-13" class="i">+	if (n &gt; m-&gt;nmaster) {
+</a><a href="#h11-5-14" id="h11-5-14" class="i">+		mh = m-&gt;nmaster ? m-&gt;mfact * m-&gt;wh : 0;
+</a><a href="#h11-5-15" id="h11-5-15" class="i">+		tw = m-&gt;ww / (n - m-&gt;nmaster);
+</a><a href="#h11-5-16" id="h11-5-16" class="i">+		ty = m-&gt;wy + mh;
+</a><a href="#h11-5-17" id="h11-5-17" class="i">+	} else {
+</a><a href="#h11-5-18" id="h11-5-18" class="i">+		mh = m-&gt;wh;
+</a><a href="#h11-5-19" id="h11-5-19" class="i">+		tw = m-&gt;ww;
+</a><a href="#h11-5-20" id="h11-5-20" class="i">+		ty = m-&gt;wy;
+</a><a href="#h11-5-21" id="h11-5-21" class="i">+	}
+</a><a href="#h11-5-22" id="h11-5-22" class="i">+	for (i = mx = 0, tx = m-&gt;wx, c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next), i++) {
+</a><a href="#h11-5-23" id="h11-5-23" class="i">+		if (i &lt; m-&gt;nmaster) {
+</a><a href="#h11-5-24" id="h11-5-24" class="i">+			w = (m-&gt;ww - mx) / (MIN(n, m-&gt;nmaster) - i);
+</a><a href="#h11-5-25" id="h11-5-25" class="i">+			resize(c, m-&gt;wx + mx, m-&gt;wy, w - (2 * c-&gt;bw), mh - (2 * c-&gt;bw), 0);
+</a><a href="#h11-5-26" id="h11-5-26" class="i">+			mx += WIDTH(c);
+</a><a href="#h11-5-27" id="h11-5-27" class="i">+		} else {
+</a><a href="#h11-5-28" id="h11-5-28" class="i">+			h = m-&gt;wh - mh;
+</a><a href="#h11-5-29" id="h11-5-29" class="i">+			resize(c, tx, ty, tw - (2 * c-&gt;bw), h - (2 * c-&gt;bw), 0);
+</a><a href="#h11-5-30" id="h11-5-30" class="i">+			if (tw != m-&gt;ww)
+</a><a href="#h11-5-31" id="h11-5-31" class="i">+				tx += WIDTH(c);
+</a><a href="#h11-5-32" id="h11-5-32" class="i">+		}
+</a><a href="#h11-5-33" id="h11-5-33" class="i">+	}
+</a><a href="#h11-5-34" id="h11-5-34" class="i">+}
+</a><a href="#h11-5-35" id="h11-5-35" class="i">+
+</a><a href="#h11-5-36" id="h11-5-36" class="i">+static void
+</a><a href="#h11-5-37" id="h11-5-37" class="i">+bstackhoriz(Monitor *m) {
+</a><a href="#h11-5-38" id="h11-5-38" class="i">+	int w, mh, mx, tx, ty, th;
+</a><a href="#h11-5-39" id="h11-5-39" class="i">+	unsigned int i, n;
+</a><a href="#h11-5-40" id="h11-5-40" class="i">+	Client *c;
+</a><a href="#h11-5-41" id="h11-5-41" class="i">+
+</a><a href="#h11-5-42" id="h11-5-42" class="i">+	for (n = 0, c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next), n++);
+</a><a href="#h11-5-43" id="h11-5-43" class="i">+	if (n == 0)
+</a><a href="#h11-5-44" id="h11-5-44" class="i">+		return;
+</a><a href="#h11-5-45" id="h11-5-45" class="i">+	if (n &gt; m-&gt;nmaster) {
+</a><a href="#h11-5-46" id="h11-5-46" class="i">+		mh = m-&gt;nmaster ? m-&gt;mfact * m-&gt;wh : 0;
+</a><a href="#h11-5-47" id="h11-5-47" class="i">+		th = (m-&gt;wh - mh) / (n - m-&gt;nmaster);
+</a><a href="#h11-5-48" id="h11-5-48" class="i">+		ty = m-&gt;wy + mh;
+</a><a href="#h11-5-49" id="h11-5-49" class="i">+	} else {
+</a><a href="#h11-5-50" id="h11-5-50" class="i">+		th = mh = m-&gt;wh;
+</a><a href="#h11-5-51" id="h11-5-51" class="i">+		ty = m-&gt;wy;
+</a><a href="#h11-5-52" id="h11-5-52" class="i">+	}
+</a><a href="#h11-5-53" id="h11-5-53" class="i">+	for (i = mx = 0, tx = m-&gt;wx, c = nexttiled(m-&gt;clients); c; c = nexttiled(c-&gt;next), i++) {
+</a><a href="#h11-5-54" id="h11-5-54" class="i">+		if (i &lt; m-&gt;nmaster) {
+</a><a href="#h11-5-55" id="h11-5-55" class="i">+			w = (m-&gt;ww - mx) / (MIN(n, m-&gt;nmaster) - i);
+</a><a href="#h11-5-56" id="h11-5-56" class="i">+			resize(c, m-&gt;wx + mx, m-&gt;wy, w - (2 * c-&gt;bw), mh - (2 * c-&gt;bw), 0);
+</a><a href="#h11-5-57" id="h11-5-57" class="i">+			mx += WIDTH(c);
+</a><a href="#h11-5-58" id="h11-5-58" class="i">+		} else {
+</a><a href="#h11-5-59" id="h11-5-59" class="i">+			resize(c, tx, ty, m-&gt;ww - (2 * c-&gt;bw), th - (2 * c-&gt;bw), 0);
+</a><a href="#h11-5-60" id="h11-5-60" class="i">+			if (th != m-&gt;wh)
+</a><a href="#h11-5-61" id="h11-5-61" class="i">+				ty += HEIGHT(c);
+</a><a href="#h11-5-62" id="h11-5-62" class="i">+		}
+</a><a href="#h11-5-63" id="h11-5-63" class="i">+	}
+</a><a href="#h11-5-64" id="h11-5-64" class="i">+}
+</a><b>diff --git a/<a id="h12" href="../file/dwm/dwm.o.html">dwm/dwm.o</a> b/<a href="../file/dwm/dwm.o.html">dwm/dwm.o</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h13" href="../file/quark.html">quark</a> b/<a href="../file/quark.html">quark</a></b>
+<a href="#h13-0" id="h13-0" class="h">@@ -0,0 +1 @@
+</a><a href="#h13-0-0" id="h13-0-0" class="i">+Subproject commit 32223c96bdee8f94980d3a1877a643a4d59f897f
+</a><b>diff --git a/<a id="h14" href="../file/st/config.h.html">st/config.h</a> b/<a href="../file/st/config.h.html">st/config.h</a></b>
+<a href="#h14-0" id="h14-0" class="h">@@ -5,7 +5,7 @@
+</a>  *
+  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
+  */
+<a href="#h14-0-3" id="h14-0-3" class="d">-static char *font = &quot;UbuntuMono Nerd Font:pixelsize=16:antialias=true:autohint=true&quot;;
+</a><a href="#h14-0-4" id="h14-0-4" class="i">+static char *font = &quot;Fura Code Nerd Font:pixelsize=16:antialias=true:autohint=true&quot;;
+</a> static int borderpx = 2;
+ 
+ /*
+<a href="#h14-1" id="h14-1" class="h">@@ -87,12 +87,12 @@ static const char *colorname[] = {
+</a> 	/* 8 normal colors */
+ 	[0] = &quot;#000000&quot;, /* black   */
+ 	[1] = &quot;#e92f2f&quot;, /* red     */
+<a href="#h14-1-3" id="h14-1-3" class="d">-	[2] = &quot;#0ed839&quot;, /* green   */
+</a><a href="#h14-1-4" id="h14-1-4" class="i">+	[2] = &quot;#3CB371&quot;, /* green   */
+</a> 	[3] = &quot;#dddd13&quot;, /* yellow  */
+ 	[4] = &quot;#3b48e3&quot;, /* blue    */
+ 	[5] = &quot;#f996e2&quot;, /* magenta */
+ 	[6] = &quot;#23edda&quot;, /* cyan    */
+<a href="#h14-1-9" id="h14-1-9" class="d">-	[7] = &quot;#ababab&quot;, /* white   */
+</a><a href="#h14-1-10" id="h14-1-10" class="i">+	[7] = &quot;#7a7676&quot;, /* white   */
+</a> 
+ 	/* 8 bright colors */
+ 	[8]  = &quot;#343434&quot;, /* black   */
+<b>diff --git a/<a id="h15" href="../file/st/st.html">st/st</a> b/<a href="../file/st/st.html">st/st</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h16" href="../file/st/x.o.html">st/x.o</a> b/<a href="../file/st/x.o.html">st/x.o</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h17" href="../file/surf/chromebar.diff.html">surf/chromebar.diff</a> b/<a href="../file/surf/chromebar.diff.html">surf/chromebar.diff</a></b>
+<a href="#h17-0" id="h17-0" class="h">@@ -0,0 +1,321 @@
+</a><a href="#h17-0-0" id="h17-0-0" class="i">+diff --git a/surf.c b/surf.c
+</a><a href="#h17-0-1" id="h17-0-1" class="i">+index 53dda18..38c15a4 100644
+</a><a href="#h17-0-2" id="h17-0-2" class="i">+--- a/surf.c
+</a><a href="#h17-0-3" id="h17-0-3" class="i">++++ b/surf.c
+</a><a href="#h17-0-4" id="h17-0-4" class="i">+@@ -17,6 +17,7 @@
+</a><a href="#h17-0-5" id="h17-0-5" class="i">+ #include &lt;limits.h&gt;
+</a><a href="#h17-0-6" id="h17-0-6" class="i">+ #include &lt;stdlib.h&gt;
+</a><a href="#h17-0-7" id="h17-0-7" class="i">+ #include &lt;stdio.h&gt;
+</a><a href="#h17-0-8" id="h17-0-8" class="i">++#include &lt;ctype.h&gt;
+</a><a href="#h17-0-9" id="h17-0-9" class="i">+ #include &lt;webkit/webkit.h&gt;
+</a><a href="#h17-0-10" id="h17-0-10" class="i">+ #include &lt;glib/gstdio.h&gt;
+</a><a href="#h17-0-11" id="h17-0-11" class="i">+ #include &lt;JavaScriptCore/JavaScript.h&gt;
+</a><a href="#h17-0-12" id="h17-0-12" class="i">+@@ -71,6 +72,12 @@ typedef struct {
+</a><a href="#h17-0-13" id="h17-0-13" class="i">+ 
+</a><a href="#h17-0-14" id="h17-0-14" class="i">+ G_DEFINE_TYPE(CookieJar, cookiejar, SOUP_TYPE_COOKIE_JAR_TEXT)
+</a><a href="#h17-0-15" id="h17-0-15" class="i">+ 
+</a><a href="#h17-0-16" id="h17-0-16" class="i">++typedef struct {
+</a><a href="#h17-0-17" id="h17-0-17" class="i">++	char *token;
+</a><a href="#h17-0-18" id="h17-0-18" class="i">++	char *uri;
+</a><a href="#h17-0-19" id="h17-0-19" class="i">++	int nr;
+</a><a href="#h17-0-20" id="h17-0-20" class="i">++} SearchEngine;
+</a><a href="#h17-0-21" id="h17-0-21" class="i">++
+</a><a href="#h17-0-22" id="h17-0-22" class="i">+ static Display *dpy;
+</a><a href="#h17-0-23" id="h17-0-23" class="i">+ static Atom atoms[AtomLast];
+</a><a href="#h17-0-24" id="h17-0-24" class="i">+ static Client *clients = NULL;
+</a><a href="#h17-0-25" id="h17-0-25" class="i">+@@ -141,6 +148,9 @@ static void loaduri(Client *c, const Arg *arg);
+</a><a href="#h17-0-26" id="h17-0-26" class="i">+ static void navigate(Client *c, const Arg *arg);
+</a><a href="#h17-0-27" id="h17-0-27" class="i">+ static Client *newclient(void);
+</a><a href="#h17-0-28" id="h17-0-28" class="i">+ static void newwindow(Client *c, const Arg *arg, gboolean noembed);
+</a><a href="#h17-0-29" id="h17-0-29" class="i">++static const gchar *parseuri(const gchar *uri, char **parsed_uri);
+</a><a href="#h17-0-30" id="h17-0-30" class="i">++static char **parse_address(const char *url);
+</a><a href="#h17-0-31" id="h17-0-31" class="i">++static char **parse_url(char *str);
+</a><a href="#h17-0-32" id="h17-0-32" class="i">+ static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
+</a><a href="#h17-0-33" id="h17-0-33" class="i">+ static void populatepopup(WebKitWebView *web, GtkMenu *menu, Client *c);
+</a><a href="#h17-0-34" id="h17-0-34" class="i">+ static void popupactivate(GtkMenuItem *menu, Client *);
+</a><a href="#h17-0-35" id="h17-0-35" class="i">+@@ -166,6 +176,7 @@ static void togglescrollbars(Client *c, const Arg *arg);
+</a><a href="#h17-0-36" id="h17-0-36" class="i">+ static void togglestyle(Client *c, const Arg *arg);
+</a><a href="#h17-0-37" id="h17-0-37" class="i">+ static void updatetitle(Client *c);
+</a><a href="#h17-0-38" id="h17-0-38" class="i">+ static void updatewinid(Client *c);
+</a><a href="#h17-0-39" id="h17-0-39" class="i">++static int url_has_domain(char *url, char **parsed_uri); 
+</a><a href="#h17-0-40" id="h17-0-40" class="i">+ static void usage(void);
+</a><a href="#h17-0-41" id="h17-0-41" class="i">+ static void windowobjectcleared(GtkWidget *w, WebKitWebFrame *frame,
+</a><a href="#h17-0-42" id="h17-0-42" class="i">+ 		JSContextRef js, JSObjectRef win, Client *c);
+</a><a href="#h17-0-43" id="h17-0-43" class="i">+@@ -616,32 +627,63 @@ loadstatuschange(WebKitWebView *view, GParamSpec *pspec, Client *c) {
+</a><a href="#h17-0-44" id="h17-0-44" class="i">+ 
+</a><a href="#h17-0-45" id="h17-0-45" class="i">+ static void
+</a><a href="#h17-0-46" id="h17-0-46" class="i">+ loaduri(Client *c, const Arg *arg) {
+</a><a href="#h17-0-47" id="h17-0-47" class="i">+-	char *u, *rp;
+</a><a href="#h17-0-48" id="h17-0-48" class="i">+-	const char *uri = (char *)arg-&gt;v;
+</a><a href="#h17-0-49" id="h17-0-49" class="i">++	const gchar *u;
+</a><a href="#h17-0-50" id="h17-0-50" class="i">++	char *rp, *pt;
+</a><a href="#h17-0-51" id="h17-0-51" class="i">++	const gchar *uri = arg-&gt;v;
+</a><a href="#h17-0-52" id="h17-0-52" class="i">++	char **parsed_uri;
+</a><a href="#h17-0-53" id="h17-0-53" class="i">++	char *home;
+</a><a href="#h17-0-54" id="h17-0-54" class="i">++	char *path;
+</a><a href="#h17-0-55" id="h17-0-55" class="i">++	int i;
+</a><a href="#h17-0-56" id="h17-0-56" class="i">++	FILE *f;
+</a><a href="#h17-0-57" id="h17-0-57" class="i">+ 	Arg a = { .b = FALSE };
+</a><a href="#h17-0-58" id="h17-0-58" class="i">+-	struct stat st;
+</a><a href="#h17-0-59" id="h17-0-59" class="i">+ 
+</a><a href="#h17-0-60" id="h17-0-60" class="i">+-	if(strcmp(uri, &quot;&quot;) == 0)
+</a><a href="#h17-0-61" id="h17-0-61" class="i">++	if (*uri == &#39;\0&#39;)
+</a><a href="#h17-0-62" id="h17-0-62" class="i">+ 		return;
+</a><a href="#h17-0-63" id="h17-0-63" class="i">+ 
+</a><a href="#h17-0-64" id="h17-0-64" class="i">++	pt=malloc(strlen(uri)+1);
+</a><a href="#h17-0-65" id="h17-0-65" class="i">++	pt=strdup((char *)uri);
+</a><a href="#h17-0-66" id="h17-0-66" class="i">++	parsed_uri = parse_url(pt);
+</a><a href="#h17-0-67" id="h17-0-67" class="i">++
+</a><a href="#h17-0-68" id="h17-0-68" class="i">+ 	/* In case it&#39;s a file path. */
+</a><a href="#h17-0-69" id="h17-0-69" class="i">+-	if(stat(uri, &amp;st) == 0) {
+</a><a href="#h17-0-70" id="h17-0-70" class="i">+-		rp = realpath(uri, NULL);
+</a><a href="#h17-0-71" id="h17-0-71" class="i">++	if(strncmp(parsed_uri[0], &quot;file://&quot;, 6) == 0 ||
+</a><a href="#h17-0-72" id="h17-0-72" class="i">++		( strlen(parsed_uri[0]) == 0 &amp;&amp; strlen(parsed_uri[1]) == 0)) {
+</a><a href="#h17-0-73" id="h17-0-73" class="i">++		path=malloc(strlen(parsed_uri[1])+strlen(parsed_uri[2])+strlen(parsed_uri[3])+1);
+</a><a href="#h17-0-74" id="h17-0-74" class="i">++		path=strcpy(path, parsed_uri[1]);
+</a><a href="#h17-0-75" id="h17-0-75" class="i">++		path=strcat(path, parsed_uri[2]);
+</a><a href="#h17-0-76" id="h17-0-76" class="i">++		path=strcat(path, parsed_uri[3]);
+</a><a href="#h17-0-77" id="h17-0-77" class="i">++
+</a><a href="#h17-0-78" id="h17-0-78" class="i">++		if (path[0] == &#39;~&#39;)
+</a><a href="#h17-0-79" id="h17-0-79" class="i">++		{
+</a><a href="#h17-0-80" id="h17-0-80" class="i">++		    home = getenv(&quot;HOME&quot;);
+</a><a href="#h17-0-81" id="h17-0-81" class="i">++		    home = realloc(home, strlen(path)+strlen(home));
+</a><a href="#h17-0-82" id="h17-0-82" class="i">++		    home = strcat(home, path+1);
+</a><a href="#h17-0-83" id="h17-0-83" class="i">++		    free(path);
+</a><a href="#h17-0-84" id="h17-0-84" class="i">++		    path = home;
+</a><a href="#h17-0-85" id="h17-0-85" class="i">++		}
+</a><a href="#h17-0-86" id="h17-0-86" class="i">++		rp = realpath(path, NULL);
+</a><a href="#h17-0-87" id="h17-0-87" class="i">+ 		u = g_strdup_printf(&quot;file://%s&quot;, rp);
+</a><a href="#h17-0-88" id="h17-0-88" class="i">++		free(path);
+</a><a href="#h17-0-89" id="h17-0-89" class="i">+ 		free(rp);
+</a><a href="#h17-0-90" id="h17-0-90" class="i">+ 	} else {
+</a><a href="#h17-0-91" id="h17-0-91" class="i">+-		u = g_strrstr(uri, &quot;://&quot;) ? g_strdup(uri)
+</a><a href="#h17-0-92" id="h17-0-92" class="i">+-			: g_strdup_printf(&quot;http://%s&quot;, uri);
+</a><a href="#h17-0-93" id="h17-0-93" class="i">++		u = parseuri(pt,parsed_uri);
+</a><a href="#h17-0-94" id="h17-0-94" class="i">+ 	}
+</a><a href="#h17-0-95" id="h17-0-95" class="i">+ 
+</a><a href="#h17-0-96" id="h17-0-96" class="i">++	free(pt);
+</a><a href="#h17-0-97" id="h17-0-97" class="i">++	for (i=0;i&lt;4;i++)
+</a><a href="#h17-0-98" id="h17-0-98" class="i">++	    free(parsed_uri[i]);
+</a><a href="#h17-0-99" id="h17-0-99" class="i">++	free(parsed_uri);
+</a><a href="#h17-0-100" id="h17-0-100" class="i">++
+</a><a href="#h17-0-101" id="h17-0-101" class="i">+ 	/* prevents endless loop */
+</a><a href="#h17-0-102" id="h17-0-102" class="i">+ 	if(c-&gt;uri &amp;&amp; strcmp(u, c-&gt;uri) == 0) {
+</a><a href="#h17-0-103" id="h17-0-103" class="i">+ 		reload(c, &amp;a);
+</a><a href="#h17-0-104" id="h17-0-104" class="i">+ 	} else {
+</a><a href="#h17-0-105" id="h17-0-105" class="i">+ 		webkit_web_view_load_uri(c-&gt;view, u);
+</a><a href="#h17-0-106" id="h17-0-106" class="i">++		f = fopen(historyfile, &quot;a+&quot;);
+</a><a href="#h17-0-107" id="h17-0-107" class="i">++		fprintf(f, &quot;%s&quot;, u);
+</a><a href="#h17-0-108" id="h17-0-108" class="i">++		fclose(f);
+</a><a href="#h17-0-109" id="h17-0-109" class="i">+ 		c-&gt;progress = 0;
+</a><a href="#h17-0-110" id="h17-0-110" class="i">+ 		c-&gt;title = copystr(&amp;c-&gt;title, u);
+</a><a href="#h17-0-111" id="h17-0-111" class="i">+-		g_free(u);
+</a><a href="#h17-0-112" id="h17-0-112" class="i">++		g_free((gpointer )u);
+</a><a href="#h17-0-113" id="h17-0-113" class="i">+ 		updatetitle(c);
+</a><a href="#h17-0-114" id="h17-0-114" class="i">+ 	}
+</a><a href="#h17-0-115" id="h17-0-115" class="i">+ }
+</a><a href="#h17-0-116" id="h17-0-116" class="i">+@@ -912,6 +954,196 @@ popupactivate(GtkMenuItem *menu, Client *c) {
+</a><a href="#h17-0-117" id="h17-0-117" class="i">+ 	}
+</a><a href="#h17-0-118" id="h17-0-118" class="i">+ }
+</a><a href="#h17-0-119" id="h17-0-119" class="i">+ 
+</a><a href="#h17-0-120" id="h17-0-120" class="i">++#define SCHEME_CHAR(ch) (isalnum (ch) || (ch) == &#39;-&#39; || (ch) == &#39;+&#39;)
+</a><a href="#h17-0-121" id="h17-0-121" class="i">++
+</a><a href="#h17-0-122" id="h17-0-122" class="i">++/*
+</a><a href="#h17-0-123" id="h17-0-123" class="i">++ * This function takes an url and chop it into three part: sheme, domain, the
+</a><a href="#h17-0-124" id="h17-0-124" class="i">++ * rest, e.g. http://www.google.co.uk/search?q=hello will produce a triple
+</a><a href="#h17-0-125" id="h17-0-125" class="i">++ * (&#39;http://&#39;, &#39;www.google.co.uk&#39;, &#39;/search?q=hello&#39;)
+</a><a href="#h17-0-126" id="h17-0-126" class="i">++ */
+</a><a href="#h17-0-127" id="h17-0-127" class="i">++static char **
+</a><a href="#h17-0-128" id="h17-0-128" class="i">++parse_url(char *str) {
+</a><a href="#h17-0-129" id="h17-0-129" class="i">++    /* Return the position of &#39;:&#39; - last element of a scheme, or 0 if there
+</a><a href="#h17-0-130" id="h17-0-130" class="i">++     * is no scheme. */
+</a><a href="#h17-0-131" id="h17-0-131" class="i">++    char *sch=&quot;&quot;;
+</a><a href="#h17-0-132" id="h17-0-132" class="i">++    char *pt;
+</a><a href="#h17-0-133" id="h17-0-133" class="i">++    char **ret;
+</a><a href="#h17-0-134" id="h17-0-134" class="i">++    char **dret;
+</a><a href="#h17-0-135" id="h17-0-135" class="i">++    int k,i = 0;
+</a><a href="#h17-0-136" id="h17-0-136" class="i">++
+</a><a href="#h17-0-137" id="h17-0-137" class="i">++    pt=malloc(strlen(str)+1);
+</a><a href="#h17-0-138" id="h17-0-138" class="i">++    pt=strcpy(pt, str);
+</a><a href="#h17-0-139" id="h17-0-139" class="i">++
+</a><a href="#h17-0-140" id="h17-0-140" class="i">++    while (*pt == &#39; &#39;)
+</a><a href="#h17-0-141" id="h17-0-141" class="i">++	pt+=1;
+</a><a href="#h17-0-142" id="h17-0-142" class="i">++    ret=malloc(4*sizeof(char *));
+</a><a href="#h17-0-143" id="h17-0-143" class="i">++
+</a><a href="#h17-0-144" id="h17-0-144" class="i">++    /* The first char must be a scheme char. */
+</a><a href="#h17-0-145" id="h17-0-145" class="i">++    if (!*pt || !SCHEME_CHAR (*pt))
+</a><a href="#h17-0-146" id="h17-0-146" class="i">++    {
+</a><a href="#h17-0-147" id="h17-0-147" class="i">++	ret[0]=malloc(1);
+</a><a href="#h17-0-148" id="h17-0-148" class="i">++	ret[0][0]=&#39;\0&#39;;
+</a><a href="#h17-0-149" id="h17-0-149" class="i">++	dret=parse_address(pt);
+</a><a href="#h17-0-150" id="h17-0-150" class="i">++	for (k=0;k&lt;3;k++)
+</a><a href="#h17-0-151" id="h17-0-151" class="i">++	    ret[k+1]=dret[k];
+</a><a href="#h17-0-152" id="h17-0-152" class="i">++	return ret;
+</a><a href="#h17-0-153" id="h17-0-153" class="i">++    }
+</a><a href="#h17-0-154" id="h17-0-154" class="i">++    ++i;
+</a><a href="#h17-0-155" id="h17-0-155" class="i">++    /* Followed by 0 or more scheme chars. */
+</a><a href="#h17-0-156" id="h17-0-156" class="i">++    while (*(pt+i) &amp;&amp; SCHEME_CHAR (*(pt+i)))
+</a><a href="#h17-0-157" id="h17-0-157" class="i">++    {
+</a><a href="#h17-0-158" id="h17-0-158" class="i">++	++i;
+</a><a href="#h17-0-159" id="h17-0-159" class="i">++    }
+</a><a href="#h17-0-160" id="h17-0-160" class="i">++    sch=malloc(i+4);
+</a><a href="#h17-0-161" id="h17-0-161" class="i">++    sch=strncpy(sch, pt, i); 
+</a><a href="#h17-0-162" id="h17-0-162" class="i">++    sch[i]=&#39;\0&#39;;
+</a><a href="#h17-0-163" id="h17-0-163" class="i">++    if (strlen(sch)) {
+</a><a href="#h17-0-164" id="h17-0-164" class="i">++	sch=strcat(sch, &quot;://&quot;);
+</a><a href="#h17-0-165" id="h17-0-165" class="i">++    }
+</a><a href="#h17-0-166" id="h17-0-166" class="i">++
+</a><a href="#h17-0-167" id="h17-0-167" class="i">++    /* Terminated by &quot;://&quot;. */
+</a><a href="#h17-0-168" id="h17-0-168" class="i">++    if (strncmp(sch, pt, strlen(sch)) == 0) {
+</a><a href="#h17-0-169" id="h17-0-169" class="i">++	    ret[0]=sch;
+</a><a href="#h17-0-170" id="h17-0-170" class="i">++	    /* dret=malloc(strlen(str)); */
+</a><a href="#h17-0-171" id="h17-0-171" class="i">++	    dret=parse_address(pt+i+3);
+</a><a href="#h17-0-172" id="h17-0-172" class="i">++	    for (k=0;k&lt;3;k++)
+</a><a href="#h17-0-173" id="h17-0-173" class="i">++		ret[k+1]=dret[k];
+</a><a href="#h17-0-174" id="h17-0-174" class="i">++	    return ret;
+</a><a href="#h17-0-175" id="h17-0-175" class="i">++    }
+</a><a href="#h17-0-176" id="h17-0-176" class="i">++    ret[0]=malloc(1);
+</a><a href="#h17-0-177" id="h17-0-177" class="i">++    ret[0][0]=&#39;\0&#39;;
+</a><a href="#h17-0-178" id="h17-0-178" class="i">++    dret=parse_address(str);
+</a><a href="#h17-0-179" id="h17-0-179" class="i">++    for (k=0;k&lt;3;k++)
+</a><a href="#h17-0-180" id="h17-0-180" class="i">++	ret[k+1]=dret[k];
+</a><a href="#h17-0-181" id="h17-0-181" class="i">++    return ret;
+</a><a href="#h17-0-182" id="h17-0-182" class="i">++}
+</a><a href="#h17-0-183" id="h17-0-183" class="i">++
+</a><a href="#h17-0-184" id="h17-0-184" class="i">++#define DOMAIN_CHAR(ch) (isalnum (ch) || (ch) == &#39;-&#39; || (ch) == &#39;.&#39;)
+</a><a href="#h17-0-185" id="h17-0-185" class="i">++
+</a><a href="#h17-0-186" id="h17-0-186" class="i">++/*
+</a><a href="#h17-0-187" id="h17-0-187" class="i">++ * This function takes an url without a scheme and outputs a pair: domain and
+</a><a href="#h17-0-188" id="h17-0-188" class="i">++ * the rest.
+</a><a href="#h17-0-189" id="h17-0-189" class="i">++ */
+</a><a href="#h17-0-190" id="h17-0-190" class="i">++static char **
+</a><a href="#h17-0-191" id="h17-0-191" class="i">++parse_address(const char *url)
+</a><a href="#h17-0-192" id="h17-0-192" class="i">++{
+</a><a href="#h17-0-193" id="h17-0-193" class="i">++    int n;
+</a><a href="#h17-0-194" id="h17-0-194" class="i">++    size_t i=0;
+</a><a href="#h17-0-195" id="h17-0-195" class="i">++    size_t u=strlen(url);
+</a><a href="#h17-0-196" id="h17-0-196" class="i">++    char *domain;
+</a><a href="#h17-0-197" id="h17-0-197" class="i">++    char *port;
+</a><a href="#h17-0-198" id="h17-0-198" class="i">++    char **res=malloc(3*sizeof (char *));
+</a><a href="#h17-0-199" id="h17-0-199" class="i">++
+</a><a href="#h17-0-200" id="h17-0-200" class="i">++    if (isalnum(*url)) {
+</a><a href="#h17-0-201" id="h17-0-201" class="i">++	++i;
+</a><a href="#h17-0-202" id="h17-0-202" class="i">++	while (*(url+i) &amp;&amp; DOMAIN_CHAR (*(url+i)))
+</a><a href="#h17-0-203" id="h17-0-203" class="i">++	    ++i;
+</a><a href="#h17-0-204" id="h17-0-204" class="i">++    }
+</a><a href="#h17-0-205" id="h17-0-205" class="i">++    domain=malloc(i+1);
+</a><a href="#h17-0-206" id="h17-0-206" class="i">++    domain=strncpy(domain, url, i);
+</a><a href="#h17-0-207" id="h17-0-207" class="i">++    domain[i]=&#39;\0&#39;;
+</a><a href="#h17-0-208" id="h17-0-208" class="i">++
+</a><a href="#h17-0-209" id="h17-0-209" class="i">++    // check for a port number
+</a><a href="#h17-0-210" id="h17-0-210" class="i">++    if ( (u &gt; i) &amp;&amp; *(url+i) == &#39;:&#39; )
+</a><a href="#h17-0-211" id="h17-0-211" class="i">++    {
+</a><a href="#h17-0-212" id="h17-0-212" class="i">++	n=i+1;
+</a><a href="#h17-0-213" id="h17-0-213" class="i">++	while ( (n&lt;=u) &amp;&amp; (n&lt;i+1+5) &amp;&amp; isdigit(*(url+n)) )
+</a><a href="#h17-0-214" id="h17-0-214" class="i">++	    n++;
+</a><a href="#h17-0-215" id="h17-0-215" class="i">++	if (n&gt;i+1)
+</a><a href="#h17-0-216" id="h17-0-216" class="i">++	{
+</a><a href="#h17-0-217" id="h17-0-217" class="i">++	    port=malloc(n-i+1);
+</a><a href="#h17-0-218" id="h17-0-218" class="i">++	    port=strncpy(port, (url+i), n-i);
+</a><a href="#h17-0-219" id="h17-0-219" class="i">++	    port[n-i+1]=&#39;\0&#39;;
+</a><a href="#h17-0-220" id="h17-0-220" class="i">++	}
+</a><a href="#h17-0-221" id="h17-0-221" class="i">++	else
+</a><a href="#h17-0-222" id="h17-0-222" class="i">++	{
+</a><a href="#h17-0-223" id="h17-0-223" class="i">++	    port=malloc(1);
+</a><a href="#h17-0-224" id="h17-0-224" class="i">++	    port[0]=&#39;\0&#39;;
+</a><a href="#h17-0-225" id="h17-0-225" class="i">++	}
+</a><a href="#h17-0-226" id="h17-0-226" class="i">++    }
+</a><a href="#h17-0-227" id="h17-0-227" class="i">++    else
+</a><a href="#h17-0-228" id="h17-0-228" class="i">++    {
+</a><a href="#h17-0-229" id="h17-0-229" class="i">++	n=i;
+</a><a href="#h17-0-230" id="h17-0-230" class="i">++	port=malloc(1);
+</a><a href="#h17-0-231" id="h17-0-231" class="i">++	port[0] = &#39;\0&#39;;
+</a><a href="#h17-0-232" id="h17-0-232" class="i">++    }
+</a><a href="#h17-0-233" id="h17-0-233" class="i">++
+</a><a href="#h17-0-234" id="h17-0-234" class="i">++
+</a><a href="#h17-0-235" id="h17-0-235" class="i">++    res[0]=domain;
+</a><a href="#h17-0-236" id="h17-0-236" class="i">++    res[1]=port;
+</a><a href="#h17-0-237" id="h17-0-237" class="i">++    res[2]=malloc(strlen(url+n)+1);
+</a><a href="#h17-0-238" id="h17-0-238" class="i">++    res[2]=strcpy(res[2], (url+n));
+</a><a href="#h17-0-239" id="h17-0-239" class="i">++    return res;
+</a><a href="#h17-0-240" id="h17-0-240" class="i">++}
+</a><a href="#h17-0-241" id="h17-0-241" class="i">++
+</a><a href="#h17-0-242" id="h17-0-242" class="i">++/*
+</a><a href="#h17-0-243" id="h17-0-243" class="i">++ * This function tests if the url has a qualified domain name.
+</a><a href="#h17-0-244" id="h17-0-244" class="i">++ */
+</a><a href="#h17-0-245" id="h17-0-245" class="i">++static int
+</a><a href="#h17-0-246" id="h17-0-246" class="i">++url_has_domain(char *url, char **parsed_uri) {
+</a><a href="#h17-0-247" id="h17-0-247" class="i">++    char *domain=parsed_uri[1];
+</a><a href="#h17-0-248" id="h17-0-248" class="i">++    char *rest=parsed_uri[3];
+</a><a href="#h17-0-249" id="h17-0-249" class="i">++
+</a><a href="#h17-0-250" id="h17-0-250" class="i">++    if (strstr(domain, &quot; &quot;) != NULL)
+</a><a href="#h17-0-251" id="h17-0-251" class="i">++	return false;
+</a><a href="#h17-0-252" id="h17-0-252" class="i">++
+</a><a href="#h17-0-253" id="h17-0-253" class="i">++    if (! *domain ||
+</a><a href="#h17-0-254" id="h17-0-254" class="i">++	    (*rest &amp;&amp; rest[0] != &#39;/&#39;))
+</a><a href="#h17-0-255" id="h17-0-255" class="i">++	return false;
+</a><a href="#h17-0-256" id="h17-0-256" class="i">++
+</a><a href="#h17-0-257" id="h17-0-257" class="i">++    // the domain name should contain at least one &#39;.&#39;,
+</a><a href="#h17-0-258" id="h17-0-258" class="i">++    // unless it is &quot;localhost&quot;
+</a><a href="#h17-0-259" id="h17-0-259" class="i">++    if (strcmp(domain, &quot;localhost&quot;) == 0) 
+</a><a href="#h17-0-260" id="h17-0-260" class="i">++	return true;
+</a><a href="#h17-0-261" id="h17-0-261" class="i">++
+</a><a href="#h17-0-262" id="h17-0-262" class="i">++    if (strstr(domain, &quot;.&quot;) != NULL)
+</a><a href="#h17-0-263" id="h17-0-263" class="i">++	return true;
+</a><a href="#h17-0-264" id="h17-0-264" class="i">++
+</a><a href="#h17-0-265" id="h17-0-265" class="i">++    return false;
+</a><a href="#h17-0-266" id="h17-0-266" class="i">++}
+</a><a href="#h17-0-267" id="h17-0-267" class="i">++
+</a><a href="#h17-0-268" id="h17-0-268" class="i">++static const gchar *
+</a><a href="#h17-0-269" id="h17-0-269" class="i">++parseuri(const gchar *uri, char **parsed_uri) {
+</a><a href="#h17-0-270" id="h17-0-270" class="i">++	guint i;
+</a><a href="#h17-0-271" id="h17-0-271" class="i">++	gchar *pt = g_strdup(uri);
+</a><a href="#h17-0-272" id="h17-0-272" class="i">++
+</a><a href="#h17-0-273" id="h17-0-273" class="i">++	while (*pt == &#39; &#39;)
+</a><a href="#h17-0-274" id="h17-0-274" class="i">++	    pt+=1;
+</a><a href="#h17-0-275" id="h17-0-275" class="i">++
+</a><a href="#h17-0-276" id="h17-0-276" class="i">++	bool hdm = url_has_domain((char *) pt, parsed_uri);
+</a><a href="#h17-0-277" id="h17-0-277" class="i">++
+</a><a href="#h17-0-278" id="h17-0-278" class="i">++	if (hdm)
+</a><a href="#h17-0-279" id="h17-0-279" class="i">++	    return g_strrstr(pt, &quot;://&quot;) ? g_strdup(pt) : g_strdup_printf(&quot;http://%s&quot;, pt);
+</a><a href="#h17-0-280" id="h17-0-280" class="i">++
+</a><a href="#h17-0-281" id="h17-0-281" class="i">++	for (i = 0; i &lt; LENGTH(searchengines); i++) {
+</a><a href="#h17-0-282" id="h17-0-282" class="i">++		if (searchengines[i].token == NULL
+</a><a href="#h17-0-283" id="h17-0-283" class="i">++			|| searchengines[i].uri == NULL)
+</a><a href="#h17-0-284" id="h17-0-284" class="i">++			continue;
+</a><a href="#h17-0-285" id="h17-0-285" class="i">++
+</a><a href="#h17-0-286" id="h17-0-286" class="i">++		if ((*(pt + strlen(searchengines[i].token)) == &#39; &#39; &amp;&amp; g_str_has_prefix(pt, searchengines[i].token)))
+</a><a href="#h17-0-287" id="h17-0-287" class="i">++		{
+</a><a href="#h17-0-288" id="h17-0-288" class="i">++		    switch (searchengines[i].nr)
+</a><a href="#h17-0-289" id="h17-0-289" class="i">++		    {
+</a><a href="#h17-0-290" id="h17-0-290" class="i">++			case 0:
+</a><a href="#h17-0-291" id="h17-0-291" class="i">++			return g_strdup_printf(&quot;%s&quot;, searchengines[i].uri);
+</a><a href="#h17-0-292" id="h17-0-292" class="i">++			break;
+</a><a href="#h17-0-293" id="h17-0-293" class="i">++			case 2:
+</a><a href="#h17-0-294" id="h17-0-294" class="i">++			return g_strdup_printf(searchengines[i].uri, pt + strlen(searchengines[i].token) + 1, pt + strlen(searchengines[i].token) + 1);
+</a><a href="#h17-0-295" id="h17-0-295" class="i">++			break;
+</a><a href="#h17-0-296" id="h17-0-296" class="i">++			default:
+</a><a href="#h17-0-297" id="h17-0-297" class="i">++			return g_strdup_printf(searchengines[i].uri, pt + strlen(searchengines[i].token) + 1);
+</a><a href="#h17-0-298" id="h17-0-298" class="i">++			break;
+</a><a href="#h17-0-299" id="h17-0-299" class="i">++		    }
+</a><a href="#h17-0-300" id="h17-0-300" class="i">++		}
+</a><a href="#h17-0-301" id="h17-0-301" class="i">++
+</a><a href="#h17-0-302" id="h17-0-302" class="i">++		if (strcmp(pt, searchengines[i].token) == 0 &amp;&amp; strstr(searchengines[i].token, &quot;%s&quot;) == NULL)
+</a><a href="#h17-0-303" id="h17-0-303" class="i">++		{
+</a><a href="#h17-0-304" id="h17-0-304" class="i">++		    return g_strdup_printf(searchengines[i].uri, &quot;&quot;);
+</a><a href="#h17-0-305" id="h17-0-305" class="i">++		}
+</a><a href="#h17-0-306" id="h17-0-306" class="i">++	}
+</a><a href="#h17-0-307" id="h17-0-307" class="i">++	return g_strdup_printf(defaultsearchengine, pt);
+</a><a href="#h17-0-308" id="h17-0-308" class="i">++}
+</a><a href="#h17-0-309" id="h17-0-309" class="i">++
+</a><a href="#h17-0-310" id="h17-0-310" class="i">+ static void
+</a><a href="#h17-0-311" id="h17-0-311" class="i">+ pasteuri(GtkClipboard *clipboard, const char *text, gpointer d) {
+</a><a href="#h17-0-312" id="h17-0-312" class="i">+ 	Arg arg = {.v = text };
+</a><a href="#h17-0-313" id="h17-0-313" class="i">+@@ -1028,6 +1260,7 @@ setup(void) {
+</a><a href="#h17-0-314" id="h17-0-314" class="i">+ 
+</a><a href="#h17-0-315" id="h17-0-315" class="i">+ 	/* dirs and files */
+</a><a href="#h17-0-316" id="h17-0-316" class="i">+ 	cookiefile = buildpath(cookiefile);
+</a><a href="#h17-0-317" id="h17-0-317" class="i">++ 	historyfile = buildpath(historyfile);
+</a><a href="#h17-0-318" id="h17-0-318" class="i">+ 	scriptfile = buildpath(scriptfile);
+</a><a href="#h17-0-319" id="h17-0-319" class="i">+ 	stylefile = buildpath(stylefile);
+</a><a href="#h17-0-320" id="h17-0-320" class="i">+ 
+</a><b>diff --git a/<a id="h18" href="../file/surf/common.o.html">surf/common.o</a> b/<a href="../file/surf/common.o.html">surf/common.o</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h19" href="../file/surf/config.def.h.rej.html">surf/config.def.h.rej</a> b/<a href="../file/surf/config.def.h.rej.html">surf/config.def.h.rej</a></b>
+<a href="#h19-0" id="h19-0" class="h">@@ -1,8 +0,0 @@
+</a><a href="#h19-0-0" id="h19-0-0" class="d">---- config.def.h
+</a><a href="#h19-0-1" id="h19-0-1" class="d">-+++ config.def.h
+</a><a href="#h19-0-2" id="h19-0-2" class="d">-@@ -164,3 +164,5 @@ static Button buttons[] = {
+</a><a href="#h19-0-3" id="h19-0-3" class="d">- 	{ OnAny,        0,              9,      clicknavigate,  { .i = +1 },    1 },
+</a><a href="#h19-0-4" id="h19-0-4" class="d">- 	{ OnMedia,      MODKEY,         1,      clickexternplayer, { 0 },       1 },
+</a><a href="#h19-0-5" id="h19-0-5" class="d">- };
+</a><a href="#h19-0-6" id="h19-0-6" class="d">-+
+</a><a href="#h19-0-7" id="h19-0-7" class="d">-+#define HOMEPAGE &quot;https://duckduckgo.com/&quot;
+</a><b>diff --git a/<a id="h20" href="../file/surf/config.h.html">surf/config.h</a> b/<a href="../file/surf/config.h.html">surf/config.h</a></b>
+<a href="#h20-0" id="h20-0" class="h">@@ -1,4 +1,3 @@
+</a><a href="#h20-0-0" id="h20-0-0" class="d">-#define HOMEPAGE &quot;file:///home/connor/.scripts/resources/homepage.html&quot;
+</a> /* modifier 0 means no modifier */
+ static int surfuseragent    = 1;  /* Append Surf version to default WebKit user agent */
+ static char *fulluseragent  = &quot;&quot;; /* Or override the whole user agent string */
+<a href="#h20-1" id="h20-1" class="h">@@ -14,12 +13,6 @@ static char *cookiefile     = &quot;~/.surf/cookies.txt&quot;;
+</a>  * Per-uri parameters are priority 1
+  * Command parameters are priority 2
+  */
+<a href="#h20-1-3" id="h20-1-3" class="d">-
+</a><a href="#h20-1-4" id="h20-1-4" class="d">-const static char *searchengine = &quot;https://duckduckgo.com/html/?q=&quot;;
+</a><a href="#h20-1-5" id="h20-1-5" class="d">-const static SearchEngine searchengines[] = {
+</a><a href="#h20-1-6" id="h20-1-6" class="d">-	{ &quot;d&quot;,	&quot;https://duckduckgo.com/html/?q=%s&quot;	},
+</a><a href="#h20-1-7" id="h20-1-7" class="d">-	{ &quot;w&quot;,  &quot;https://en.wikipedia.org/wiki/%s&quot; 	},
+</a><a href="#h20-1-8" id="h20-1-8" class="d">-};
+</a> static Parameter defconfig[ParameterLast] = {
+ 	/* parameter                    Arg value       priority */
+ 	[AcceleratedCanvas]   =       { { .i = 1 },     },
+<a href="#h20-2" id="h20-2" class="h">@@ -200,3 +193,5 @@ static Button buttons[] = {
+</a> 	{ OnAny,        0,              9,      clicknavigate,  { .i = +1 },    1 },
+ 	{ OnMedia,      MODKEY,         1,      clickexternplayer, { 0 },       1 },
+ };
+<a href="#h20-2-3" id="h20-2-3" class="i">+
+</a><a href="#h20-2-4" id="h20-2-4" class="i">+#define HOMEPAGE &quot;https://duckduckgo.com/&quot;
+</a><b>diff --git a/<a id="h21" href="../file/surf/surf-patches/surf-homepage.diff.html">surf/surf-patches/surf-homepage.diff</a> b/<a href="../file/surf/homepage.diff.html">surf/homepage.diff</a></b>
+<b>diff --git a/<a id="h22" href="../file/surf/libsurf-webext.o.html">surf/libsurf-webext.o</a> b/<a href="../file/surf/libsurf-webext.o.html">surf/libsurf-webext.o</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h23" href="../file/surf/libsurf-webext.so.html">surf/libsurf-webext.so</a> b/<a href="../file/surf/libsurf-webext.so.html">surf/libsurf-webext.so</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h24" href="../file/surf/surf-patches/searchengines.diff.html">surf/surf-patches/searchengines.diff</a> b/<a href="../file/surf/searchengines.diff.html">surf/searchengines.diff</a></b>
+<b>diff --git a/<a id="h25" href="../file/surf/surf.html">surf/surf</a> b/<a href="../file/surf/surf.html">surf/surf</a></b>
+Binary files differ.
+<b>diff --git a/<a id="h26" href="../file/surf/surf.c.html">surf/surf.c</a> b/<a href="../file/surf/surf.c.html">surf/surf.c</a></b>
+<a href="#h26-0" id="h26-0" class="h">@@ -129,11 +129,6 @@ typedef struct {
+</a> } Button;
+ 
+ typedef struct {
+<a href="#h26-0-3" id="h26-0-3" class="d">-	char *token;
+</a><a href="#h26-0-4" id="h26-0-4" class="d">-	char *uri;
+</a><a href="#h26-0-5" id="h26-0-5" class="d">-} SearchEngine;
+</a><a href="#h26-0-6" id="h26-0-6" class="d">-
+</a><a href="#h26-0-7" id="h26-0-7" class="d">-typedef struct {
+</a> 	const char *uri;
+ 	Parameter config[ParameterLast];
+ 	regex_t re;
+<a href="#h26-1" id="h26-1" class="h">@@ -219,7 +214,6 @@ static void webprocessterminated(WebKitWebView *v,
+</a>                                  Client *c);
+ static void closeview(WebKitWebView *v, Client *c);
+ static void destroywin(GtkWidget* w, Client *c);
+<a href="#h26-1-3" id="h26-1-3" class="d">-static gchar *parseuri(const gchar *uri);
+</a> 
+ /* Hotkeys */
+ static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
+<a href="#h26-2" id="h26-2" class="h">@@ -1771,22 +1765,6 @@ destroywin(GtkWidget* w, Client *c)
+</a> 		gtk_main_quit();
+ }
+ 
+<a href="#h26-2-3" id="h26-2-3" class="d">-gchar *
+</a><a href="#h26-2-4" id="h26-2-4" class="d">-parseuri(const gchar *uri) {
+</a><a href="#h26-2-5" id="h26-2-5" class="d">-	guint i;
+</a><a href="#h26-2-6" id="h26-2-6" class="d">-
+</a><a href="#h26-2-7" id="h26-2-7" class="d">-	for (i = 0; i &lt; LENGTH(searchengines); i++) {
+</a><a href="#h26-2-8" id="h26-2-8" class="d">-		if (searchengines[i].token == NULL || searchengines[i].uri == NULL ||
+</a><a href="#h26-2-9" id="h26-2-9" class="d">-		    *(uri + strlen(searchengines[i].token)) != &#39; &#39;)
+</a><a href="#h26-2-10" id="h26-2-10" class="d">-			continue;
+</a><a href="#h26-2-11" id="h26-2-11" class="d">-		if (g_str_has_prefix(uri, searchengines[i].token))
+</a><a href="#h26-2-12" id="h26-2-12" class="d">-			return g_strdup_printf(searchengines[i].uri,
+</a><a href="#h26-2-13" id="h26-2-13" class="d">-					       uri + strlen(searchengines[i].token) + 1);
+</a><a href="#h26-2-14" id="h26-2-14" class="d">-	}
+</a><a href="#h26-2-15" id="h26-2-15" class="d">-
+</a><a href="#h26-2-16" id="h26-2-16" class="d">-	return g_strdup_printf(&quot;http://%s&quot;, uri);
+</a><a href="#h26-2-17" id="h26-2-17" class="d">-}
+</a><a href="#h26-2-18" id="h26-2-18" class="d">-
+</a> void
+ pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
+ {
+<b>diff --git a/<a id="h27" href="../file/surf/surf.c.orig.html">surf/surf.c.orig</a> b/<a href="../file/surf/surf.c.orig.html">surf/surf.c.orig</a></b>
+<a href="#h27-0" id="h27-0" class="h">@@ -129,6 +129,11 @@ typedef struct {
+</a> } Button;
+ 
+ typedef struct {
+<a href="#h27-0-3" id="h27-0-3" class="i">+	char *token;
+</a><a href="#h27-0-4" id="h27-0-4" class="i">+	char *uri;
+</a><a href="#h27-0-5" id="h27-0-5" class="i">+} SearchEngine;
+</a><a href="#h27-0-6" id="h27-0-6" class="i">+
+</a><a href="#h27-0-7" id="h27-0-7" class="i">+typedef struct {
+</a> 	const char *uri;
+ 	Parameter config[ParameterLast];
+ 	regex_t re;
+<a href="#h27-1" id="h27-1" class="h">@@ -214,6 +219,7 @@ static void webprocessterminated(WebKitWebView *v,
+</a>                                  Client *c);
+ static void closeview(WebKitWebView *v, Client *c);
+ static void destroywin(GtkWidget* w, Client *c);
+<a href="#h27-1-3" id="h27-1-3" class="i">+static gchar *parseuri(const gchar *uri);
+</a> 
+ /* Hotkeys */
+ static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
+<a href="#h27-2" id="h27-2" class="h">@@ -1765,6 +1771,22 @@ destroywin(GtkWidget* w, Client *c)
+</a> 		gtk_main_quit();
+ }
+ 
+<a href="#h27-2-3" id="h27-2-3" class="i">+gchar *
+</a><a href="#h27-2-4" id="h27-2-4" class="i">+parseuri(const gchar *uri) {
+</a><a href="#h27-2-5" id="h27-2-5" class="i">+	guint i;
+</a><a href="#h27-2-6" id="h27-2-6" class="i">+
+</a><a href="#h27-2-7" id="h27-2-7" class="i">+	for (i = 0; i &lt; LENGTH(searchengines); i++) {
+</a><a href="#h27-2-8" id="h27-2-8" class="i">+		if (searchengines[i].token == NULL || searchengines[i].uri == NULL ||
+</a><a href="#h27-2-9" id="h27-2-9" class="i">+		    *(uri + strlen(searchengines[i].token)) != &#39; &#39;)
+</a><a href="#h27-2-10" id="h27-2-10" class="i">+			continue;
+</a><a href="#h27-2-11" id="h27-2-11" class="i">+		if (g_str_has_prefix(uri, searchengines[i].token))
+</a><a href="#h27-2-12" id="h27-2-12" class="i">+			return g_strdup_printf(searchengines[i].uri,
+</a><a href="#h27-2-13" id="h27-2-13" class="i">+					       uri + strlen(searchengines[i].token) + 1);
+</a><a href="#h27-2-14" id="h27-2-14" class="i">+	}
+</a><a href="#h27-2-15" id="h27-2-15" class="i">+
+</a><a href="#h27-2-16" id="h27-2-16" class="i">+	return g_strdup_printf(&quot;http://%s&quot;, uri);
+</a><a href="#h27-2-17" id="h27-2-17" class="i">+}
+</a><a href="#h27-2-18" id="h27-2-18" class="i">+
+</a> void
+ pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
+ {
+<b>diff --git a/<a id="h28" href="../file/surf/surf.c.rej.html">surf/surf.c.rej</a> b/<a href="../file/surf/surf.c.rej.html">surf/surf.c.rej</a></b>
+<a href="#h28-0" id="h28-0" class="h">@@ -1,14 +1,11 @@
+</a> --- surf.c
+ +++ surf.c
+<a href="#h28-0-2" id="h28-0-2" class="d">-@@ -1751,7 +1751,11 @@ main(int argc, char *argv[])
+</a><a href="#h28-0-3" id="h28-0-3" class="d">- 	if (argc &gt; 0)
+</a><a href="#h28-0-4" id="h28-0-4" class="d">- 		arg.v = argv[0];
+</a><a href="#h28-0-5" id="h28-0-5" class="d">- 	else
+</a><a href="#h28-0-6" id="h28-0-6" class="d">-+#ifdef HOMEPAGE
+</a><a href="#h28-0-7" id="h28-0-7" class="d">-+		arg.v = HOMEPAGE;
+</a><a href="#h28-0-8" id="h28-0-8" class="d">-+#else
+</a><a href="#h28-0-9" id="h28-0-9" class="d">- 		arg.v = &quot;about:blank&quot;;
+</a><a href="#h28-0-10" id="h28-0-10" class="d">-+#endif
+</a><a href="#h28-0-11" id="h28-0-11" class="i">+@@ -477,7 +471,7 @@ loaduri(Client *c, const Arg *a)
+</a><a href="#h28-0-12" id="h28-0-12" class="i">+ 		url = g_strdup_printf(&quot;file://%s&quot;, path);
+</a><a href="#h28-0-13" id="h28-0-13" class="i">+ 		free(path);
+</a><a href="#h28-0-14" id="h28-0-14" class="i">+ 	} else {
+</a><a href="#h28-0-15" id="h28-0-15" class="i">+-		url = parseuri(uri);
+</a><a href="#h28-0-16" id="h28-0-16" class="i">++		url = g_strdup_printf(&quot;http://%s&quot;, uri);
+</a><a href="#h28-0-17" id="h28-0-17" class="i">+ 	}
+</a>  
+<a href="#h28-0-19" id="h28-0-19" class="d">- 	setup();
+</a><a href="#h28-0-20" id="h28-0-20" class="d">- 	c = newclient(NULL);
+</a><a href="#h28-0-21" id="h28-0-21" class="i">+ 	setatom(c, AtomUri, url);
+</a><b>diff --git a/<a id="h29" href="../file/surf/surf.o.html">surf/surf.o</a> b/<a href="../file/surf/surf.o.html">surf/surf.o</a></b>
+Binary files differ.
+</pre>
+</div>
+</body>
+</html>

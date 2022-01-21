@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>x.c - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> x.c (47621B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> /* See LICENSE for license details. */
+<a href="#l2" class="line" id="l2">      2</a> #include &lt;errno.h&gt;
+<a href="#l3" class="line" id="l3">      3</a> #include &lt;math.h&gt;
+<a href="#l4" class="line" id="l4">      4</a> #include &lt;limits.h&gt;
+<a href="#l5" class="line" id="l5">      5</a> #include &lt;locale.h&gt;
+<a href="#l6" class="line" id="l6">      6</a> #include &lt;signal.h&gt;
+<a href="#l7" class="line" id="l7">      7</a> #include &lt;sys/select.h&gt;
+<a href="#l8" class="line" id="l8">      8</a> #include &lt;time.h&gt;
+<a href="#l9" class="line" id="l9">      9</a> #include &lt;unistd.h&gt;
+<a href="#l10" class="line" id="l10">     10</a> #include &lt;libgen.h&gt;
+<a href="#l11" class="line" id="l11">     11</a> #include &lt;X11/Xatom.h&gt;
+<a href="#l12" class="line" id="l12">     12</a> #include &lt;X11/Xlib.h&gt;
+<a href="#l13" class="line" id="l13">     13</a> #include &lt;X11/cursorfont.h&gt;
+<a href="#l14" class="line" id="l14">     14</a> #include &lt;X11/keysym.h&gt;
+<a href="#l15" class="line" id="l15">     15</a> #include &lt;X11/Xft/Xft.h&gt;
+<a href="#l16" class="line" id="l16">     16</a> #include &lt;X11/XKBlib.h&gt;
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> static char *argv0;
+<a href="#l19" class="line" id="l19">     19</a> #include &quot;arg.h&quot;
+<a href="#l20" class="line" id="l20">     20</a> #include &quot;st.h&quot;
+<a href="#l21" class="line" id="l21">     21</a> #include &quot;win.h&quot;
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> /* types used in config.h */
+<a href="#l24" class="line" id="l24">     24</a> typedef struct {
+<a href="#l25" class="line" id="l25">     25</a> 	uint mod;
+<a href="#l26" class="line" id="l26">     26</a> 	KeySym keysym;
+<a href="#l27" class="line" id="l27">     27</a> 	void (*func)(const Arg *);
+<a href="#l28" class="line" id="l28">     28</a> 	const Arg arg;
+<a href="#l29" class="line" id="l29">     29</a> } Shortcut;
+<a href="#l30" class="line" id="l30">     30</a> 
+<a href="#l31" class="line" id="l31">     31</a> typedef struct {
+<a href="#l32" class="line" id="l32">     32</a> 	uint b;
+<a href="#l33" class="line" id="l33">     33</a> 	uint mask;
+<a href="#l34" class="line" id="l34">     34</a> 	char *s;
+<a href="#l35" class="line" id="l35">     35</a> } MouseShortcut;
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a> typedef struct {
+<a href="#l38" class="line" id="l38">     38</a> 	KeySym k;
+<a href="#l39" class="line" id="l39">     39</a> 	uint mask;
+<a href="#l40" class="line" id="l40">     40</a> 	char *s;
+<a href="#l41" class="line" id="l41">     41</a> 	/* three-valued logic variables: 0 indifferent, 1 on, -1 off */
+<a href="#l42" class="line" id="l42">     42</a> 	signed char appkey;    /* application keypad */
+<a href="#l43" class="line" id="l43">     43</a> 	signed char appcursor; /* application cursor */
+<a href="#l44" class="line" id="l44">     44</a> } Key;
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a> /* X modifiers */
+<a href="#l47" class="line" id="l47">     47</a> #define XK_ANY_MOD    UINT_MAX
+<a href="#l48" class="line" id="l48">     48</a> #define XK_NO_MOD     0
+<a href="#l49" class="line" id="l49">     49</a> #define XK_SWITCH_MOD (1&lt;&lt;13)
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> /* alpha */
+<a href="#l52" class="line" id="l52">     52</a> #define OPAQUE 0Xff
+<a href="#l53" class="line" id="l53">     53</a> #define USE_ARGB (alpha != OPAQUE &amp;&amp; opt_embed == NULL)
+<a href="#l54" class="line" id="l54">     54</a> 
+<a href="#l55" class="line" id="l55">     55</a> /* function definitions used in config.h */
+<a href="#l56" class="line" id="l56">     56</a> static void clipcopy(const Arg *);
+<a href="#l57" class="line" id="l57">     57</a> static void clippaste(const Arg *);
+<a href="#l58" class="line" id="l58">     58</a> static void numlock(const Arg *);
+<a href="#l59" class="line" id="l59">     59</a> static void selpaste(const Arg *);
+<a href="#l60" class="line" id="l60">     60</a> static void zoom(const Arg *);
+<a href="#l61" class="line" id="l61">     61</a> static void zoomabs(const Arg *);
+<a href="#l62" class="line" id="l62">     62</a> static void zoomreset(const Arg *);
+<a href="#l63" class="line" id="l63">     63</a> 
+<a href="#l64" class="line" id="l64">     64</a> /* config.h for applying patches and the configuration. */
+<a href="#l65" class="line" id="l65">     65</a> #include &quot;config.h&quot;
+<a href="#l66" class="line" id="l66">     66</a> 
+<a href="#l67" class="line" id="l67">     67</a> /* XEMBED messages */
+<a href="#l68" class="line" id="l68">     68</a> #define XEMBED_FOCUS_IN  4
+<a href="#l69" class="line" id="l69">     69</a> #define XEMBED_FOCUS_OUT 5
+<a href="#l70" class="line" id="l70">     70</a> 
+<a href="#l71" class="line" id="l71">     71</a> /* macros */
+<a href="#l72" class="line" id="l72">     72</a> #define IS_SET(flag)		((win.mode &amp; (flag)) != 0)
+<a href="#l73" class="line" id="l73">     73</a> #define TRUERED(x)		(((x) &amp; 0xff0000) &gt;&gt; 8)
+<a href="#l74" class="line" id="l74">     74</a> #define TRUEGREEN(x)		(((x) &amp; 0xff00))
+<a href="#l75" class="line" id="l75">     75</a> #define TRUEBLUE(x)		(((x) &amp; 0xff) &lt;&lt; 8)
+<a href="#l76" class="line" id="l76">     76</a> 
+<a href="#l77" class="line" id="l77">     77</a> typedef XftDraw *Draw;
+<a href="#l78" class="line" id="l78">     78</a> typedef XftColor Color;
+<a href="#l79" class="line" id="l79">     79</a> typedef XftGlyphFontSpec GlyphFontSpec;
+<a href="#l80" class="line" id="l80">     80</a> 
+<a href="#l81" class="line" id="l81">     81</a> /* Purely graphic info */
+<a href="#l82" class="line" id="l82">     82</a> typedef struct {
+<a href="#l83" class="line" id="l83">     83</a> 	int tw, th; /* tty width and height */
+<a href="#l84" class="line" id="l84">     84</a> 	int w, h; /* window width and height */
+<a href="#l85" class="line" id="l85">     85</a> 	int hborderpx, vborderpx;
+<a href="#l86" class="line" id="l86">     86</a> 	int ch; /* char height */
+<a href="#l87" class="line" id="l87">     87</a> 	int cw; /* char width  */
+<a href="#l88" class="line" id="l88">     88</a> 	int mode; /* window state/mode flags */
+<a href="#l89" class="line" id="l89">     89</a> 	int cursor; /* cursor style */
+<a href="#l90" class="line" id="l90">     90</a> } TermWindow;
+<a href="#l91" class="line" id="l91">     91</a> 
+<a href="#l92" class="line" id="l92">     92</a> typedef struct {
+<a href="#l93" class="line" id="l93">     93</a> 	Display *dpy;
+<a href="#l94" class="line" id="l94">     94</a> 	Colormap cmap;
+<a href="#l95" class="line" id="l95">     95</a> 	Window win;
+<a href="#l96" class="line" id="l96">     96</a> 	Drawable buf;
+<a href="#l97" class="line" id="l97">     97</a> 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
+<a href="#l98" class="line" id="l98">     98</a> 	Atom xembed, wmdeletewin, netwmname, netwmpid;
+<a href="#l99" class="line" id="l99">     99</a> 	XIM xim;
+<a href="#l100" class="line" id="l100">    100</a> 	XIC xic;
+<a href="#l101" class="line" id="l101">    101</a> 	Draw draw;
+<a href="#l102" class="line" id="l102">    102</a> 	Visual *vis;
+<a href="#l103" class="line" id="l103">    103</a> 	XSetWindowAttributes attrs;
+<a href="#l104" class="line" id="l104">    104</a> 	/* Here, we use the term *pointer* to differentiate the cursor
+<a href="#l105" class="line" id="l105">    105</a> 	 * one sees when hovering the mouse over the terminal from, e.g.,
+<a href="#l106" class="line" id="l106">    106</a> 	 * a green rectangle where text would be entered. */
+<a href="#l107" class="line" id="l107">    107</a> 	Cursor vpointer, bpointer; /* visible and hidden pointers */
+<a href="#l108" class="line" id="l108">    108</a> 	int pointerisvisible;
+<a href="#l109" class="line" id="l109">    109</a> 	int scr;
+<a href="#l110" class="line" id="l110">    110</a> 	int isfixed; /* is fixed geometry? */
+<a href="#l111" class="line" id="l111">    111</a> 	int depth; /* bit depth */
+<a href="#l112" class="line" id="l112">    112</a> 	int l, t; /* left and top offset */
+<a href="#l113" class="line" id="l113">    113</a> 	int gm; /* geometry mask */
+<a href="#l114" class="line" id="l114">    114</a> } XWindow;
+<a href="#l115" class="line" id="l115">    115</a> 
+<a href="#l116" class="line" id="l116">    116</a> typedef struct {
+<a href="#l117" class="line" id="l117">    117</a> 	Atom xtarget;
+<a href="#l118" class="line" id="l118">    118</a> 	char *primary, *clipboard;
+<a href="#l119" class="line" id="l119">    119</a> 	struct timespec tclick1;
+<a href="#l120" class="line" id="l120">    120</a> 	struct timespec tclick2;
+<a href="#l121" class="line" id="l121">    121</a> } XSelection;
+<a href="#l122" class="line" id="l122">    122</a> 
+<a href="#l123" class="line" id="l123">    123</a> /* Font structure */
+<a href="#l124" class="line" id="l124">    124</a> #define Font Font_
+<a href="#l125" class="line" id="l125">    125</a> typedef struct {
+<a href="#l126" class="line" id="l126">    126</a> 	int height;
+<a href="#l127" class="line" id="l127">    127</a> 	int width;
+<a href="#l128" class="line" id="l128">    128</a> 	int ascent;
+<a href="#l129" class="line" id="l129">    129</a> 	int descent;
+<a href="#l130" class="line" id="l130">    130</a> 	int badslant;
+<a href="#l131" class="line" id="l131">    131</a> 	int badweight;
+<a href="#l132" class="line" id="l132">    132</a> 	short lbearing;
+<a href="#l133" class="line" id="l133">    133</a> 	short rbearing;
+<a href="#l134" class="line" id="l134">    134</a> 	XftFont *match;
+<a href="#l135" class="line" id="l135">    135</a> 	FcFontSet *set;
+<a href="#l136" class="line" id="l136">    136</a> 	FcPattern *pattern;
+<a href="#l137" class="line" id="l137">    137</a> } Font;
+<a href="#l138" class="line" id="l138">    138</a> 
+<a href="#l139" class="line" id="l139">    139</a> /* Drawing Context */
+<a href="#l140" class="line" id="l140">    140</a> typedef struct {
+<a href="#l141" class="line" id="l141">    141</a> 	Color *col;
+<a href="#l142" class="line" id="l142">    142</a> 	size_t collen;
+<a href="#l143" class="line" id="l143">    143</a> 	Font font, bfont, ifont, ibfont;
+<a href="#l144" class="line" id="l144">    144</a> 	GC gc;
+<a href="#l145" class="line" id="l145">    145</a> } DC;
+<a href="#l146" class="line" id="l146">    146</a> 
+<a href="#l147" class="line" id="l147">    147</a> static inline ushort sixd_to_16bit(int);
+<a href="#l148" class="line" id="l148">    148</a> static int xmakeglyphfontspecs(XftGlyphFontSpec *, const Glyph *, int, int, int);
+<a href="#l149" class="line" id="l149">    149</a> static void xdrawglyphfontspecs(const XftGlyphFontSpec *, Glyph, int, int, int);
+<a href="#l150" class="line" id="l150">    150</a> static void xdrawglyph(Glyph, int, int);
+<a href="#l151" class="line" id="l151">    151</a> static void xclear(int, int, int, int);
+<a href="#l152" class="line" id="l152">    152</a> static int xgeommasktogravity(int);
+<a href="#l153" class="line" id="l153">    153</a> static void ximopen(Display *);
+<a href="#l154" class="line" id="l154">    154</a> static void ximinstantiate(Display *, XPointer, XPointer);
+<a href="#l155" class="line" id="l155">    155</a> static void ximdestroy(XIM, XPointer, XPointer);
+<a href="#l156" class="line" id="l156">    156</a> static void xinit(int, int);
+<a href="#l157" class="line" id="l157">    157</a> static void cresize(int, int);
+<a href="#l158" class="line" id="l158">    158</a> static void xresize(int, int);
+<a href="#l159" class="line" id="l159">    159</a> static void xhints(void);
+<a href="#l160" class="line" id="l160">    160</a> static int xloadcolor(int, const char *, Color *);
+<a href="#l161" class="line" id="l161">    161</a> static int xloadfont(Font *, FcPattern *);
+<a href="#l162" class="line" id="l162">    162</a> static void xloadfonts(char *, double);
+<a href="#l163" class="line" id="l163">    163</a> static void xunloadfont(Font *);
+<a href="#l164" class="line" id="l164">    164</a> static void xunloadfonts(void);
+<a href="#l165" class="line" id="l165">    165</a> static void xsetenv(void);
+<a href="#l166" class="line" id="l166">    166</a> static void xseturgency(int);
+<a href="#l167" class="line" id="l167">    167</a> static int evcol(XEvent *);
+<a href="#l168" class="line" id="l168">    168</a> static int evrow(XEvent *);
+<a href="#l169" class="line" id="l169">    169</a> 
+<a href="#l170" class="line" id="l170">    170</a> static void expose(XEvent *);
+<a href="#l171" class="line" id="l171">    171</a> static void visibility(XEvent *);
+<a href="#l172" class="line" id="l172">    172</a> static void unmap(XEvent *);
+<a href="#l173" class="line" id="l173">    173</a> static void kpress(XEvent *);
+<a href="#l174" class="line" id="l174">    174</a> static void cmessage(XEvent *);
+<a href="#l175" class="line" id="l175">    175</a> static void resize(XEvent *);
+<a href="#l176" class="line" id="l176">    176</a> static void focus(XEvent *);
+<a href="#l177" class="line" id="l177">    177</a> static void brelease(XEvent *);
+<a href="#l178" class="line" id="l178">    178</a> static void bpress(XEvent *);
+<a href="#l179" class="line" id="l179">    179</a> static void bmotion(XEvent *);
+<a href="#l180" class="line" id="l180">    180</a> static void propnotify(XEvent *);
+<a href="#l181" class="line" id="l181">    181</a> static void selnotify(XEvent *);
+<a href="#l182" class="line" id="l182">    182</a> static void selclear_(XEvent *);
+<a href="#l183" class="line" id="l183">    183</a> static void selrequest(XEvent *);
+<a href="#l184" class="line" id="l184">    184</a> static void setsel(char *, Time);
+<a href="#l185" class="line" id="l185">    185</a> static void mousesel(XEvent *, int);
+<a href="#l186" class="line" id="l186">    186</a> static void mousereport(XEvent *);
+<a href="#l187" class="line" id="l187">    187</a> static char *kmap(KeySym, uint);
+<a href="#l188" class="line" id="l188">    188</a> static int match(uint, uint);
+<a href="#l189" class="line" id="l189">    189</a> 
+<a href="#l190" class="line" id="l190">    190</a> static void run(void);
+<a href="#l191" class="line" id="l191">    191</a> static void usage(void);
+<a href="#l192" class="line" id="l192">    192</a> 
+<a href="#l193" class="line" id="l193">    193</a> static void (*handler[LASTEvent])(XEvent *) = {
+<a href="#l194" class="line" id="l194">    194</a> 	[KeyPress] = kpress,
+<a href="#l195" class="line" id="l195">    195</a> 	[ClientMessage] = cmessage,
+<a href="#l196" class="line" id="l196">    196</a> 	[ConfigureNotify] = resize,
+<a href="#l197" class="line" id="l197">    197</a> 	[VisibilityNotify] = visibility,
+<a href="#l198" class="line" id="l198">    198</a> 	[UnmapNotify] = unmap,
+<a href="#l199" class="line" id="l199">    199</a> 	[Expose] = expose,
+<a href="#l200" class="line" id="l200">    200</a> 	[FocusIn] = focus,
+<a href="#l201" class="line" id="l201">    201</a> 	[FocusOut] = focus,
+<a href="#l202" class="line" id="l202">    202</a> 	[MotionNotify] = bmotion,
+<a href="#l203" class="line" id="l203">    203</a> 	[ButtonPress] = bpress,
+<a href="#l204" class="line" id="l204">    204</a> 	[ButtonRelease] = brelease,
+<a href="#l205" class="line" id="l205">    205</a> /*
+<a href="#l206" class="line" id="l206">    206</a>  * Uncomment if you want the selection to disappear when you select something
+<a href="#l207" class="line" id="l207">    207</a>  * different in another window.
+<a href="#l208" class="line" id="l208">    208</a>  */
+<a href="#l209" class="line" id="l209">    209</a> /*	[SelectionClear] = selclear_, */
+<a href="#l210" class="line" id="l210">    210</a> 	[SelectionNotify] = selnotify,
+<a href="#l211" class="line" id="l211">    211</a> /*
+<a href="#l212" class="line" id="l212">    212</a>  * PropertyNotify is only turned on when there is some INCR transfer happening
+<a href="#l213" class="line" id="l213">    213</a>  * for the selection retrieval.
+<a href="#l214" class="line" id="l214">    214</a>  */
+<a href="#l215" class="line" id="l215">    215</a> 	[PropertyNotify] = propnotify,
+<a href="#l216" class="line" id="l216">    216</a> 	[SelectionRequest] = selrequest,
+<a href="#l217" class="line" id="l217">    217</a> };
+<a href="#l218" class="line" id="l218">    218</a> 
+<a href="#l219" class="line" id="l219">    219</a> /* Globals */
+<a href="#l220" class="line" id="l220">    220</a> static DC dc;
+<a href="#l221" class="line" id="l221">    221</a> static XWindow xw;
+<a href="#l222" class="line" id="l222">    222</a> static XSelection xsel;
+<a href="#l223" class="line" id="l223">    223</a> static TermWindow win;
+<a href="#l224" class="line" id="l224">    224</a> 
+<a href="#l225" class="line" id="l225">    225</a> /* Font Ring Cache */
+<a href="#l226" class="line" id="l226">    226</a> enum {
+<a href="#l227" class="line" id="l227">    227</a> 	FRC_NORMAL,
+<a href="#l228" class="line" id="l228">    228</a> 	FRC_ITALIC,
+<a href="#l229" class="line" id="l229">    229</a> 	FRC_BOLD,
+<a href="#l230" class="line" id="l230">    230</a> 	FRC_ITALICBOLD
+<a href="#l231" class="line" id="l231">    231</a> };
+<a href="#l232" class="line" id="l232">    232</a> 
+<a href="#l233" class="line" id="l233">    233</a> typedef struct {
+<a href="#l234" class="line" id="l234">    234</a> 	XftFont *font;
+<a href="#l235" class="line" id="l235">    235</a> 	int flags;
+<a href="#l236" class="line" id="l236">    236</a> 	Rune unicodep;
+<a href="#l237" class="line" id="l237">    237</a> } Fontcache;
+<a href="#l238" class="line" id="l238">    238</a> 
+<a href="#l239" class="line" id="l239">    239</a> /* Fontcache is an array now. A new font will be appended to the array. */
+<a href="#l240" class="line" id="l240">    240</a> static Fontcache frc[16];
+<a href="#l241" class="line" id="l241">    241</a> static int frclen = 0;
+<a href="#l242" class="line" id="l242">    242</a> static char *usedfont = NULL;
+<a href="#l243" class="line" id="l243">    243</a> static double usedfontsize = 0;
+<a href="#l244" class="line" id="l244">    244</a> static double defaultfontsize = 0;
+<a href="#l245" class="line" id="l245">    245</a> 
+<a href="#l246" class="line" id="l246">    246</a> static char *opt_class = NULL;
+<a href="#l247" class="line" id="l247">    247</a> static char **opt_cmd  = NULL;
+<a href="#l248" class="line" id="l248">    248</a> static char *opt_embed = NULL;
+<a href="#l249" class="line" id="l249">    249</a> static char *opt_font  = NULL;
+<a href="#l250" class="line" id="l250">    250</a> static char *opt_io    = NULL;
+<a href="#l251" class="line" id="l251">    251</a> static char *opt_line  = NULL;
+<a href="#l252" class="line" id="l252">    252</a> static char *opt_name  = NULL;
+<a href="#l253" class="line" id="l253">    253</a> static char *opt_title = NULL;
+<a href="#l254" class="line" id="l254">    254</a> 
+<a href="#l255" class="line" id="l255">    255</a> static int oldbutton = 3; /* button event on startup: 3 = release */
+<a href="#l256" class="line" id="l256">    256</a> 
+<a href="#l257" class="line" id="l257">    257</a> void
+<a href="#l258" class="line" id="l258">    258</a> clipcopy(const Arg *dummy)
+<a href="#l259" class="line" id="l259">    259</a> {
+<a href="#l260" class="line" id="l260">    260</a> 	Atom clipboard;
+<a href="#l261" class="line" id="l261">    261</a> 
+<a href="#l262" class="line" id="l262">    262</a> 	free(xsel.clipboard);
+<a href="#l263" class="line" id="l263">    263</a> 	xsel.clipboard = NULL;
+<a href="#l264" class="line" id="l264">    264</a> 
+<a href="#l265" class="line" id="l265">    265</a> 	if (xsel.primary != NULL) {
+<a href="#l266" class="line" id="l266">    266</a> 		xsel.clipboard = xstrdup(xsel.primary);
+<a href="#l267" class="line" id="l267">    267</a> 		clipboard = XInternAtom(xw.dpy, &quot;CLIPBOARD&quot;, 0);
+<a href="#l268" class="line" id="l268">    268</a> 		XSetSelectionOwner(xw.dpy, clipboard, xw.win, CurrentTime);
+<a href="#l269" class="line" id="l269">    269</a> 	}
+<a href="#l270" class="line" id="l270">    270</a> }
+<a href="#l271" class="line" id="l271">    271</a> 
+<a href="#l272" class="line" id="l272">    272</a> void
+<a href="#l273" class="line" id="l273">    273</a> clippaste(const Arg *dummy)
+<a href="#l274" class="line" id="l274">    274</a> {
+<a href="#l275" class="line" id="l275">    275</a> 	Atom clipboard;
+<a href="#l276" class="line" id="l276">    276</a> 
+<a href="#l277" class="line" id="l277">    277</a> 	clipboard = XInternAtom(xw.dpy, &quot;CLIPBOARD&quot;, 0);
+<a href="#l278" class="line" id="l278">    278</a> 	XConvertSelection(xw.dpy, clipboard, xsel.xtarget, clipboard,
+<a href="#l279" class="line" id="l279">    279</a> 			xw.win, CurrentTime);
+<a href="#l280" class="line" id="l280">    280</a> }
+<a href="#l281" class="line" id="l281">    281</a> 
+<a href="#l282" class="line" id="l282">    282</a> void
+<a href="#l283" class="line" id="l283">    283</a> selpaste(const Arg *dummy)
+<a href="#l284" class="line" id="l284">    284</a> {
+<a href="#l285" class="line" id="l285">    285</a> 	XConvertSelection(xw.dpy, XA_PRIMARY, xsel.xtarget, XA_PRIMARY,
+<a href="#l286" class="line" id="l286">    286</a> 			xw.win, CurrentTime);
+<a href="#l287" class="line" id="l287">    287</a> }
+<a href="#l288" class="line" id="l288">    288</a> 
+<a href="#l289" class="line" id="l289">    289</a> void
+<a href="#l290" class="line" id="l290">    290</a> numlock(const Arg *dummy)
+<a href="#l291" class="line" id="l291">    291</a> {
+<a href="#l292" class="line" id="l292">    292</a> 	win.mode ^= MODE_NUMLOCK;
+<a href="#l293" class="line" id="l293">    293</a> }
+<a href="#l294" class="line" id="l294">    294</a> 
+<a href="#l295" class="line" id="l295">    295</a> void
+<a href="#l296" class="line" id="l296">    296</a> zoom(const Arg *arg)
+<a href="#l297" class="line" id="l297">    297</a> {
+<a href="#l298" class="line" id="l298">    298</a> 	Arg larg;
+<a href="#l299" class="line" id="l299">    299</a> 
+<a href="#l300" class="line" id="l300">    300</a> 	larg.f = usedfontsize + arg-&gt;f;
+<a href="#l301" class="line" id="l301">    301</a> 	zoomabs(&amp;larg);
+<a href="#l302" class="line" id="l302">    302</a> }
+<a href="#l303" class="line" id="l303">    303</a> 
+<a href="#l304" class="line" id="l304">    304</a> void
+<a href="#l305" class="line" id="l305">    305</a> zoomabs(const Arg *arg)
+<a href="#l306" class="line" id="l306">    306</a> {
+<a href="#l307" class="line" id="l307">    307</a> 	xunloadfonts();
+<a href="#l308" class="line" id="l308">    308</a> 	xloadfonts(usedfont, arg-&gt;f);
+<a href="#l309" class="line" id="l309">    309</a> 	cresize(0, 0);
+<a href="#l310" class="line" id="l310">    310</a> 	redraw();
+<a href="#l311" class="line" id="l311">    311</a> 	xhints();
+<a href="#l312" class="line" id="l312">    312</a> }
+<a href="#l313" class="line" id="l313">    313</a> 
+<a href="#l314" class="line" id="l314">    314</a> void
+<a href="#l315" class="line" id="l315">    315</a> zoomreset(const Arg *arg)
+<a href="#l316" class="line" id="l316">    316</a> {
+<a href="#l317" class="line" id="l317">    317</a> 	Arg larg;
+<a href="#l318" class="line" id="l318">    318</a> 
+<a href="#l319" class="line" id="l319">    319</a> 	if (defaultfontsize &gt; 0) {
+<a href="#l320" class="line" id="l320">    320</a> 		larg.f = defaultfontsize;
+<a href="#l321" class="line" id="l321">    321</a> 		zoomabs(&amp;larg);
+<a href="#l322" class="line" id="l322">    322</a> 	}
+<a href="#l323" class="line" id="l323">    323</a> }
+<a href="#l324" class="line" id="l324">    324</a> 
+<a href="#l325" class="line" id="l325">    325</a> int
+<a href="#l326" class="line" id="l326">    326</a> evcol(XEvent *e)
+<a href="#l327" class="line" id="l327">    327</a> {
+<a href="#l328" class="line" id="l328">    328</a> 	int x = e-&gt;xbutton.x - win.hborderpx;
+<a href="#l329" class="line" id="l329">    329</a> 	LIMIT(x, 0, win.tw - 1);
+<a href="#l330" class="line" id="l330">    330</a> 	return x / win.cw;
+<a href="#l331" class="line" id="l331">    331</a> }
+<a href="#l332" class="line" id="l332">    332</a> 
+<a href="#l333" class="line" id="l333">    333</a> int
+<a href="#l334" class="line" id="l334">    334</a> evrow(XEvent *e)
+<a href="#l335" class="line" id="l335">    335</a> {
+<a href="#l336" class="line" id="l336">    336</a> 	int y = e-&gt;xbutton.y - win.vborderpx;
+<a href="#l337" class="line" id="l337">    337</a> 	LIMIT(y, 0, win.th - 1);
+<a href="#l338" class="line" id="l338">    338</a> 	return y / win.ch;
+<a href="#l339" class="line" id="l339">    339</a> }
+<a href="#l340" class="line" id="l340">    340</a> 
+<a href="#l341" class="line" id="l341">    341</a> void
+<a href="#l342" class="line" id="l342">    342</a> mousesel(XEvent *e, int done)
+<a href="#l343" class="line" id="l343">    343</a> {
+<a href="#l344" class="line" id="l344">    344</a> 	int type, seltype = SEL_REGULAR;
+<a href="#l345" class="line" id="l345">    345</a> 	uint state = e-&gt;xbutton.state &amp; ~(Button1Mask | forceselmod);
+<a href="#l346" class="line" id="l346">    346</a> 
+<a href="#l347" class="line" id="l347">    347</a> 	for (type = 1; type &lt; LEN(selmasks); ++type) {
+<a href="#l348" class="line" id="l348">    348</a> 		if (match(selmasks[type], state)) {
+<a href="#l349" class="line" id="l349">    349</a> 			seltype = type;
+<a href="#l350" class="line" id="l350">    350</a> 			break;
+<a href="#l351" class="line" id="l351">    351</a> 		}
+<a href="#l352" class="line" id="l352">    352</a> 	}
+<a href="#l353" class="line" id="l353">    353</a> 	selextend(evcol(e), evrow(e), seltype, done);
+<a href="#l354" class="line" id="l354">    354</a> 	if (done)
+<a href="#l355" class="line" id="l355">    355</a> 		setsel(getsel(), e-&gt;xbutton.time);
+<a href="#l356" class="line" id="l356">    356</a> }
+<a href="#l357" class="line" id="l357">    357</a> 
+<a href="#l358" class="line" id="l358">    358</a> void
+<a href="#l359" class="line" id="l359">    359</a> mousereport(XEvent *e)
+<a href="#l360" class="line" id="l360">    360</a> {
+<a href="#l361" class="line" id="l361">    361</a> 	int len, x = evcol(e), y = evrow(e),
+<a href="#l362" class="line" id="l362">    362</a> 	    button = e-&gt;xbutton.button, state = e-&gt;xbutton.state;
+<a href="#l363" class="line" id="l363">    363</a> 	char buf[40];
+<a href="#l364" class="line" id="l364">    364</a> 	static int ox, oy;
+<a href="#l365" class="line" id="l365">    365</a> 
+<a href="#l366" class="line" id="l366">    366</a> 	/* from urxvt */
+<a href="#l367" class="line" id="l367">    367</a> 	if (e-&gt;xbutton.type == MotionNotify) {
+<a href="#l368" class="line" id="l368">    368</a> 		if (x == ox &amp;&amp; y == oy)
+<a href="#l369" class="line" id="l369">    369</a> 			return;
+<a href="#l370" class="line" id="l370">    370</a> 		if (!IS_SET(MODE_MOUSEMOTION) &amp;&amp; !IS_SET(MODE_MOUSEMANY))
+<a href="#l371" class="line" id="l371">    371</a> 			return;
+<a href="#l372" class="line" id="l372">    372</a> 		/* MOUSE_MOTION: no reporting if no button is pressed */
+<a href="#l373" class="line" id="l373">    373</a> 		if (IS_SET(MODE_MOUSEMOTION) &amp;&amp; oldbutton == 3)
+<a href="#l374" class="line" id="l374">    374</a> 			return;
+<a href="#l375" class="line" id="l375">    375</a> 
+<a href="#l376" class="line" id="l376">    376</a> 		button = oldbutton + 32;
+<a href="#l377" class="line" id="l377">    377</a> 		ox = x;
+<a href="#l378" class="line" id="l378">    378</a> 		oy = y;
+<a href="#l379" class="line" id="l379">    379</a> 	} else {
+<a href="#l380" class="line" id="l380">    380</a> 		if (!IS_SET(MODE_MOUSESGR) &amp;&amp; e-&gt;xbutton.type == ButtonRelease) {
+<a href="#l381" class="line" id="l381">    381</a> 			button = 3;
+<a href="#l382" class="line" id="l382">    382</a> 		} else {
+<a href="#l383" class="line" id="l383">    383</a> 			button -= Button1;
+<a href="#l384" class="line" id="l384">    384</a> 			if (button &gt;= 3)
+<a href="#l385" class="line" id="l385">    385</a> 				button += 64 - 3;
+<a href="#l386" class="line" id="l386">    386</a> 		}
+<a href="#l387" class="line" id="l387">    387</a> 		if (e-&gt;xbutton.type == ButtonPress) {
+<a href="#l388" class="line" id="l388">    388</a> 			oldbutton = button;
+<a href="#l389" class="line" id="l389">    389</a> 			ox = x;
+<a href="#l390" class="line" id="l390">    390</a> 			oy = y;
+<a href="#l391" class="line" id="l391">    391</a> 		} else if (e-&gt;xbutton.type == ButtonRelease) {
+<a href="#l392" class="line" id="l392">    392</a> 			oldbutton = 3;
+<a href="#l393" class="line" id="l393">    393</a> 			/* MODE_MOUSEX10: no button release reporting */
+<a href="#l394" class="line" id="l394">    394</a> 			if (IS_SET(MODE_MOUSEX10))
+<a href="#l395" class="line" id="l395">    395</a> 				return;
+<a href="#l396" class="line" id="l396">    396</a> 			if (button == 64 || button == 65)
+<a href="#l397" class="line" id="l397">    397</a> 				return;
+<a href="#l398" class="line" id="l398">    398</a> 		}
+<a href="#l399" class="line" id="l399">    399</a> 	}
+<a href="#l400" class="line" id="l400">    400</a> 
+<a href="#l401" class="line" id="l401">    401</a> 	if (!IS_SET(MODE_MOUSEX10)) {
+<a href="#l402" class="line" id="l402">    402</a> 		button += ((state &amp; ShiftMask  ) ? 4  : 0)
+<a href="#l403" class="line" id="l403">    403</a> 			+ ((state &amp; Mod4Mask   ) ? 8  : 0)
+<a href="#l404" class="line" id="l404">    404</a> 			+ ((state &amp; ControlMask) ? 16 : 0);
+<a href="#l405" class="line" id="l405">    405</a> 	}
+<a href="#l406" class="line" id="l406">    406</a> 
+<a href="#l407" class="line" id="l407">    407</a> 	if (IS_SET(MODE_MOUSESGR)) {
+<a href="#l408" class="line" id="l408">    408</a> 		len = snprintf(buf, sizeof(buf), &quot;\033[&lt;%d;%d;%d%c&quot;,
+<a href="#l409" class="line" id="l409">    409</a> 				button, x+1, y+1,
+<a href="#l410" class="line" id="l410">    410</a> 				e-&gt;xbutton.type == ButtonRelease ? &#39;m&#39; : &#39;M&#39;);
+<a href="#l411" class="line" id="l411">    411</a> 	} else if (x &lt; 223 &amp;&amp; y &lt; 223) {
+<a href="#l412" class="line" id="l412">    412</a> 		len = snprintf(buf, sizeof(buf), &quot;\033[M%c%c%c&quot;,
+<a href="#l413" class="line" id="l413">    413</a> 				32+button, 32+x+1, 32+y+1);
+<a href="#l414" class="line" id="l414">    414</a> 	} else {
+<a href="#l415" class="line" id="l415">    415</a> 		return;
+<a href="#l416" class="line" id="l416">    416</a> 	}
+<a href="#l417" class="line" id="l417">    417</a> 
+<a href="#l418" class="line" id="l418">    418</a> 	ttywrite(buf, len, 0);
+<a href="#l419" class="line" id="l419">    419</a> }
+<a href="#l420" class="line" id="l420">    420</a> 
+<a href="#l421" class="line" id="l421">    421</a> void
+<a href="#l422" class="line" id="l422">    422</a> bpress(XEvent *e)
+<a href="#l423" class="line" id="l423">    423</a> {
+<a href="#l424" class="line" id="l424">    424</a> 	struct timespec now;
+<a href="#l425" class="line" id="l425">    425</a> 	MouseShortcut *ms;
+<a href="#l426" class="line" id="l426">    426</a> 	int snap;
+<a href="#l427" class="line" id="l427">    427</a> 
+<a href="#l428" class="line" id="l428">    428</a> 	if (IS_SET(MODE_MOUSE) &amp;&amp; !(e-&gt;xbutton.state &amp; forceselmod)) {
+<a href="#l429" class="line" id="l429">    429</a> 		mousereport(e);
+<a href="#l430" class="line" id="l430">    430</a> 		return;
+<a href="#l431" class="line" id="l431">    431</a> 	}
+<a href="#l432" class="line" id="l432">    432</a> 
+<a href="#l433" class="line" id="l433">    433</a> 	for (ms = mshortcuts; ms &lt; mshortcuts + LEN(mshortcuts); ms++) {
+<a href="#l434" class="line" id="l434">    434</a> 		if (e-&gt;xbutton.button == ms-&gt;b
+<a href="#l435" class="line" id="l435">    435</a> 				&amp;&amp; match(ms-&gt;mask, e-&gt;xbutton.state)) {
+<a href="#l436" class="line" id="l436">    436</a> 			ttywrite(ms-&gt;s, strlen(ms-&gt;s), 1);
+<a href="#l437" class="line" id="l437">    437</a> 			return;
+<a href="#l438" class="line" id="l438">    438</a> 		}
+<a href="#l439" class="line" id="l439">    439</a> 	}
+<a href="#l440" class="line" id="l440">    440</a> 
+<a href="#l441" class="line" id="l441">    441</a> 	if (e-&gt;xbutton.button == Button1) {
+<a href="#l442" class="line" id="l442">    442</a> 		/*
+<a href="#l443" class="line" id="l443">    443</a> 		 * If the user clicks below predefined timeouts specific
+<a href="#l444" class="line" id="l444">    444</a> 		 * snapping behaviour is exposed.
+<a href="#l445" class="line" id="l445">    445</a> 		 */
+<a href="#l446" class="line" id="l446">    446</a> 		clock_gettime(CLOCK_MONOTONIC, &amp;now);
+<a href="#l447" class="line" id="l447">    447</a> 		if (TIMEDIFF(now, xsel.tclick2) &lt;= tripleclicktimeout) {
+<a href="#l448" class="line" id="l448">    448</a> 			snap = SNAP_LINE;
+<a href="#l449" class="line" id="l449">    449</a> 		} else if (TIMEDIFF(now, xsel.tclick1) &lt;= doubleclicktimeout) {
+<a href="#l450" class="line" id="l450">    450</a> 			snap = SNAP_WORD;
+<a href="#l451" class="line" id="l451">    451</a> 		} else {
+<a href="#l452" class="line" id="l452">    452</a> 			snap = 0;
+<a href="#l453" class="line" id="l453">    453</a> 		}
+<a href="#l454" class="line" id="l454">    454</a> 		xsel.tclick2 = xsel.tclick1;
+<a href="#l455" class="line" id="l455">    455</a> 		xsel.tclick1 = now;
+<a href="#l456" class="line" id="l456">    456</a> 
+<a href="#l457" class="line" id="l457">    457</a> 		selstart(evcol(e), evrow(e), snap);
+<a href="#l458" class="line" id="l458">    458</a> 	}
+<a href="#l459" class="line" id="l459">    459</a> }
+<a href="#l460" class="line" id="l460">    460</a> 
+<a href="#l461" class="line" id="l461">    461</a> void
+<a href="#l462" class="line" id="l462">    462</a> propnotify(XEvent *e)
+<a href="#l463" class="line" id="l463">    463</a> {
+<a href="#l464" class="line" id="l464">    464</a> 	XPropertyEvent *xpev;
+<a href="#l465" class="line" id="l465">    465</a> 	Atom clipboard = XInternAtom(xw.dpy, &quot;CLIPBOARD&quot;, 0);
+<a href="#l466" class="line" id="l466">    466</a> 
+<a href="#l467" class="line" id="l467">    467</a> 	xpev = &amp;e-&gt;xproperty;
+<a href="#l468" class="line" id="l468">    468</a> 	if (xpev-&gt;state == PropertyNewValue &amp;&amp;
+<a href="#l469" class="line" id="l469">    469</a> 			(xpev-&gt;atom == XA_PRIMARY ||
+<a href="#l470" class="line" id="l470">    470</a> 			 xpev-&gt;atom == clipboard)) {
+<a href="#l471" class="line" id="l471">    471</a> 		selnotify(e);
+<a href="#l472" class="line" id="l472">    472</a> 	}
+<a href="#l473" class="line" id="l473">    473</a> }
+<a href="#l474" class="line" id="l474">    474</a> 
+<a href="#l475" class="line" id="l475">    475</a> void
+<a href="#l476" class="line" id="l476">    476</a> selnotify(XEvent *e)
+<a href="#l477" class="line" id="l477">    477</a> {
+<a href="#l478" class="line" id="l478">    478</a> 	ulong nitems, ofs, rem;
+<a href="#l479" class="line" id="l479">    479</a> 	int format;
+<a href="#l480" class="line" id="l480">    480</a> 	uchar *data, *last, *repl;
+<a href="#l481" class="line" id="l481">    481</a> 	Atom type, incratom, property = None;
+<a href="#l482" class="line" id="l482">    482</a> 
+<a href="#l483" class="line" id="l483">    483</a> 	incratom = XInternAtom(xw.dpy, &quot;INCR&quot;, 0);
+<a href="#l484" class="line" id="l484">    484</a> 
+<a href="#l485" class="line" id="l485">    485</a> 	ofs = 0;
+<a href="#l486" class="line" id="l486">    486</a> 	if (e-&gt;type == SelectionNotify)
+<a href="#l487" class="line" id="l487">    487</a> 		property = e-&gt;xselection.property;
+<a href="#l488" class="line" id="l488">    488</a> 	else if (e-&gt;type == PropertyNotify)
+<a href="#l489" class="line" id="l489">    489</a> 		property = e-&gt;xproperty.atom;
+<a href="#l490" class="line" id="l490">    490</a> 
+<a href="#l491" class="line" id="l491">    491</a> 	if (property == None)
+<a href="#l492" class="line" id="l492">    492</a> 		return;
+<a href="#l493" class="line" id="l493">    493</a> 
+<a href="#l494" class="line" id="l494">    494</a> 	do {
+<a href="#l495" class="line" id="l495">    495</a> 		if (XGetWindowProperty(xw.dpy, xw.win, property, ofs,
+<a href="#l496" class="line" id="l496">    496</a> 					BUFSIZ/4, False, AnyPropertyType,
+<a href="#l497" class="line" id="l497">    497</a> 					&amp;type, &amp;format, &amp;nitems, &amp;rem,
+<a href="#l498" class="line" id="l498">    498</a> 					&amp;data)) {
+<a href="#l499" class="line" id="l499">    499</a> 			fprintf(stderr, &quot;Clipboard allocation failed\n&quot;);
+<a href="#l500" class="line" id="l500">    500</a> 			return;
+<a href="#l501" class="line" id="l501">    501</a> 		}
+<a href="#l502" class="line" id="l502">    502</a> 
+<a href="#l503" class="line" id="l503">    503</a> 		if (e-&gt;type == PropertyNotify &amp;&amp; nitems == 0 &amp;&amp; rem == 0) {
+<a href="#l504" class="line" id="l504">    504</a> 			/*
+<a href="#l505" class="line" id="l505">    505</a> 			 * If there is some PropertyNotify with no data, then
+<a href="#l506" class="line" id="l506">    506</a> 			 * this is the signal of the selection owner that all
+<a href="#l507" class="line" id="l507">    507</a> 			 * data has been transferred. We won&#39;t need to receive
+<a href="#l508" class="line" id="l508">    508</a> 			 * PropertyNotify events anymore.
+<a href="#l509" class="line" id="l509">    509</a> 			 */
+<a href="#l510" class="line" id="l510">    510</a> 			MODBIT(xw.attrs.event_mask, 0, PropertyChangeMask);
+<a href="#l511" class="line" id="l511">    511</a> 			XChangeWindowAttributes(xw.dpy, xw.win, CWEventMask,
+<a href="#l512" class="line" id="l512">    512</a> 					&amp;xw.attrs);
+<a href="#l513" class="line" id="l513">    513</a> 		}
+<a href="#l514" class="line" id="l514">    514</a> 
+<a href="#l515" class="line" id="l515">    515</a> 		if (type == incratom) {
+<a href="#l516" class="line" id="l516">    516</a> 			/*
+<a href="#l517" class="line" id="l517">    517</a> 			 * Activate the PropertyNotify events so we receive
+<a href="#l518" class="line" id="l518">    518</a> 			 * when the selection owner does send us the next
+<a href="#l519" class="line" id="l519">    519</a> 			 * chunk of data.
+<a href="#l520" class="line" id="l520">    520</a> 			 */
+<a href="#l521" class="line" id="l521">    521</a> 			MODBIT(xw.attrs.event_mask, 1, PropertyChangeMask);
+<a href="#l522" class="line" id="l522">    522</a> 			XChangeWindowAttributes(xw.dpy, xw.win, CWEventMask,
+<a href="#l523" class="line" id="l523">    523</a> 					&amp;xw.attrs);
+<a href="#l524" class="line" id="l524">    524</a> 
+<a href="#l525" class="line" id="l525">    525</a> 			/*
+<a href="#l526" class="line" id="l526">    526</a> 			 * Deleting the property is the transfer start signal.
+<a href="#l527" class="line" id="l527">    527</a> 			 */
+<a href="#l528" class="line" id="l528">    528</a> 			XDeleteProperty(xw.dpy, xw.win, (int)property);
+<a href="#l529" class="line" id="l529">    529</a> 			continue;
+<a href="#l530" class="line" id="l530">    530</a> 		}
+<a href="#l531" class="line" id="l531">    531</a> 
+<a href="#l532" class="line" id="l532">    532</a> 		/*
+<a href="#l533" class="line" id="l533">    533</a> 		 * As seen in getsel:
+<a href="#l534" class="line" id="l534">    534</a> 		 * Line endings are inconsistent in the terminal and GUI world
+<a href="#l535" class="line" id="l535">    535</a> 		 * copy and pasting. When receiving some selection data,
+<a href="#l536" class="line" id="l536">    536</a> 		 * replace all &#39;\n&#39; with &#39;\r&#39;.
+<a href="#l537" class="line" id="l537">    537</a> 		 * FIXME: Fix the computer world.
+<a href="#l538" class="line" id="l538">    538</a> 		 */
+<a href="#l539" class="line" id="l539">    539</a> 		repl = data;
+<a href="#l540" class="line" id="l540">    540</a> 		last = data + nitems * format / 8;
+<a href="#l541" class="line" id="l541">    541</a> 		while ((repl = memchr(repl, &#39;\n&#39;, last - repl))) {
+<a href="#l542" class="line" id="l542">    542</a> 			*repl++ = &#39;\r&#39;;
+<a href="#l543" class="line" id="l543">    543</a> 		}
+<a href="#l544" class="line" id="l544">    544</a> 
+<a href="#l545" class="line" id="l545">    545</a> 		if (IS_SET(MODE_BRCKTPASTE) &amp;&amp; ofs == 0)
+<a href="#l546" class="line" id="l546">    546</a> 			ttywrite(&quot;\033[200~&quot;, 6, 0);
+<a href="#l547" class="line" id="l547">    547</a> 		ttywrite((char *)data, nitems * format / 8, 1);
+<a href="#l548" class="line" id="l548">    548</a> 		if (IS_SET(MODE_BRCKTPASTE) &amp;&amp; rem == 0)
+<a href="#l549" class="line" id="l549">    549</a> 			ttywrite(&quot;\033[201~&quot;, 6, 0);
+<a href="#l550" class="line" id="l550">    550</a> 		XFree(data);
+<a href="#l551" class="line" id="l551">    551</a> 		/* number of 32-bit chunks returned */
+<a href="#l552" class="line" id="l552">    552</a> 		ofs += nitems * format / 32;
+<a href="#l553" class="line" id="l553">    553</a> 	} while (rem &gt; 0);
+<a href="#l554" class="line" id="l554">    554</a> 
+<a href="#l555" class="line" id="l555">    555</a> 	/*
+<a href="#l556" class="line" id="l556">    556</a> 	 * Deleting the property again tells the selection owner to send the
+<a href="#l557" class="line" id="l557">    557</a> 	 * next data chunk in the property.
+<a href="#l558" class="line" id="l558">    558</a> 	 */
+<a href="#l559" class="line" id="l559">    559</a> 	XDeleteProperty(xw.dpy, xw.win, (int)property);
+<a href="#l560" class="line" id="l560">    560</a> }
+<a href="#l561" class="line" id="l561">    561</a> 
+<a href="#l562" class="line" id="l562">    562</a> void
+<a href="#l563" class="line" id="l563">    563</a> xclipcopy(void)
+<a href="#l564" class="line" id="l564">    564</a> {
+<a href="#l565" class="line" id="l565">    565</a> 	clipcopy(NULL);
+<a href="#l566" class="line" id="l566">    566</a> }
+<a href="#l567" class="line" id="l567">    567</a> 
+<a href="#l568" class="line" id="l568">    568</a> void
+<a href="#l569" class="line" id="l569">    569</a> selclear_(XEvent *e)
+<a href="#l570" class="line" id="l570">    570</a> {
+<a href="#l571" class="line" id="l571">    571</a> 	selclear();
+<a href="#l572" class="line" id="l572">    572</a> }
+<a href="#l573" class="line" id="l573">    573</a> 
+<a href="#l574" class="line" id="l574">    574</a> void
+<a href="#l575" class="line" id="l575">    575</a> selrequest(XEvent *e)
+<a href="#l576" class="line" id="l576">    576</a> {
+<a href="#l577" class="line" id="l577">    577</a> 	XSelectionRequestEvent *xsre;
+<a href="#l578" class="line" id="l578">    578</a> 	XSelectionEvent xev;
+<a href="#l579" class="line" id="l579">    579</a> 	Atom xa_targets, string, clipboard;
+<a href="#l580" class="line" id="l580">    580</a> 	char *seltext;
+<a href="#l581" class="line" id="l581">    581</a> 
+<a href="#l582" class="line" id="l582">    582</a> 	xsre = (XSelectionRequestEvent *) e;
+<a href="#l583" class="line" id="l583">    583</a> 	xev.type = SelectionNotify;
+<a href="#l584" class="line" id="l584">    584</a> 	xev.requestor = xsre-&gt;requestor;
+<a href="#l585" class="line" id="l585">    585</a> 	xev.selection = xsre-&gt;selection;
+<a href="#l586" class="line" id="l586">    586</a> 	xev.target = xsre-&gt;target;
+<a href="#l587" class="line" id="l587">    587</a> 	xev.time = xsre-&gt;time;
+<a href="#l588" class="line" id="l588">    588</a> 	if (xsre-&gt;property == None)
+<a href="#l589" class="line" id="l589">    589</a> 		xsre-&gt;property = xsre-&gt;target;
+<a href="#l590" class="line" id="l590">    590</a> 
+<a href="#l591" class="line" id="l591">    591</a> 	/* reject */
+<a href="#l592" class="line" id="l592">    592</a> 	xev.property = None;
+<a href="#l593" class="line" id="l593">    593</a> 
+<a href="#l594" class="line" id="l594">    594</a> 	xa_targets = XInternAtom(xw.dpy, &quot;TARGETS&quot;, 0);
+<a href="#l595" class="line" id="l595">    595</a> 	if (xsre-&gt;target == xa_targets) {
+<a href="#l596" class="line" id="l596">    596</a> 		/* respond with the supported type */
+<a href="#l597" class="line" id="l597">    597</a> 		string = xsel.xtarget;
+<a href="#l598" class="line" id="l598">    598</a> 		XChangeProperty(xsre-&gt;display, xsre-&gt;requestor, xsre-&gt;property,
+<a href="#l599" class="line" id="l599">    599</a> 				XA_ATOM, 32, PropModeReplace,
+<a href="#l600" class="line" id="l600">    600</a> 				(uchar *) &amp;string, 1);
+<a href="#l601" class="line" id="l601">    601</a> 		xev.property = xsre-&gt;property;
+<a href="#l602" class="line" id="l602">    602</a> 	} else if (xsre-&gt;target == xsel.xtarget || xsre-&gt;target == XA_STRING) {
+<a href="#l603" class="line" id="l603">    603</a> 		/*
+<a href="#l604" class="line" id="l604">    604</a> 		 * xith XA_STRING non ascii characters may be incorrect in the
+<a href="#l605" class="line" id="l605">    605</a> 		 * requestor. It is not our problem, use utf8.
+<a href="#l606" class="line" id="l606">    606</a> 		 */
+<a href="#l607" class="line" id="l607">    607</a> 		clipboard = XInternAtom(xw.dpy, &quot;CLIPBOARD&quot;, 0);
+<a href="#l608" class="line" id="l608">    608</a> 		if (xsre-&gt;selection == XA_PRIMARY) {
+<a href="#l609" class="line" id="l609">    609</a> 			seltext = xsel.primary;
+<a href="#l610" class="line" id="l610">    610</a> 		} else if (xsre-&gt;selection == clipboard) {
+<a href="#l611" class="line" id="l611">    611</a> 			seltext = xsel.clipboard;
+<a href="#l612" class="line" id="l612">    612</a> 		} else {
+<a href="#l613" class="line" id="l613">    613</a> 			fprintf(stderr,
+<a href="#l614" class="line" id="l614">    614</a> 				&quot;Unhandled clipboard selection 0x%lx\n&quot;,
+<a href="#l615" class="line" id="l615">    615</a> 				xsre-&gt;selection);
+<a href="#l616" class="line" id="l616">    616</a> 			return;
+<a href="#l617" class="line" id="l617">    617</a> 		}
+<a href="#l618" class="line" id="l618">    618</a> 		if (seltext != NULL) {
+<a href="#l619" class="line" id="l619">    619</a> 			XChangeProperty(xsre-&gt;display, xsre-&gt;requestor,
+<a href="#l620" class="line" id="l620">    620</a> 					xsre-&gt;property, xsre-&gt;target,
+<a href="#l621" class="line" id="l621">    621</a> 					8, PropModeReplace,
+<a href="#l622" class="line" id="l622">    622</a> 					(uchar *)seltext, strlen(seltext));
+<a href="#l623" class="line" id="l623">    623</a> 			xev.property = xsre-&gt;property;
+<a href="#l624" class="line" id="l624">    624</a> 		}
+<a href="#l625" class="line" id="l625">    625</a> 	}
+<a href="#l626" class="line" id="l626">    626</a> 
+<a href="#l627" class="line" id="l627">    627</a> 	/* all done, send a notification to the listener */
+<a href="#l628" class="line" id="l628">    628</a> 	if (!XSendEvent(xsre-&gt;display, xsre-&gt;requestor, 1, 0, (XEvent *) &amp;xev))
+<a href="#l629" class="line" id="l629">    629</a> 		fprintf(stderr, &quot;Error sending SelectionNotify event\n&quot;);
+<a href="#l630" class="line" id="l630">    630</a> }
+<a href="#l631" class="line" id="l631">    631</a> 
+<a href="#l632" class="line" id="l632">    632</a> void
+<a href="#l633" class="line" id="l633">    633</a> setsel(char *str, Time t)
+<a href="#l634" class="line" id="l634">    634</a> {
+<a href="#l635" class="line" id="l635">    635</a> 	if (!str)
+<a href="#l636" class="line" id="l636">    636</a> 		return;
+<a href="#l637" class="line" id="l637">    637</a> 
+<a href="#l638" class="line" id="l638">    638</a> 	free(xsel.primary);
+<a href="#l639" class="line" id="l639">    639</a> 	xsel.primary = str;
+<a href="#l640" class="line" id="l640">    640</a> 
+<a href="#l641" class="line" id="l641">    641</a> 	XSetSelectionOwner(xw.dpy, XA_PRIMARY, xw.win, t);
+<a href="#l642" class="line" id="l642">    642</a> 	if (XGetSelectionOwner(xw.dpy, XA_PRIMARY) != xw.win)
+<a href="#l643" class="line" id="l643">    643</a> 		selclear();
+<a href="#l644" class="line" id="l644">    644</a> 
+<a href="#l645" class="line" id="l645">    645</a> 	xclipcopy();
+<a href="#l646" class="line" id="l646">    646</a> }
+<a href="#l647" class="line" id="l647">    647</a> 
+<a href="#l648" class="line" id="l648">    648</a> void
+<a href="#l649" class="line" id="l649">    649</a> xsetsel(char *str)
+<a href="#l650" class="line" id="l650">    650</a> {
+<a href="#l651" class="line" id="l651">    651</a> 	setsel(str, CurrentTime);
+<a href="#l652" class="line" id="l652">    652</a> }
+<a href="#l653" class="line" id="l653">    653</a> 
+<a href="#l654" class="line" id="l654">    654</a> void
+<a href="#l655" class="line" id="l655">    655</a> brelease(XEvent *e)
+<a href="#l656" class="line" id="l656">    656</a> {
+<a href="#l657" class="line" id="l657">    657</a> 	if (IS_SET(MODE_MOUSE) &amp;&amp; !(e-&gt;xbutton.state &amp; forceselmod)) {
+<a href="#l658" class="line" id="l658">    658</a> 		mousereport(e);
+<a href="#l659" class="line" id="l659">    659</a> 		return;
+<a href="#l660" class="line" id="l660">    660</a> 	}
+<a href="#l661" class="line" id="l661">    661</a> 
+<a href="#l662" class="line" id="l662">    662</a> 	if (e-&gt;xbutton.button == Button2)
+<a href="#l663" class="line" id="l663">    663</a> 		selpaste(NULL);
+<a href="#l664" class="line" id="l664">    664</a> 	else if (e-&gt;xbutton.button == Button1)
+<a href="#l665" class="line" id="l665">    665</a> 		mousesel(e, 1);
+<a href="#l666" class="line" id="l666">    666</a> }
+<a href="#l667" class="line" id="l667">    667</a> 
+<a href="#l668" class="line" id="l668">    668</a> void
+<a href="#l669" class="line" id="l669">    669</a> bmotion(XEvent *e)
+<a href="#l670" class="line" id="l670">    670</a> {
+<a href="#l671" class="line" id="l671">    671</a> 	if (!xw.pointerisvisible) {
+<a href="#l672" class="line" id="l672">    672</a> 		XDefineCursor(xw.dpy, xw.win, xw.vpointer);
+<a href="#l673" class="line" id="l673">    673</a> 		xw.pointerisvisible = 1;
+<a href="#l674" class="line" id="l674">    674</a> 		if (!IS_SET(MODE_MOUSEMANY))
+<a href="#l675" class="line" id="l675">    675</a> 			xsetpointermotion(0);
+<a href="#l676" class="line" id="l676">    676</a> 	}
+<a href="#l677" class="line" id="l677">    677</a> 
+<a href="#l678" class="line" id="l678">    678</a> 	if (IS_SET(MODE_MOUSE) &amp;&amp; !(e-&gt;xbutton.state &amp; forceselmod)) {
+<a href="#l679" class="line" id="l679">    679</a> 		mousereport(e);
+<a href="#l680" class="line" id="l680">    680</a> 		return;
+<a href="#l681" class="line" id="l681">    681</a> 	}
+<a href="#l682" class="line" id="l682">    682</a> 
+<a href="#l683" class="line" id="l683">    683</a> 	mousesel(e, 0);
+<a href="#l684" class="line" id="l684">    684</a> }
+<a href="#l685" class="line" id="l685">    685</a> 
+<a href="#l686" class="line" id="l686">    686</a> void
+<a href="#l687" class="line" id="l687">    687</a> cresize(int width, int height)
+<a href="#l688" class="line" id="l688">    688</a> {
+<a href="#l689" class="line" id="l689">    689</a> 	int col, row;
+<a href="#l690" class="line" id="l690">    690</a> 
+<a href="#l691" class="line" id="l691">    691</a> 	if (width != 0)
+<a href="#l692" class="line" id="l692">    692</a> 		win.w = width;
+<a href="#l693" class="line" id="l693">    693</a> 	if (height != 0)
+<a href="#l694" class="line" id="l694">    694</a> 		win.h = height;
+<a href="#l695" class="line" id="l695">    695</a> 
+<a href="#l696" class="line" id="l696">    696</a> 	col = (win.w - 2 * borderpx) / win.cw;
+<a href="#l697" class="line" id="l697">    697</a> 	row = (win.h - 2 * borderpx) / win.ch;
+<a href="#l698" class="line" id="l698">    698</a> 	col = MAX(1, col);
+<a href="#l699" class="line" id="l699">    699</a> 	row = MAX(1, row);
+<a href="#l700" class="line" id="l700">    700</a> 
+<a href="#l701" class="line" id="l701">    701</a> 	win.hborderpx = (win.w - col * win.cw) / 2;
+<a href="#l702" class="line" id="l702">    702</a> 	win.vborderpx = (win.h - row * win.ch) / 2;
+<a href="#l703" class="line" id="l703">    703</a> 
+<a href="#l704" class="line" id="l704">    704</a> 	tresize(col, row);
+<a href="#l705" class="line" id="l705">    705</a> 	xresize(col, row);
+<a href="#l706" class="line" id="l706">    706</a> 	ttyresize(win.tw, win.th);
+<a href="#l707" class="line" id="l707">    707</a> }
+<a href="#l708" class="line" id="l708">    708</a> 
+<a href="#l709" class="line" id="l709">    709</a> void
+<a href="#l710" class="line" id="l710">    710</a> xresize(int col, int row)
+<a href="#l711" class="line" id="l711">    711</a> {
+<a href="#l712" class="line" id="l712">    712</a> 	win.tw = col * win.cw;
+<a href="#l713" class="line" id="l713">    713</a> 	win.th = row * win.ch;
+<a href="#l714" class="line" id="l714">    714</a> 
+<a href="#l715" class="line" id="l715">    715</a> 	XFreePixmap(xw.dpy, xw.buf);
+<a href="#l716" class="line" id="l716">    716</a> 	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h,
+<a href="#l717" class="line" id="l717">    717</a> 			xw.depth);
+<a href="#l718" class="line" id="l718">    718</a> 	XftDrawChange(xw.draw, xw.buf);
+<a href="#l719" class="line" id="l719">    719</a> 	xclear(0, 0, win.w, win.h);
+<a href="#l720" class="line" id="l720">    720</a> 
+<a href="#l721" class="line" id="l721">    721</a> 	/* resize to new width */
+<a href="#l722" class="line" id="l722">    722</a> 	xw.specbuf = xrealloc(xw.specbuf, col * sizeof(GlyphFontSpec));
+<a href="#l723" class="line" id="l723">    723</a> }
+<a href="#l724" class="line" id="l724">    724</a> 
+<a href="#l725" class="line" id="l725">    725</a> ushort
+<a href="#l726" class="line" id="l726">    726</a> sixd_to_16bit(int x)
+<a href="#l727" class="line" id="l727">    727</a> {
+<a href="#l728" class="line" id="l728">    728</a> 	return x == 0 ? 0 : 0x3737 + 0x2828 * x;
+<a href="#l729" class="line" id="l729">    729</a> }
+<a href="#l730" class="line" id="l730">    730</a> 
+<a href="#l731" class="line" id="l731">    731</a> int
+<a href="#l732" class="line" id="l732">    732</a> xloadcolor(int i, const char *name, Color *ncolor)
+<a href="#l733" class="line" id="l733">    733</a> {
+<a href="#l734" class="line" id="l734">    734</a> 	XRenderColor color = { .alpha = 0xffff };
+<a href="#l735" class="line" id="l735">    735</a> 
+<a href="#l736" class="line" id="l736">    736</a> 	if (!name) {
+<a href="#l737" class="line" id="l737">    737</a> 		if (BETWEEN(i, 16, 255)) { /* 256 color */
+<a href="#l738" class="line" id="l738">    738</a> 			if (i &lt; 6*6*6+16) { /* same colors as xterm */
+<a href="#l739" class="line" id="l739">    739</a> 				color.red   = sixd_to_16bit( ((i-16)/36)%6 );
+<a href="#l740" class="line" id="l740">    740</a> 				color.green = sixd_to_16bit( ((i-16)/6) %6 );
+<a href="#l741" class="line" id="l741">    741</a> 				color.blue  = sixd_to_16bit( ((i-16)/1) %6 );
+<a href="#l742" class="line" id="l742">    742</a> 			} else { /* greyscale */
+<a href="#l743" class="line" id="l743">    743</a> 				color.red = 0x0808 + 0x0a0a * (i - (6*6*6+16));
+<a href="#l744" class="line" id="l744">    744</a> 				color.green = color.blue = color.red;
+<a href="#l745" class="line" id="l745">    745</a> 			}
+<a href="#l746" class="line" id="l746">    746</a> 			return XftColorAllocValue(xw.dpy, xw.vis,
+<a href="#l747" class="line" id="l747">    747</a> 			                          xw.cmap, &amp;color, ncolor);
+<a href="#l748" class="line" id="l748">    748</a> 		} else
+<a href="#l749" class="line" id="l749">    749</a> 			name = colorname[i];
+<a href="#l750" class="line" id="l750">    750</a> 	}
+<a href="#l751" class="line" id="l751">    751</a> 
+<a href="#l752" class="line" id="l752">    752</a> 	return XftColorAllocName(xw.dpy, xw.vis, xw.cmap, name, ncolor);
+<a href="#l753" class="line" id="l753">    753</a> }
+<a href="#l754" class="line" id="l754">    754</a> 
+<a href="#l755" class="line" id="l755">    755</a> void
+<a href="#l756" class="line" id="l756">    756</a> xloadcols(void)
+<a href="#l757" class="line" id="l757">    757</a> {
+<a href="#l758" class="line" id="l758">    758</a> 	int i;
+<a href="#l759" class="line" id="l759">    759</a> 	static int loaded;
+<a href="#l760" class="line" id="l760">    760</a> 	Color *cp;
+<a href="#l761" class="line" id="l761">    761</a> 
+<a href="#l762" class="line" id="l762">    762</a> 	if (loaded) {
+<a href="#l763" class="line" id="l763">    763</a> 		for (cp = dc.col; cp &lt; &amp;dc.col[dc.collen]; ++cp)
+<a href="#l764" class="line" id="l764">    764</a> 			XftColorFree(xw.dpy, xw.vis, xw.cmap, cp);
+<a href="#l765" class="line" id="l765">    765</a> 	} else {
+<a href="#l766" class="line" id="l766">    766</a> 		dc.collen = MAX(LEN(colorname), 256);
+<a href="#l767" class="line" id="l767">    767</a> 		dc.col = xmalloc(dc.collen * sizeof(Color));
+<a href="#l768" class="line" id="l768">    768</a> 	}
+<a href="#l769" class="line" id="l769">    769</a> 
+<a href="#l770" class="line" id="l770">    770</a> 	for (i = 0; i &lt; dc.collen; i++)
+<a href="#l771" class="line" id="l771">    771</a> 		if (!xloadcolor(i, NULL, &amp;dc.col[i])) {
+<a href="#l772" class="line" id="l772">    772</a> 			if (colorname[i])
+<a href="#l773" class="line" id="l773">    773</a> 				die(&quot;could not allocate color &#39;%s&#39;\n&quot;, colorname[i]);
+<a href="#l774" class="line" id="l774">    774</a> 			else
+<a href="#l775" class="line" id="l775">    775</a> 				die(&quot;could not allocate color %d\n&quot;, i);
+<a href="#l776" class="line" id="l776">    776</a> 		}
+<a href="#l777" class="line" id="l777">    777</a> 
+<a href="#l778" class="line" id="l778">    778</a> 	/* set alpha value of bg color */
+<a href="#l779" class="line" id="l779">    779</a> 	if (USE_ARGB) {
+<a href="#l780" class="line" id="l780">    780</a> 		dc.col[defaultbg].color.alpha = alpha &lt;&lt; 8;
+<a href="#l781" class="line" id="l781">    781</a> 		dc.col[defaultbg].color.red   = ((dc.col[defaultbg].color.red &gt;&gt; 8) * alpha / 255) &lt;&lt; 8;
+<a href="#l782" class="line" id="l782">    782</a> 		dc.col[defaultbg].color.green = ((dc.col[defaultbg].color.green &gt;&gt; 8) * alpha / 255) &lt;&lt; 8;
+<a href="#l783" class="line" id="l783">    783</a> 		dc.col[defaultbg].color.blue  = ((dc.col[defaultbg].color.blue &gt;&gt; 8) * alpha / 255) &lt;&lt; 8;
+<a href="#l784" class="line" id="l784">    784</a> 	}
+<a href="#l785" class="line" id="l785">    785</a> 	loaded = 1;
+<a href="#l786" class="line" id="l786">    786</a> }
+<a href="#l787" class="line" id="l787">    787</a> 
+<a href="#l788" class="line" id="l788">    788</a> int
+<a href="#l789" class="line" id="l789">    789</a> xsetcolorname(int x, const char *name)
+<a href="#l790" class="line" id="l790">    790</a> {
+<a href="#l791" class="line" id="l791">    791</a> 	Color ncolor;
+<a href="#l792" class="line" id="l792">    792</a> 
+<a href="#l793" class="line" id="l793">    793</a> 	if (!BETWEEN(x, 0, dc.collen))
+<a href="#l794" class="line" id="l794">    794</a> 		return 1;
+<a href="#l795" class="line" id="l795">    795</a> 
+<a href="#l796" class="line" id="l796">    796</a> 
+<a href="#l797" class="line" id="l797">    797</a> 	if (!xloadcolor(x, name, &amp;ncolor))
+<a href="#l798" class="line" id="l798">    798</a> 		return 1;
+<a href="#l799" class="line" id="l799">    799</a> 
+<a href="#l800" class="line" id="l800">    800</a> 	XftColorFree(xw.dpy, xw.vis, xw.cmap, &amp;dc.col[x]);
+<a href="#l801" class="line" id="l801">    801</a> 	dc.col[x] = ncolor;
+<a href="#l802" class="line" id="l802">    802</a> 
+<a href="#l803" class="line" id="l803">    803</a> 	return 0;
+<a href="#l804" class="line" id="l804">    804</a> }
+<a href="#l805" class="line" id="l805">    805</a> 
+<a href="#l806" class="line" id="l806">    806</a> void
+<a href="#l807" class="line" id="l807">    807</a> xtermclear(int col1, int row1, int col2, int row2)
+<a href="#l808" class="line" id="l808">    808</a> {
+<a href="#l809" class="line" id="l809">    809</a> 	XftDrawRect(xw.draw,
+<a href="#l810" class="line" id="l810">    810</a> 			&amp;dc.col[IS_SET(MODE_REVERSE) ? defaultfg : defaultbg],
+<a href="#l811" class="line" id="l811">    811</a> 			borderpx + col1 * win.cw,
+<a href="#l812" class="line" id="l812">    812</a> 			borderpx + row1 * win.ch,
+<a href="#l813" class="line" id="l813">    813</a> 			(col2-col1+1) * win.cw,
+<a href="#l814" class="line" id="l814">    814</a> 			(row2-row1+1) * win.ch);
+<a href="#l815" class="line" id="l815">    815</a> }
+<a href="#l816" class="line" id="l816">    816</a> 
+<a href="#l817" class="line" id="l817">    817</a> /*
+<a href="#l818" class="line" id="l818">    818</a>  * Absolute coordinates.
+<a href="#l819" class="line" id="l819">    819</a>  */
+<a href="#l820" class="line" id="l820">    820</a> void
+<a href="#l821" class="line" id="l821">    821</a> xclear(int x1, int y1, int x2, int y2)
+<a href="#l822" class="line" id="l822">    822</a> {
+<a href="#l823" class="line" id="l823">    823</a> 	XftDrawRect(xw.draw,
+<a href="#l824" class="line" id="l824">    824</a> 			&amp;dc.col[IS_SET(MODE_REVERSE)? defaultfg : defaultbg],
+<a href="#l825" class="line" id="l825">    825</a> 			x1, y1, x2-x1, y2-y1);
+<a href="#l826" class="line" id="l826">    826</a> }
+<a href="#l827" class="line" id="l827">    827</a> 
+<a href="#l828" class="line" id="l828">    828</a> void
+<a href="#l829" class="line" id="l829">    829</a> xhints(void)
+<a href="#l830" class="line" id="l830">    830</a> {
+<a href="#l831" class="line" id="l831">    831</a> 	XClassHint class = {opt_name ? opt_name : termname,
+<a href="#l832" class="line" id="l832">    832</a> 	                    opt_class ? opt_class : termname};
+<a href="#l833" class="line" id="l833">    833</a> 	XWMHints wm = {.flags = InputHint, .input = 1};
+<a href="#l834" class="line" id="l834">    834</a> 	XSizeHints *sizeh;
+<a href="#l835" class="line" id="l835">    835</a> 
+<a href="#l836" class="line" id="l836">    836</a> 	sizeh = XAllocSizeHints();
+<a href="#l837" class="line" id="l837">    837</a> 
+<a href="#l838" class="line" id="l838">    838</a> 	sizeh-&gt;flags = PSize | PResizeInc | PBaseSize | PMinSize;
+<a href="#l839" class="line" id="l839">    839</a> 	sizeh-&gt;height = win.h;
+<a href="#l840" class="line" id="l840">    840</a> 	sizeh-&gt;width = win.w;
+<a href="#l841" class="line" id="l841">    841</a> 	sizeh-&gt;height_inc = 1;
+<a href="#l842" class="line" id="l842">    842</a> 	sizeh-&gt;width_inc = 1;
+<a href="#l843" class="line" id="l843">    843</a> 	sizeh-&gt;base_height = 2 * borderpx;
+<a href="#l844" class="line" id="l844">    844</a> 	sizeh-&gt;base_width = 2 * borderpx;
+<a href="#l845" class="line" id="l845">    845</a> 	sizeh-&gt;min_height = win.ch + 2 * borderpx;
+<a href="#l846" class="line" id="l846">    846</a> 	sizeh-&gt;min_width = win.cw + 2 * borderpx;
+<a href="#l847" class="line" id="l847">    847</a> 	if (xw.isfixed) {
+<a href="#l848" class="line" id="l848">    848</a> 		sizeh-&gt;flags |= PMaxSize;
+<a href="#l849" class="line" id="l849">    849</a> 		sizeh-&gt;min_width = sizeh-&gt;max_width = win.w;
+<a href="#l850" class="line" id="l850">    850</a> 		sizeh-&gt;min_height = sizeh-&gt;max_height = win.h;
+<a href="#l851" class="line" id="l851">    851</a> 	}
+<a href="#l852" class="line" id="l852">    852</a> 	if (xw.gm &amp; (XValue|YValue)) {
+<a href="#l853" class="line" id="l853">    853</a> 		sizeh-&gt;flags |= USPosition | PWinGravity;
+<a href="#l854" class="line" id="l854">    854</a> 		sizeh-&gt;x = xw.l;
+<a href="#l855" class="line" id="l855">    855</a> 		sizeh-&gt;y = xw.t;
+<a href="#l856" class="line" id="l856">    856</a> 		sizeh-&gt;win_gravity = xgeommasktogravity(xw.gm);
+<a href="#l857" class="line" id="l857">    857</a> 	}
+<a href="#l858" class="line" id="l858">    858</a> 
+<a href="#l859" class="line" id="l859">    859</a> 	XSetWMProperties(xw.dpy, xw.win, NULL, NULL, NULL, 0, sizeh, &amp;wm,
+<a href="#l860" class="line" id="l860">    860</a> 			&amp;class);
+<a href="#l861" class="line" id="l861">    861</a> 	XFree(sizeh);
+<a href="#l862" class="line" id="l862">    862</a> }
+<a href="#l863" class="line" id="l863">    863</a> 
+<a href="#l864" class="line" id="l864">    864</a> int
+<a href="#l865" class="line" id="l865">    865</a> xgeommasktogravity(int mask)
+<a href="#l866" class="line" id="l866">    866</a> {
+<a href="#l867" class="line" id="l867">    867</a> 	switch (mask &amp; (XNegative|YNegative)) {
+<a href="#l868" class="line" id="l868">    868</a> 	case 0:
+<a href="#l869" class="line" id="l869">    869</a> 		return NorthWestGravity;
+<a href="#l870" class="line" id="l870">    870</a> 	case XNegative:
+<a href="#l871" class="line" id="l871">    871</a> 		return NorthEastGravity;
+<a href="#l872" class="line" id="l872">    872</a> 	case YNegative:
+<a href="#l873" class="line" id="l873">    873</a> 		return SouthWestGravity;
+<a href="#l874" class="line" id="l874">    874</a> 	}
+<a href="#l875" class="line" id="l875">    875</a> 
+<a href="#l876" class="line" id="l876">    876</a> 	return SouthEastGravity;
+<a href="#l877" class="line" id="l877">    877</a> }
+<a href="#l878" class="line" id="l878">    878</a> 
+<a href="#l879" class="line" id="l879">    879</a> int
+<a href="#l880" class="line" id="l880">    880</a> xloadfont(Font *f, FcPattern *pattern)
+<a href="#l881" class="line" id="l881">    881</a> {
+<a href="#l882" class="line" id="l882">    882</a> 	FcPattern *configured;
+<a href="#l883" class="line" id="l883">    883</a> 	FcPattern *match;
+<a href="#l884" class="line" id="l884">    884</a> 	FcResult result;
+<a href="#l885" class="line" id="l885">    885</a> 	XGlyphInfo extents;
+<a href="#l886" class="line" id="l886">    886</a> 	int wantattr, haveattr;
+<a href="#l887" class="line" id="l887">    887</a> 
+<a href="#l888" class="line" id="l888">    888</a> 	/*
+<a href="#l889" class="line" id="l889">    889</a> 	 * Manually configure instead of calling XftMatchFont
+<a href="#l890" class="line" id="l890">    890</a> 	 * so that we can use the configured pattern for
+<a href="#l891" class="line" id="l891">    891</a> 	 * &quot;missing glyph&quot; lookups.
+<a href="#l892" class="line" id="l892">    892</a> 	 */
+<a href="#l893" class="line" id="l893">    893</a> 	configured = FcPatternDuplicate(pattern);
+<a href="#l894" class="line" id="l894">    894</a> 	if (!configured)
+<a href="#l895" class="line" id="l895">    895</a> 		return 1;
+<a href="#l896" class="line" id="l896">    896</a> 
+<a href="#l897" class="line" id="l897">    897</a> 	FcConfigSubstitute(NULL, configured, FcMatchPattern);
+<a href="#l898" class="line" id="l898">    898</a> 	XftDefaultSubstitute(xw.dpy, xw.scr, configured);
+<a href="#l899" class="line" id="l899">    899</a> 
+<a href="#l900" class="line" id="l900">    900</a> 	match = FcFontMatch(NULL, configured, &amp;result);
+<a href="#l901" class="line" id="l901">    901</a> 	if (!match) {
+<a href="#l902" class="line" id="l902">    902</a> 		FcPatternDestroy(configured);
+<a href="#l903" class="line" id="l903">    903</a> 		return 1;
+<a href="#l904" class="line" id="l904">    904</a> 	}
+<a href="#l905" class="line" id="l905">    905</a> 
+<a href="#l906" class="line" id="l906">    906</a> 	if (!(f-&gt;match = XftFontOpenPattern(xw.dpy, match))) {
+<a href="#l907" class="line" id="l907">    907</a> 		FcPatternDestroy(configured);
+<a href="#l908" class="line" id="l908">    908</a> 		FcPatternDestroy(match);
+<a href="#l909" class="line" id="l909">    909</a> 		return 1;
+<a href="#l910" class="line" id="l910">    910</a> 	}
+<a href="#l911" class="line" id="l911">    911</a> 
+<a href="#l912" class="line" id="l912">    912</a> 	if ((XftPatternGetInteger(pattern, &quot;slant&quot;, 0, &amp;wantattr) ==
+<a href="#l913" class="line" id="l913">    913</a> 	    XftResultMatch)) {
+<a href="#l914" class="line" id="l914">    914</a> 		/*
+<a href="#l915" class="line" id="l915">    915</a> 		 * Check if xft was unable to find a font with the appropriate
+<a href="#l916" class="line" id="l916">    916</a> 		 * slant but gave us one anyway. Try to mitigate.
+<a href="#l917" class="line" id="l917">    917</a> 		 */
+<a href="#l918" class="line" id="l918">    918</a> 		if ((XftPatternGetInteger(f-&gt;match-&gt;pattern, &quot;slant&quot;, 0,
+<a href="#l919" class="line" id="l919">    919</a> 		    &amp;haveattr) != XftResultMatch) || haveattr &lt; wantattr) {
+<a href="#l920" class="line" id="l920">    920</a> 			f-&gt;badslant = 1;
+<a href="#l921" class="line" id="l921">    921</a> 			fputs(&quot;font slant does not match\n&quot;, stderr);
+<a href="#l922" class="line" id="l922">    922</a> 		}
+<a href="#l923" class="line" id="l923">    923</a> 	}
+<a href="#l924" class="line" id="l924">    924</a> 
+<a href="#l925" class="line" id="l925">    925</a> 	if ((XftPatternGetInteger(pattern, &quot;weight&quot;, 0, &amp;wantattr) ==
+<a href="#l926" class="line" id="l926">    926</a> 	    XftResultMatch)) {
+<a href="#l927" class="line" id="l927">    927</a> 		if ((XftPatternGetInteger(f-&gt;match-&gt;pattern, &quot;weight&quot;, 0,
+<a href="#l928" class="line" id="l928">    928</a> 		    &amp;haveattr) != XftResultMatch) || haveattr != wantattr) {
+<a href="#l929" class="line" id="l929">    929</a> 			f-&gt;badweight = 1;
+<a href="#l930" class="line" id="l930">    930</a> 			fputs(&quot;font weight does not match\n&quot;, stderr);
+<a href="#l931" class="line" id="l931">    931</a> 		}
+<a href="#l932" class="line" id="l932">    932</a> 	}
+<a href="#l933" class="line" id="l933">    933</a> 
+<a href="#l934" class="line" id="l934">    934</a> 	XftTextExtentsUtf8(xw.dpy, f-&gt;match,
+<a href="#l935" class="line" id="l935">    935</a> 		(const FcChar8 *) ascii_printable,
+<a href="#l936" class="line" id="l936">    936</a> 		strlen(ascii_printable), &amp;extents);
+<a href="#l937" class="line" id="l937">    937</a> 
+<a href="#l938" class="line" id="l938">    938</a> 	f-&gt;set = NULL;
+<a href="#l939" class="line" id="l939">    939</a> 	f-&gt;pattern = configured;
+<a href="#l940" class="line" id="l940">    940</a> 
+<a href="#l941" class="line" id="l941">    941</a> 	f-&gt;ascent = f-&gt;match-&gt;ascent;
+<a href="#l942" class="line" id="l942">    942</a> 	f-&gt;descent = f-&gt;match-&gt;descent;
+<a href="#l943" class="line" id="l943">    943</a> 	f-&gt;lbearing = 0;
+<a href="#l944" class="line" id="l944">    944</a> 	f-&gt;rbearing = f-&gt;match-&gt;max_advance_width;
+<a href="#l945" class="line" id="l945">    945</a> 
+<a href="#l946" class="line" id="l946">    946</a> 	f-&gt;height = f-&gt;ascent + f-&gt;descent;
+<a href="#l947" class="line" id="l947">    947</a> 	f-&gt;width = DIVCEIL(extents.xOff, strlen(ascii_printable));
+<a href="#l948" class="line" id="l948">    948</a> 
+<a href="#l949" class="line" id="l949">    949</a> 	return 0;
+<a href="#l950" class="line" id="l950">    950</a> }
+<a href="#l951" class="line" id="l951">    951</a> 
+<a href="#l952" class="line" id="l952">    952</a> void
+<a href="#l953" class="line" id="l953">    953</a> xloadfonts(char *fontstr, double fontsize)
+<a href="#l954" class="line" id="l954">    954</a> {
+<a href="#l955" class="line" id="l955">    955</a> 	FcPattern *pattern;
+<a href="#l956" class="line" id="l956">    956</a> 	double fontval;
+<a href="#l957" class="line" id="l957">    957</a> 
+<a href="#l958" class="line" id="l958">    958</a> 	if (fontstr[0] == &#39;-&#39;)
+<a href="#l959" class="line" id="l959">    959</a> 		pattern = XftXlfdParse(fontstr, False, False);
+<a href="#l960" class="line" id="l960">    960</a> 	else
+<a href="#l961" class="line" id="l961">    961</a> 		pattern = FcNameParse((FcChar8 *)fontstr);
+<a href="#l962" class="line" id="l962">    962</a> 
+<a href="#l963" class="line" id="l963">    963</a> 	if (!pattern)
+<a href="#l964" class="line" id="l964">    964</a> 		die(&quot;can&#39;t open font %s\n&quot;, fontstr);
+<a href="#l965" class="line" id="l965">    965</a> 
+<a href="#l966" class="line" id="l966">    966</a> 	if (fontsize &gt; 1) {
+<a href="#l967" class="line" id="l967">    967</a> 		FcPatternDel(pattern, FC_PIXEL_SIZE);
+<a href="#l968" class="line" id="l968">    968</a> 		FcPatternDel(pattern, FC_SIZE);
+<a href="#l969" class="line" id="l969">    969</a> 		FcPatternAddDouble(pattern, FC_PIXEL_SIZE, (double)fontsize);
+<a href="#l970" class="line" id="l970">    970</a> 		usedfontsize = fontsize;
+<a href="#l971" class="line" id="l971">    971</a> 	} else {
+<a href="#l972" class="line" id="l972">    972</a> 		if (FcPatternGetDouble(pattern, FC_PIXEL_SIZE, 0, &amp;fontval) ==
+<a href="#l973" class="line" id="l973">    973</a> 				FcResultMatch) {
+<a href="#l974" class="line" id="l974">    974</a> 			usedfontsize = fontval;
+<a href="#l975" class="line" id="l975">    975</a> 		} else if (FcPatternGetDouble(pattern, FC_SIZE, 0, &amp;fontval) ==
+<a href="#l976" class="line" id="l976">    976</a> 				FcResultMatch) {
+<a href="#l977" class="line" id="l977">    977</a> 			usedfontsize = -1;
+<a href="#l978" class="line" id="l978">    978</a> 		} else {
+<a href="#l979" class="line" id="l979">    979</a> 			/*
+<a href="#l980" class="line" id="l980">    980</a> 			 * Default font size is 12, if none given. This is to
+<a href="#l981" class="line" id="l981">    981</a> 			 * have a known usedfontsize value.
+<a href="#l982" class="line" id="l982">    982</a> 			 */
+<a href="#l983" class="line" id="l983">    983</a> 			FcPatternAddDouble(pattern, FC_PIXEL_SIZE, 12);
+<a href="#l984" class="line" id="l984">    984</a> 			usedfontsize = 12;
+<a href="#l985" class="line" id="l985">    985</a> 		}
+<a href="#l986" class="line" id="l986">    986</a> 		defaultfontsize = usedfontsize;
+<a href="#l987" class="line" id="l987">    987</a> 	}
+<a href="#l988" class="line" id="l988">    988</a> 
+<a href="#l989" class="line" id="l989">    989</a> 	if (xloadfont(&amp;dc.font, pattern))
+<a href="#l990" class="line" id="l990">    990</a> 		die(&quot;can&#39;t open font %s\n&quot;, fontstr);
+<a href="#l991" class="line" id="l991">    991</a> 
+<a href="#l992" class="line" id="l992">    992</a> 	if (usedfontsize &lt; 0) {
+<a href="#l993" class="line" id="l993">    993</a> 		FcPatternGetDouble(dc.font.match-&gt;pattern,
+<a href="#l994" class="line" id="l994">    994</a> 		                   FC_PIXEL_SIZE, 0, &amp;fontval);
+<a href="#l995" class="line" id="l995">    995</a> 		usedfontsize = fontval;
+<a href="#l996" class="line" id="l996">    996</a> 		if (fontsize == 0)
+<a href="#l997" class="line" id="l997">    997</a> 			defaultfontsize = fontval;
+<a href="#l998" class="line" id="l998">    998</a> 	}
+<a href="#l999" class="line" id="l999">    999</a> 
+<a href="#l1000" class="line" id="l1000">   1000</a> 	/* Setting character width and height. */
+<a href="#l1001" class="line" id="l1001">   1001</a> 	win.cw = ceilf(dc.font.width * cwscale);
+<a href="#l1002" class="line" id="l1002">   1002</a> 	win.ch = ceilf(dc.font.height * chscale);
+<a href="#l1003" class="line" id="l1003">   1003</a> 
+<a href="#l1004" class="line" id="l1004">   1004</a> 	FcPatternDel(pattern, FC_SLANT);
+<a href="#l1005" class="line" id="l1005">   1005</a> 	FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ITALIC);
+<a href="#l1006" class="line" id="l1006">   1006</a> 	if (xloadfont(&amp;dc.ifont, pattern))
+<a href="#l1007" class="line" id="l1007">   1007</a> 		die(&quot;can&#39;t open font %s\n&quot;, fontstr);
+<a href="#l1008" class="line" id="l1008">   1008</a> 
+<a href="#l1009" class="line" id="l1009">   1009</a> 	FcPatternDel(pattern, FC_WEIGHT);
+<a href="#l1010" class="line" id="l1010">   1010</a> 	FcPatternAddInteger(pattern, FC_WEIGHT, FC_WEIGHT_BOLD);
+<a href="#l1011" class="line" id="l1011">   1011</a> 	if (xloadfont(&amp;dc.ibfont, pattern))
+<a href="#l1012" class="line" id="l1012">   1012</a> 		die(&quot;can&#39;t open font %s\n&quot;, fontstr);
+<a href="#l1013" class="line" id="l1013">   1013</a> 
+<a href="#l1014" class="line" id="l1014">   1014</a> 	FcPatternDel(pattern, FC_SLANT);
+<a href="#l1015" class="line" id="l1015">   1015</a> 	FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ROMAN);
+<a href="#l1016" class="line" id="l1016">   1016</a> 	if (xloadfont(&amp;dc.bfont, pattern))
+<a href="#l1017" class="line" id="l1017">   1017</a> 		die(&quot;can&#39;t open font %s\n&quot;, fontstr);
+<a href="#l1018" class="line" id="l1018">   1018</a> 
+<a href="#l1019" class="line" id="l1019">   1019</a> 	FcPatternDestroy(pattern);
+<a href="#l1020" class="line" id="l1020">   1020</a> }
+<a href="#l1021" class="line" id="l1021">   1021</a> 
+<a href="#l1022" class="line" id="l1022">   1022</a> void
+<a href="#l1023" class="line" id="l1023">   1023</a> xunloadfont(Font *f)
+<a href="#l1024" class="line" id="l1024">   1024</a> {
+<a href="#l1025" class="line" id="l1025">   1025</a> 	XftFontClose(xw.dpy, f-&gt;match);
+<a href="#l1026" class="line" id="l1026">   1026</a> 	FcPatternDestroy(f-&gt;pattern);
+<a href="#l1027" class="line" id="l1027">   1027</a> 	if (f-&gt;set)
+<a href="#l1028" class="line" id="l1028">   1028</a> 		FcFontSetDestroy(f-&gt;set);
+<a href="#l1029" class="line" id="l1029">   1029</a> }
+<a href="#l1030" class="line" id="l1030">   1030</a> 
+<a href="#l1031" class="line" id="l1031">   1031</a> void
+<a href="#l1032" class="line" id="l1032">   1032</a> xunloadfonts(void)
+<a href="#l1033" class="line" id="l1033">   1033</a> {
+<a href="#l1034" class="line" id="l1034">   1034</a> 	/* Free the loaded fonts in the font cache.  */
+<a href="#l1035" class="line" id="l1035">   1035</a> 	while (frclen &gt; 0)
+<a href="#l1036" class="line" id="l1036">   1036</a> 		XftFontClose(xw.dpy, frc[--frclen].font);
+<a href="#l1037" class="line" id="l1037">   1037</a> 
+<a href="#l1038" class="line" id="l1038">   1038</a> 	xunloadfont(&amp;dc.font);
+<a href="#l1039" class="line" id="l1039">   1039</a> 	xunloadfont(&amp;dc.bfont);
+<a href="#l1040" class="line" id="l1040">   1040</a> 	xunloadfont(&amp;dc.ifont);
+<a href="#l1041" class="line" id="l1041">   1041</a> 	xunloadfont(&amp;dc.ibfont);
+<a href="#l1042" class="line" id="l1042">   1042</a> }
+<a href="#l1043" class="line" id="l1043">   1043</a> 
+<a href="#l1044" class="line" id="l1044">   1044</a> void
+<a href="#l1045" class="line" id="l1045">   1045</a> ximopen(Display *dpy)
+<a href="#l1046" class="line" id="l1046">   1046</a> {
+<a href="#l1047" class="line" id="l1047">   1047</a> 	XIMCallback destroy = { .client_data = NULL, .callback = ximdestroy };
+<a href="#l1048" class="line" id="l1048">   1048</a> 
+<a href="#l1049" class="line" id="l1049">   1049</a> 	if ((xw.xim = XOpenIM(xw.dpy, NULL, NULL, NULL)) == NULL) {
+<a href="#l1050" class="line" id="l1050">   1050</a> 		XSetLocaleModifiers(&quot;@im=local&quot;);
+<a href="#l1051" class="line" id="l1051">   1051</a> 		if ((xw.xim = XOpenIM(xw.dpy, NULL, NULL, NULL)) == NULL) {
+<a href="#l1052" class="line" id="l1052">   1052</a> 			XSetLocaleModifiers(&quot;@im=&quot;);
+<a href="#l1053" class="line" id="l1053">   1053</a> 			if ((xw.xim = XOpenIM(xw.dpy, NULL, NULL, NULL)) == NULL)
+<a href="#l1054" class="line" id="l1054">   1054</a> 				die(&quot;XOpenIM failed. Could not open input device.\n&quot;);
+<a href="#l1055" class="line" id="l1055">   1055</a> 		}
+<a href="#l1056" class="line" id="l1056">   1056</a> 	}
+<a href="#l1057" class="line" id="l1057">   1057</a> 	if (XSetIMValues(xw.xim, XNDestroyCallback, &amp;destroy, NULL) != NULL)
+<a href="#l1058" class="line" id="l1058">   1058</a> 		die(&quot;XSetIMValues failed. Could not set input method value.\n&quot;);
+<a href="#l1059" class="line" id="l1059">   1059</a> 	xw.xic = XCreateIC(xw.xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+<a href="#l1060" class="line" id="l1060">   1060</a> 				XNClientWindow, xw.win, XNFocusWindow, xw.win, NULL);
+<a href="#l1061" class="line" id="l1061">   1061</a> 	if (xw.xic == NULL)
+<a href="#l1062" class="line" id="l1062">   1062</a> 		die(&quot;XCreateIC failed. Could not obtain input method.\n&quot;);
+<a href="#l1063" class="line" id="l1063">   1063</a> }
+<a href="#l1064" class="line" id="l1064">   1064</a> 
+<a href="#l1065" class="line" id="l1065">   1065</a> void
+<a href="#l1066" class="line" id="l1066">   1066</a> ximinstantiate(Display *dpy, XPointer client, XPointer call)
+<a href="#l1067" class="line" id="l1067">   1067</a> {
+<a href="#l1068" class="line" id="l1068">   1068</a> 	ximopen(dpy);
+<a href="#l1069" class="line" id="l1069">   1069</a> 	XUnregisterIMInstantiateCallback(xw.dpy, NULL, NULL, NULL,
+<a href="#l1070" class="line" id="l1070">   1070</a> 					ximinstantiate, NULL);
+<a href="#l1071" class="line" id="l1071">   1071</a> }
+<a href="#l1072" class="line" id="l1072">   1072</a> 
+<a href="#l1073" class="line" id="l1073">   1073</a> void
+<a href="#l1074" class="line" id="l1074">   1074</a> ximdestroy(XIM xim, XPointer client, XPointer call)
+<a href="#l1075" class="line" id="l1075">   1075</a> {
+<a href="#l1076" class="line" id="l1076">   1076</a> 	xw.xim = NULL;
+<a href="#l1077" class="line" id="l1077">   1077</a> 	XRegisterIMInstantiateCallback(xw.dpy, NULL, NULL, NULL,
+<a href="#l1078" class="line" id="l1078">   1078</a> 					ximinstantiate, NULL);
+<a href="#l1079" class="line" id="l1079">   1079</a> }
+<a href="#l1080" class="line" id="l1080">   1080</a> 
+<a href="#l1081" class="line" id="l1081">   1081</a> void
+<a href="#l1082" class="line" id="l1082">   1082</a> xinit(int cols, int rows)
+<a href="#l1083" class="line" id="l1083">   1083</a> {
+<a href="#l1084" class="line" id="l1084">   1084</a> 	XGCValues gcvalues;
+<a href="#l1085" class="line" id="l1085">   1085</a> 	Window parent;
+<a href="#l1086" class="line" id="l1086">   1086</a> 	pid_t thispid = getpid();
+<a href="#l1087" class="line" id="l1087">   1087</a> 	XColor xmousefg, xmousebg;
+<a href="#l1088" class="line" id="l1088">   1088</a> 	Pixmap blankpm;
+<a href="#l1089" class="line" id="l1089">   1089</a> 
+<a href="#l1090" class="line" id="l1090">   1090</a> 	if (!(xw.dpy = XOpenDisplay(NULL)))
+<a href="#l1091" class="line" id="l1091">   1091</a> 		die(&quot;can&#39;t open display\n&quot;);
+<a href="#l1092" class="line" id="l1092">   1092</a> 	xw.scr = XDefaultScreen(xw.dpy);
+<a href="#l1093" class="line" id="l1093">   1093</a> 	xw.depth = (USE_ARGB) ? 32: XDefaultDepth(xw.dpy, xw.scr);
+<a href="#l1094" class="line" id="l1094">   1094</a> 	if (!USE_ARGB)
+<a href="#l1095" class="line" id="l1095">   1095</a> 		xw.vis = XDefaultVisual(xw.dpy, xw.scr);
+<a href="#l1096" class="line" id="l1096">   1096</a> 	else {
+<a href="#l1097" class="line" id="l1097">   1097</a> 		XVisualInfo *vis;
+<a href="#l1098" class="line" id="l1098">   1098</a> 		XRenderPictFormat *fmt;
+<a href="#l1099" class="line" id="l1099">   1099</a> 		int nvi;
+<a href="#l1100" class="line" id="l1100">   1100</a> 		int i;
+<a href="#l1101" class="line" id="l1101">   1101</a> 
+<a href="#l1102" class="line" id="l1102">   1102</a> 		XVisualInfo tpl = {
+<a href="#l1103" class="line" id="l1103">   1103</a> 			.screen = xw.scr,
+<a href="#l1104" class="line" id="l1104">   1104</a> 			.depth = 32,
+<a href="#l1105" class="line" id="l1105">   1105</a> 			.class = TrueColor
+<a href="#l1106" class="line" id="l1106">   1106</a> 		};
+<a href="#l1107" class="line" id="l1107">   1107</a> 
+<a href="#l1108" class="line" id="l1108">   1108</a> 		vis = XGetVisualInfo(xw.dpy,
+<a href="#l1109" class="line" id="l1109">   1109</a> 				VisualScreenMask | VisualDepthMask | VisualClassMask,
+<a href="#l1110" class="line" id="l1110">   1110</a> 				&amp;tpl, &amp;nvi);
+<a href="#l1111" class="line" id="l1111">   1111</a> 		xw.vis = NULL;
+<a href="#l1112" class="line" id="l1112">   1112</a> 		for (i = 0; i &lt; nvi; i++) {
+<a href="#l1113" class="line" id="l1113">   1113</a> 			fmt = XRenderFindVisualFormat(xw.dpy, vis[i].visual);
+<a href="#l1114" class="line" id="l1114">   1114</a> 			if (fmt-&gt;type == PictTypeDirect &amp;&amp; fmt-&gt;direct.alphaMask) {
+<a href="#l1115" class="line" id="l1115">   1115</a> 				xw.vis = vis[i].visual;
+<a href="#l1116" class="line" id="l1116">   1116</a> 				break;
+<a href="#l1117" class="line" id="l1117">   1117</a> 			}
+<a href="#l1118" class="line" id="l1118">   1118</a> 		}
+<a href="#l1119" class="line" id="l1119">   1119</a> 
+<a href="#l1120" class="line" id="l1120">   1120</a> 		XFree(vis);
+<a href="#l1121" class="line" id="l1121">   1121</a> 
+<a href="#l1122" class="line" id="l1122">   1122</a> 		if (!xw.vis) {
+<a href="#l1123" class="line" id="l1123">   1123</a> 			fprintf(stderr, &quot;Couldn&#39;t find ARGB visual.\n&quot;);
+<a href="#l1124" class="line" id="l1124">   1124</a> 			exit(1);
+<a href="#l1125" class="line" id="l1125">   1125</a> 		}
+<a href="#l1126" class="line" id="l1126">   1126</a> 	}
+<a href="#l1127" class="line" id="l1127">   1127</a> 
+<a href="#l1128" class="line" id="l1128">   1128</a> 	/* font */
+<a href="#l1129" class="line" id="l1129">   1129</a> 	if (!FcInit())
+<a href="#l1130" class="line" id="l1130">   1130</a> 		die(&quot;could not init fontconfig.\n&quot;);
+<a href="#l1131" class="line" id="l1131">   1131</a> 
+<a href="#l1132" class="line" id="l1132">   1132</a> 	usedfont = (opt_font == NULL)? font : opt_font;
+<a href="#l1133" class="line" id="l1133">   1133</a> 	xloadfonts(usedfont, 0);
+<a href="#l1134" class="line" id="l1134">   1134</a> 
+<a href="#l1135" class="line" id="l1135">   1135</a> 	/* colors */
+<a href="#l1136" class="line" id="l1136">   1136</a> 	if (!USE_ARGB)
+<a href="#l1137" class="line" id="l1137">   1137</a> 		xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
+<a href="#l1138" class="line" id="l1138">   1138</a> 	else
+<a href="#l1139" class="line" id="l1139">   1139</a> 		xw.cmap = XCreateColormap(xw.dpy, XRootWindow(xw.dpy, xw.scr),
+<a href="#l1140" class="line" id="l1140">   1140</a> 				xw.vis, None);
+<a href="#l1141" class="line" id="l1141">   1141</a> 	xloadcols();
+<a href="#l1142" class="line" id="l1142">   1142</a> 
+<a href="#l1143" class="line" id="l1143">   1143</a> 	/* adjust fixed window geometry */
+<a href="#l1144" class="line" id="l1144">   1144</a> 	win.w = 2 * win.hborderpx + cols * win.cw;
+<a href="#l1145" class="line" id="l1145">   1145</a> 	win.h = 2 * win.vborderpx + rows * win.ch;
+<a href="#l1146" class="line" id="l1146">   1146</a> 	if (xw.gm &amp; XNegative)
+<a href="#l1147" class="line" id="l1147">   1147</a> 		xw.l += DisplayWidth(xw.dpy, xw.scr) - win.w - 2;
+<a href="#l1148" class="line" id="l1148">   1148</a> 	if (xw.gm &amp; YNegative)
+<a href="#l1149" class="line" id="l1149">   1149</a> 		xw.t += DisplayHeight(xw.dpy, xw.scr) - win.h - 2;
+<a href="#l1150" class="line" id="l1150">   1150</a> 
+<a href="#l1151" class="line" id="l1151">   1151</a> 	/* Events */
+<a href="#l1152" class="line" id="l1152">   1152</a> 	xw.attrs.background_pixel = dc.col[defaultbg].pixel;
+<a href="#l1153" class="line" id="l1153">   1153</a> 	xw.attrs.border_pixel = dc.col[defaultbg].pixel;
+<a href="#l1154" class="line" id="l1154">   1154</a> 	xw.attrs.bit_gravity = NorthWestGravity;
+<a href="#l1155" class="line" id="l1155">   1155</a> 	xw.attrs.event_mask = FocusChangeMask | KeyPressMask | KeyReleaseMask
+<a href="#l1156" class="line" id="l1156">   1156</a> 		| ExposureMask | VisibilityChangeMask | StructureNotifyMask
+<a href="#l1157" class="line" id="l1157">   1157</a> 		| ButtonMotionMask | ButtonPressMask | ButtonReleaseMask;
+<a href="#l1158" class="line" id="l1158">   1158</a> 	xw.attrs.colormap = xw.cmap;
+<a href="#l1159" class="line" id="l1159">   1159</a> 
+<a href="#l1160" class="line" id="l1160">   1160</a> 	if (!(opt_embed &amp;&amp; (parent = strtol(opt_embed, NULL, 0))))
+<a href="#l1161" class="line" id="l1161">   1161</a> 		parent = XRootWindow(xw.dpy, xw.scr);
+<a href="#l1162" class="line" id="l1162">   1162</a> 	xw.win = XCreateWindow(xw.dpy, parent, xw.l, xw.t,
+<a href="#l1163" class="line" id="l1163">   1163</a> 			win.w, win.h, 0, xw.depth, InputOutput,
+<a href="#l1164" class="line" id="l1164">   1164</a> 			xw.vis, CWBackPixel | CWBorderPixel | CWBitGravity
+<a href="#l1165" class="line" id="l1165">   1165</a> 			| CWEventMask | CWColormap, &amp;xw.attrs);
+<a href="#l1166" class="line" id="l1166">   1166</a> 
+<a href="#l1167" class="line" id="l1167">   1167</a> 	memset(&amp;gcvalues, 0, sizeof(gcvalues));
+<a href="#l1168" class="line" id="l1168">   1168</a> 	gcvalues.graphics_exposures = False;
+<a href="#l1169" class="line" id="l1169">   1169</a> 	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h, xw.depth);
+<a href="#l1170" class="line" id="l1170">   1170</a> 	dc.gc = XCreateGC(xw.dpy, (USE_ARGB) ? xw.buf: parent,
+<a href="#l1171" class="line" id="l1171">   1171</a> 			GCGraphicsExposures, &amp;gcvalues);
+<a href="#l1172" class="line" id="l1172">   1172</a> 	XSetForeground(xw.dpy, dc.gc, dc.col[defaultbg].pixel);
+<a href="#l1173" class="line" id="l1173">   1173</a> 	XFillRectangle(xw.dpy, xw.buf, dc.gc, 0, 0, win.w, win.h);
+<a href="#l1174" class="line" id="l1174">   1174</a> 
+<a href="#l1175" class="line" id="l1175">   1175</a> 	/* font spec buffer */
+<a href="#l1176" class="line" id="l1176">   1176</a> 	xw.specbuf = xmalloc(cols * sizeof(GlyphFontSpec));
+<a href="#l1177" class="line" id="l1177">   1177</a> 
+<a href="#l1178" class="line" id="l1178">   1178</a> 	/* Xft rendering context */
+<a href="#l1179" class="line" id="l1179">   1179</a> 	xw.draw = XftDrawCreate(xw.dpy, xw.buf, xw.vis, xw.cmap);
+<a href="#l1180" class="line" id="l1180">   1180</a> 
+<a href="#l1181" class="line" id="l1181">   1181</a> 	/* input methods */
+<a href="#l1182" class="line" id="l1182">   1182</a> 	ximopen(xw.dpy);
+<a href="#l1183" class="line" id="l1183">   1183</a> 
+<a href="#l1184" class="line" id="l1184">   1184</a> 	/* white cursor, black outline */
+<a href="#l1185" class="line" id="l1185">   1185</a> 	xw.pointerisvisible = 1;
+<a href="#l1186" class="line" id="l1186">   1186</a> 	xw.vpointer = XCreateFontCursor(xw.dpy, mouseshape);
+<a href="#l1187" class="line" id="l1187">   1187</a> 	XDefineCursor(xw.dpy, xw.win, xw.vpointer);
+<a href="#l1188" class="line" id="l1188">   1188</a> 
+<a href="#l1189" class="line" id="l1189">   1189</a> 	if (XParseColor(xw.dpy, xw.cmap, colorname[mousefg], &amp;xmousefg) == 0) {
+<a href="#l1190" class="line" id="l1190">   1190</a> 		xmousefg.red   = 0xffff;
+<a href="#l1191" class="line" id="l1191">   1191</a> 		xmousefg.green = 0xffff;
+<a href="#l1192" class="line" id="l1192">   1192</a> 		xmousefg.blue  = 0xffff;
+<a href="#l1193" class="line" id="l1193">   1193</a> 	}
+<a href="#l1194" class="line" id="l1194">   1194</a> 
+<a href="#l1195" class="line" id="l1195">   1195</a> 	if (XParseColor(xw.dpy, xw.cmap, colorname[mousebg], &amp;xmousebg) == 0) {
+<a href="#l1196" class="line" id="l1196">   1196</a> 		xmousebg.red   = 0x0000;
+<a href="#l1197" class="line" id="l1197">   1197</a> 		xmousebg.green = 0x0000;
+<a href="#l1198" class="line" id="l1198">   1198</a> 		xmousebg.blue  = 0x0000;
+<a href="#l1199" class="line" id="l1199">   1199</a> 	}
+<a href="#l1200" class="line" id="l1200">   1200</a> 
+<a href="#l1201" class="line" id="l1201">   1201</a> 	XRecolorCursor(xw.dpy, xw.vpointer, &amp;xmousefg, &amp;xmousebg);
+<a href="#l1202" class="line" id="l1202">   1202</a> 	blankpm = XCreateBitmapFromData(xw.dpy, xw.win, &amp;(char){0}, 1, 1);
+<a href="#l1203" class="line" id="l1203">   1203</a> 	xw.bpointer = XCreatePixmapCursor(xw.dpy, blankpm, blankpm,
+<a href="#l1204" class="line" id="l1204">   1204</a> 					  &amp;xmousefg, &amp;xmousebg, 0, 0);
+<a href="#l1205" class="line" id="l1205">   1205</a> 
+<a href="#l1206" class="line" id="l1206">   1206</a> 	xw.xembed = XInternAtom(xw.dpy, &quot;_XEMBED&quot;, False);
+<a href="#l1207" class="line" id="l1207">   1207</a> 	xw.wmdeletewin = XInternAtom(xw.dpy, &quot;WM_DELETE_WINDOW&quot;, False);
+<a href="#l1208" class="line" id="l1208">   1208</a> 	xw.netwmname = XInternAtom(xw.dpy, &quot;_NET_WM_NAME&quot;, False);
+<a href="#l1209" class="line" id="l1209">   1209</a> 	XSetWMProtocols(xw.dpy, xw.win, &amp;xw.wmdeletewin, 1);
+<a href="#l1210" class="line" id="l1210">   1210</a> 
+<a href="#l1211" class="line" id="l1211">   1211</a> 	xw.netwmpid = XInternAtom(xw.dpy, &quot;_NET_WM_PID&quot;, False);
+<a href="#l1212" class="line" id="l1212">   1212</a> 	XChangeProperty(xw.dpy, xw.win, xw.netwmpid, XA_CARDINAL, 32,
+<a href="#l1213" class="line" id="l1213">   1213</a> 			PropModeReplace, (uchar *)&amp;thispid, 1);
+<a href="#l1214" class="line" id="l1214">   1214</a> 
+<a href="#l1215" class="line" id="l1215">   1215</a> 	win.mode = MODE_NUMLOCK;
+<a href="#l1216" class="line" id="l1216">   1216</a> 	resettitle();
+<a href="#l1217" class="line" id="l1217">   1217</a> 	XMapWindow(xw.dpy, xw.win);
+<a href="#l1218" class="line" id="l1218">   1218</a> 	xhints();
+<a href="#l1219" class="line" id="l1219">   1219</a> 	XSync(xw.dpy, False);
+<a href="#l1220" class="line" id="l1220">   1220</a> 
+<a href="#l1221" class="line" id="l1221">   1221</a> 	clock_gettime(CLOCK_MONOTONIC, &amp;xsel.tclick1);
+<a href="#l1222" class="line" id="l1222">   1222</a> 	clock_gettime(CLOCK_MONOTONIC, &amp;xsel.tclick2);
+<a href="#l1223" class="line" id="l1223">   1223</a> 	xsel.primary = NULL;
+<a href="#l1224" class="line" id="l1224">   1224</a> 	xsel.clipboard = NULL;
+<a href="#l1225" class="line" id="l1225">   1225</a> 	xsel.xtarget = XInternAtom(xw.dpy, &quot;UTF8_STRING&quot;, 0);
+<a href="#l1226" class="line" id="l1226">   1226</a> 	if (xsel.xtarget == None)
+<a href="#l1227" class="line" id="l1227">   1227</a> 		xsel.xtarget = XA_STRING;
+<a href="#l1228" class="line" id="l1228">   1228</a> }
+<a href="#l1229" class="line" id="l1229">   1229</a> 
+<a href="#l1230" class="line" id="l1230">   1230</a> int
+<a href="#l1231" class="line" id="l1231">   1231</a> xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x, int y)
+<a href="#l1232" class="line" id="l1232">   1232</a> {
+<a href="#l1233" class="line" id="l1233">   1233</a> 	float winx = win.hborderpx + x * win.cw, winy = win.vborderpx + y * win.ch, xp, yp;
+<a href="#l1234" class="line" id="l1234">   1234</a> 	ushort mode, prevmode = USHRT_MAX;
+<a href="#l1235" class="line" id="l1235">   1235</a> 	Font *font = &amp;dc.font;
+<a href="#l1236" class="line" id="l1236">   1236</a> 	int frcflags = FRC_NORMAL;
+<a href="#l1237" class="line" id="l1237">   1237</a> 	float runewidth = win.cw;
+<a href="#l1238" class="line" id="l1238">   1238</a> 	Rune rune;
+<a href="#l1239" class="line" id="l1239">   1239</a> 	FT_UInt glyphidx;
+<a href="#l1240" class="line" id="l1240">   1240</a> 	FcResult fcres;
+<a href="#l1241" class="line" id="l1241">   1241</a> 	FcPattern *fcpattern, *fontpattern;
+<a href="#l1242" class="line" id="l1242">   1242</a> 	FcFontSet *fcsets[] = { NULL };
+<a href="#l1243" class="line" id="l1243">   1243</a> 	FcCharSet *fccharset;
+<a href="#l1244" class="line" id="l1244">   1244</a> 	int i, f, numspecs = 0;
+<a href="#l1245" class="line" id="l1245">   1245</a> 
+<a href="#l1246" class="line" id="l1246">   1246</a> 	for (i = 0, xp = winx, yp = winy + font-&gt;ascent; i &lt; len; ++i) {
+<a href="#l1247" class="line" id="l1247">   1247</a> 		/* Fetch rune and mode for current glyph. */
+<a href="#l1248" class="line" id="l1248">   1248</a> 		rune = glyphs[i].u;
+<a href="#l1249" class="line" id="l1249">   1249</a> 		mode = glyphs[i].mode;
+<a href="#l1250" class="line" id="l1250">   1250</a> 
+<a href="#l1251" class="line" id="l1251">   1251</a> 		/* Skip dummy wide-character spacing. */
+<a href="#l1252" class="line" id="l1252">   1252</a> 		if (mode == ATTR_WDUMMY)
+<a href="#l1253" class="line" id="l1253">   1253</a> 			continue;
+<a href="#l1254" class="line" id="l1254">   1254</a> 
+<a href="#l1255" class="line" id="l1255">   1255</a> 		/* Determine font for glyph if different from previous glyph. */
+<a href="#l1256" class="line" id="l1256">   1256</a> 		if (prevmode != mode) {
+<a href="#l1257" class="line" id="l1257">   1257</a> 			prevmode = mode;
+<a href="#l1258" class="line" id="l1258">   1258</a> 			font = &amp;dc.font;
+<a href="#l1259" class="line" id="l1259">   1259</a> 			frcflags = FRC_NORMAL;
+<a href="#l1260" class="line" id="l1260">   1260</a> 			runewidth = win.cw * ((mode &amp; ATTR_WIDE) ? 2.0f : 1.0f);
+<a href="#l1261" class="line" id="l1261">   1261</a> 			if ((mode &amp; ATTR_ITALIC) &amp;&amp; (mode &amp; ATTR_BOLD)) {
+<a href="#l1262" class="line" id="l1262">   1262</a> 				font = &amp;dc.ibfont;
+<a href="#l1263" class="line" id="l1263">   1263</a> 				frcflags = FRC_ITALICBOLD;
+<a href="#l1264" class="line" id="l1264">   1264</a> 			} else if (mode &amp; ATTR_ITALIC) {
+<a href="#l1265" class="line" id="l1265">   1265</a> 				font = &amp;dc.ifont;
+<a href="#l1266" class="line" id="l1266">   1266</a> 				frcflags = FRC_ITALIC;
+<a href="#l1267" class="line" id="l1267">   1267</a> 			} else if (mode &amp; ATTR_BOLD) {
+<a href="#l1268" class="line" id="l1268">   1268</a> 				font = &amp;dc.bfont;
+<a href="#l1269" class="line" id="l1269">   1269</a> 				frcflags = FRC_BOLD;
+<a href="#l1270" class="line" id="l1270">   1270</a> 			}
+<a href="#l1271" class="line" id="l1271">   1271</a> 			yp = winy + font-&gt;ascent;
+<a href="#l1272" class="line" id="l1272">   1272</a> 		}
+<a href="#l1273" class="line" id="l1273">   1273</a> 
+<a href="#l1274" class="line" id="l1274">   1274</a> 		/* Lookup character index with default font. */
+<a href="#l1275" class="line" id="l1275">   1275</a> 		glyphidx = XftCharIndex(xw.dpy, font-&gt;match, rune);
+<a href="#l1276" class="line" id="l1276">   1276</a> 		if (glyphidx) {
+<a href="#l1277" class="line" id="l1277">   1277</a> 			specs[numspecs].font = font-&gt;match;
+<a href="#l1278" class="line" id="l1278">   1278</a> 			specs[numspecs].glyph = glyphidx;
+<a href="#l1279" class="line" id="l1279">   1279</a> 			specs[numspecs].x = (short)xp;
+<a href="#l1280" class="line" id="l1280">   1280</a> 			specs[numspecs].y = (short)yp;
+<a href="#l1281" class="line" id="l1281">   1281</a> 			xp += runewidth;
+<a href="#l1282" class="line" id="l1282">   1282</a> 			numspecs++;
+<a href="#l1283" class="line" id="l1283">   1283</a> 			continue;
+<a href="#l1284" class="line" id="l1284">   1284</a> 		}
+<a href="#l1285" class="line" id="l1285">   1285</a> 
+<a href="#l1286" class="line" id="l1286">   1286</a> 		/* Fallback on font cache, search the font cache for match. */
+<a href="#l1287" class="line" id="l1287">   1287</a> 		for (f = 0; f &lt; frclen; f++) {
+<a href="#l1288" class="line" id="l1288">   1288</a> 			glyphidx = XftCharIndex(xw.dpy, frc[f].font, rune);
+<a href="#l1289" class="line" id="l1289">   1289</a> 			/* Everything correct. */
+<a href="#l1290" class="line" id="l1290">   1290</a> 			if (glyphidx &amp;&amp; frc[f].flags == frcflags)
+<a href="#l1291" class="line" id="l1291">   1291</a> 				break;
+<a href="#l1292" class="line" id="l1292">   1292</a> 			/* We got a default font for a not found glyph. */
+<a href="#l1293" class="line" id="l1293">   1293</a> 			if (!glyphidx &amp;&amp; frc[f].flags == frcflags
+<a href="#l1294" class="line" id="l1294">   1294</a> 					&amp;&amp; frc[f].unicodep == rune) {
+<a href="#l1295" class="line" id="l1295">   1295</a> 				break;
+<a href="#l1296" class="line" id="l1296">   1296</a> 			}
+<a href="#l1297" class="line" id="l1297">   1297</a> 		}
+<a href="#l1298" class="line" id="l1298">   1298</a> 
+<a href="#l1299" class="line" id="l1299">   1299</a> 		/* Nothing was found. Use fontconfig to find matching font. */
+<a href="#l1300" class="line" id="l1300">   1300</a> 		if (f &gt;= frclen) {
+<a href="#l1301" class="line" id="l1301">   1301</a> 			if (!font-&gt;set)
+<a href="#l1302" class="line" id="l1302">   1302</a> 				font-&gt;set = FcFontSort(0, font-&gt;pattern,
+<a href="#l1303" class="line" id="l1303">   1303</a> 				                       1, 0, &amp;fcres);
+<a href="#l1304" class="line" id="l1304">   1304</a> 			fcsets[0] = font-&gt;set;
+<a href="#l1305" class="line" id="l1305">   1305</a> 
+<a href="#l1306" class="line" id="l1306">   1306</a> 			/*
+<a href="#l1307" class="line" id="l1307">   1307</a> 			 * Nothing was found in the cache. Now use
+<a href="#l1308" class="line" id="l1308">   1308</a> 			 * some dozen of Fontconfig calls to get the
+<a href="#l1309" class="line" id="l1309">   1309</a> 			 * font for one single character.
+<a href="#l1310" class="line" id="l1310">   1310</a> 			 *
+<a href="#l1311" class="line" id="l1311">   1311</a> 			 * Xft and fontconfig are design failures.
+<a href="#l1312" class="line" id="l1312">   1312</a> 			 */
+<a href="#l1313" class="line" id="l1313">   1313</a> 			fcpattern = FcPatternDuplicate(font-&gt;pattern);
+<a href="#l1314" class="line" id="l1314">   1314</a> 			fccharset = FcCharSetCreate();
+<a href="#l1315" class="line" id="l1315">   1315</a> 
+<a href="#l1316" class="line" id="l1316">   1316</a> 			FcCharSetAddChar(fccharset, rune);
+<a href="#l1317" class="line" id="l1317">   1317</a> 			FcPatternAddCharSet(fcpattern, FC_CHARSET,
+<a href="#l1318" class="line" id="l1318">   1318</a> 					fccharset);
+<a href="#l1319" class="line" id="l1319">   1319</a> 			FcPatternAddBool(fcpattern, FC_SCALABLE, 1);
+<a href="#l1320" class="line" id="l1320">   1320</a> 
+<a href="#l1321" class="line" id="l1321">   1321</a> 			FcConfigSubstitute(0, fcpattern,
+<a href="#l1322" class="line" id="l1322">   1322</a> 					FcMatchPattern);
+<a href="#l1323" class="line" id="l1323">   1323</a> 			FcDefaultSubstitute(fcpattern);
+<a href="#l1324" class="line" id="l1324">   1324</a> 
+<a href="#l1325" class="line" id="l1325">   1325</a> 			fontpattern = FcFontSetMatch(0, fcsets, 1,
+<a href="#l1326" class="line" id="l1326">   1326</a> 					fcpattern, &amp;fcres);
+<a href="#l1327" class="line" id="l1327">   1327</a> 
+<a href="#l1328" class="line" id="l1328">   1328</a> 			/*
+<a href="#l1329" class="line" id="l1329">   1329</a> 			 * Overwrite or create the new cache entry.
+<a href="#l1330" class="line" id="l1330">   1330</a> 			 */
+<a href="#l1331" class="line" id="l1331">   1331</a> 			if (frclen &gt;= LEN(frc)) {
+<a href="#l1332" class="line" id="l1332">   1332</a> 				frclen = LEN(frc) - 1;
+<a href="#l1333" class="line" id="l1333">   1333</a> 				XftFontClose(xw.dpy, frc[frclen].font);
+<a href="#l1334" class="line" id="l1334">   1334</a> 				frc[frclen].unicodep = 0;
+<a href="#l1335" class="line" id="l1335">   1335</a> 			}
+<a href="#l1336" class="line" id="l1336">   1336</a> 
+<a href="#l1337" class="line" id="l1337">   1337</a> 			frc[frclen].font = XftFontOpenPattern(xw.dpy,
+<a href="#l1338" class="line" id="l1338">   1338</a> 					fontpattern);
+<a href="#l1339" class="line" id="l1339">   1339</a> 			if (!frc[frclen].font)
+<a href="#l1340" class="line" id="l1340">   1340</a> 				die(&quot;XftFontOpenPattern failed seeking fallback font: %s\n&quot;,
+<a href="#l1341" class="line" id="l1341">   1341</a> 					strerror(errno));
+<a href="#l1342" class="line" id="l1342">   1342</a> 			frc[frclen].flags = frcflags;
+<a href="#l1343" class="line" id="l1343">   1343</a> 			frc[frclen].unicodep = rune;
+<a href="#l1344" class="line" id="l1344">   1344</a> 
+<a href="#l1345" class="line" id="l1345">   1345</a> 			glyphidx = XftCharIndex(xw.dpy, frc[frclen].font, rune);
+<a href="#l1346" class="line" id="l1346">   1346</a> 
+<a href="#l1347" class="line" id="l1347">   1347</a> 			f = frclen;
+<a href="#l1348" class="line" id="l1348">   1348</a> 			frclen++;
+<a href="#l1349" class="line" id="l1349">   1349</a> 
+<a href="#l1350" class="line" id="l1350">   1350</a> 			FcPatternDestroy(fcpattern);
+<a href="#l1351" class="line" id="l1351">   1351</a> 			FcCharSetDestroy(fccharset);
+<a href="#l1352" class="line" id="l1352">   1352</a> 		}
+<a href="#l1353" class="line" id="l1353">   1353</a> 
+<a href="#l1354" class="line" id="l1354">   1354</a> 		specs[numspecs].font = frc[f].font;
+<a href="#l1355" class="line" id="l1355">   1355</a> 		specs[numspecs].glyph = glyphidx;
+<a href="#l1356" class="line" id="l1356">   1356</a> 		specs[numspecs].x = (short)xp;
+<a href="#l1357" class="line" id="l1357">   1357</a> 		specs[numspecs].y = (short)yp;
+<a href="#l1358" class="line" id="l1358">   1358</a> 		xp += runewidth;
+<a href="#l1359" class="line" id="l1359">   1359</a> 		numspecs++;
+<a href="#l1360" class="line" id="l1360">   1360</a> 	}
+<a href="#l1361" class="line" id="l1361">   1361</a> 
+<a href="#l1362" class="line" id="l1362">   1362</a> 	return numspecs;
+<a href="#l1363" class="line" id="l1363">   1363</a> }
+<a href="#l1364" class="line" id="l1364">   1364</a> 
+<a href="#l1365" class="line" id="l1365">   1365</a> void
+<a href="#l1366" class="line" id="l1366">   1366</a> xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, int y)
+<a href="#l1367" class="line" id="l1367">   1367</a> {
+<a href="#l1368" class="line" id="l1368">   1368</a> 	int charlen = len * ((base.mode &amp; ATTR_WIDE) ? 2 : 1);
+<a href="#l1369" class="line" id="l1369">   1369</a> 	int winx = win.hborderpx + x * win.cw, winy = win.vborderpx + y * win.ch,
+<a href="#l1370" class="line" id="l1370">   1370</a> 	    width = charlen * win.cw;
+<a href="#l1371" class="line" id="l1371">   1371</a> 	Color *fg, *bg, *temp, revfg, revbg, truefg, truebg;
+<a href="#l1372" class="line" id="l1372">   1372</a> 	XRenderColor colfg, colbg;
+<a href="#l1373" class="line" id="l1373">   1373</a> 	XRectangle r;
+<a href="#l1374" class="line" id="l1374">   1374</a> 
+<a href="#l1375" class="line" id="l1375">   1375</a> 	/* Fallback on color display for attributes not supported by the font */
+<a href="#l1376" class="line" id="l1376">   1376</a> 	if (base.mode &amp; ATTR_ITALIC &amp;&amp; base.mode &amp; ATTR_BOLD) {
+<a href="#l1377" class="line" id="l1377">   1377</a> 		if (dc.ibfont.badslant || dc.ibfont.badweight)
+<a href="#l1378" class="line" id="l1378">   1378</a> 			base.fg = defaultattr;
+<a href="#l1379" class="line" id="l1379">   1379</a> 	} else if ((base.mode &amp; ATTR_ITALIC &amp;&amp; dc.ifont.badslant) ||
+<a href="#l1380" class="line" id="l1380">   1380</a> 	    (base.mode &amp; ATTR_BOLD &amp;&amp; dc.bfont.badweight)) {
+<a href="#l1381" class="line" id="l1381">   1381</a> 		base.fg = defaultattr;
+<a href="#l1382" class="line" id="l1382">   1382</a> 	}
+<a href="#l1383" class="line" id="l1383">   1383</a> 
+<a href="#l1384" class="line" id="l1384">   1384</a> 	if (IS_TRUECOL(base.fg)) {
+<a href="#l1385" class="line" id="l1385">   1385</a> 		colfg.alpha = 0xffff;
+<a href="#l1386" class="line" id="l1386">   1386</a> 		colfg.red = TRUERED(base.fg);
+<a href="#l1387" class="line" id="l1387">   1387</a> 		colfg.green = TRUEGREEN(base.fg);
+<a href="#l1388" class="line" id="l1388">   1388</a> 		colfg.blue = TRUEBLUE(base.fg);
+<a href="#l1389" class="line" id="l1389">   1389</a> 		XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &amp;colfg, &amp;truefg);
+<a href="#l1390" class="line" id="l1390">   1390</a> 		fg = &amp;truefg;
+<a href="#l1391" class="line" id="l1391">   1391</a> 	} else {
+<a href="#l1392" class="line" id="l1392">   1392</a> 		fg = &amp;dc.col[base.fg];
+<a href="#l1393" class="line" id="l1393">   1393</a> 	}
+<a href="#l1394" class="line" id="l1394">   1394</a> 
+<a href="#l1395" class="line" id="l1395">   1395</a> 	if (IS_TRUECOL(base.bg)) {
+<a href="#l1396" class="line" id="l1396">   1396</a> 		colbg.alpha = 0xffff;
+<a href="#l1397" class="line" id="l1397">   1397</a> 		colbg.green = TRUEGREEN(base.bg);
+<a href="#l1398" class="line" id="l1398">   1398</a> 		colbg.red = TRUERED(base.bg);
+<a href="#l1399" class="line" id="l1399">   1399</a> 		colbg.blue = TRUEBLUE(base.bg);
+<a href="#l1400" class="line" id="l1400">   1400</a> 		XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &amp;colbg, &amp;truebg);
+<a href="#l1401" class="line" id="l1401">   1401</a> 		bg = &amp;truebg;
+<a href="#l1402" class="line" id="l1402">   1402</a> 	} else {
+<a href="#l1403" class="line" id="l1403">   1403</a> 		bg = &amp;dc.col[base.bg];
+<a href="#l1404" class="line" id="l1404">   1404</a> 	}
+<a href="#l1405" class="line" id="l1405">   1405</a> 
+<a href="#l1406" class="line" id="l1406">   1406</a> 	/* Change basic system colors [0-7] to bright system colors [8-15] */
+<a href="#l1407" class="line" id="l1407">   1407</a> 	if ((base.mode &amp; ATTR_BOLD_FAINT) == ATTR_BOLD &amp;&amp; BETWEEN(base.fg, 0, 7))
+<a href="#l1408" class="line" id="l1408">   1408</a> 		fg = &amp;dc.col[base.fg + 8];
+<a href="#l1409" class="line" id="l1409">   1409</a> 
+<a href="#l1410" class="line" id="l1410">   1410</a> 	if (IS_SET(MODE_REVERSE)) {
+<a href="#l1411" class="line" id="l1411">   1411</a> 		if (fg == &amp;dc.col[defaultfg]) {
+<a href="#l1412" class="line" id="l1412">   1412</a> 			fg = &amp;dc.col[defaultbg];
+<a href="#l1413" class="line" id="l1413">   1413</a> 		} else {
+<a href="#l1414" class="line" id="l1414">   1414</a> 			colfg.red = ~fg-&gt;color.red;
+<a href="#l1415" class="line" id="l1415">   1415</a> 			colfg.green = ~fg-&gt;color.green;
+<a href="#l1416" class="line" id="l1416">   1416</a> 			colfg.blue = ~fg-&gt;color.blue;
+<a href="#l1417" class="line" id="l1417">   1417</a> 			colfg.alpha = fg-&gt;color.alpha;
+<a href="#l1418" class="line" id="l1418">   1418</a> 			XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &amp;colfg,
+<a href="#l1419" class="line" id="l1419">   1419</a> 					&amp;revfg);
+<a href="#l1420" class="line" id="l1420">   1420</a> 			fg = &amp;revfg;
+<a href="#l1421" class="line" id="l1421">   1421</a> 		}
+<a href="#l1422" class="line" id="l1422">   1422</a> 
+<a href="#l1423" class="line" id="l1423">   1423</a> 		if (bg == &amp;dc.col[defaultbg]) {
+<a href="#l1424" class="line" id="l1424">   1424</a> 			bg = &amp;dc.col[defaultfg];
+<a href="#l1425" class="line" id="l1425">   1425</a> 		} else {
+<a href="#l1426" class="line" id="l1426">   1426</a> 			colbg.red = ~bg-&gt;color.red;
+<a href="#l1427" class="line" id="l1427">   1427</a> 			colbg.green = ~bg-&gt;color.green;
+<a href="#l1428" class="line" id="l1428">   1428</a> 			colbg.blue = ~bg-&gt;color.blue;
+<a href="#l1429" class="line" id="l1429">   1429</a> 			colbg.alpha = bg-&gt;color.alpha;
+<a href="#l1430" class="line" id="l1430">   1430</a> 			XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &amp;colbg,
+<a href="#l1431" class="line" id="l1431">   1431</a> 					&amp;revbg);
+<a href="#l1432" class="line" id="l1432">   1432</a> 			bg = &amp;revbg;
+<a href="#l1433" class="line" id="l1433">   1433</a> 		}
+<a href="#l1434" class="line" id="l1434">   1434</a> 	}
+<a href="#l1435" class="line" id="l1435">   1435</a> 
+<a href="#l1436" class="line" id="l1436">   1436</a> 	if ((base.mode &amp; ATTR_BOLD_FAINT) == ATTR_FAINT) {
+<a href="#l1437" class="line" id="l1437">   1437</a> 		colfg.red = fg-&gt;color.red / 2;
+<a href="#l1438" class="line" id="l1438">   1438</a> 		colfg.green = fg-&gt;color.green / 2;
+<a href="#l1439" class="line" id="l1439">   1439</a> 		colfg.blue = fg-&gt;color.blue / 2;
+<a href="#l1440" class="line" id="l1440">   1440</a> 		colfg.alpha = fg-&gt;color.alpha;
+<a href="#l1441" class="line" id="l1441">   1441</a> 		XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &amp;colfg, &amp;revfg);
+<a href="#l1442" class="line" id="l1442">   1442</a> 		fg = &amp;revfg;
+<a href="#l1443" class="line" id="l1443">   1443</a> 	}
+<a href="#l1444" class="line" id="l1444">   1444</a> 
+<a href="#l1445" class="line" id="l1445">   1445</a> 	if (base.mode &amp; ATTR_REVERSE) {
+<a href="#l1446" class="line" id="l1446">   1446</a> 		temp = fg;
+<a href="#l1447" class="line" id="l1447">   1447</a> 		fg = bg;
+<a href="#l1448" class="line" id="l1448">   1448</a> 		bg = temp;
+<a href="#l1449" class="line" id="l1449">   1449</a> 	}
+<a href="#l1450" class="line" id="l1450">   1450</a> 
+<a href="#l1451" class="line" id="l1451">   1451</a> 	if (base.mode &amp; ATTR_BLINK &amp;&amp; win.mode &amp; MODE_BLINK)
+<a href="#l1452" class="line" id="l1452">   1452</a> 		fg = bg;
+<a href="#l1453" class="line" id="l1453">   1453</a> 
+<a href="#l1454" class="line" id="l1454">   1454</a> 	if (base.mode &amp; ATTR_INVISIBLE)
+<a href="#l1455" class="line" id="l1455">   1455</a> 		fg = bg;
+<a href="#l1456" class="line" id="l1456">   1456</a> 
+<a href="#l1457" class="line" id="l1457">   1457</a> 	/* Intelligent cleaning up of the borders. */
+<a href="#l1458" class="line" id="l1458">   1458</a> 	if (x == 0) {
+<a href="#l1459" class="line" id="l1459">   1459</a> 		xclear(0, (y == 0)? 0 : winy, win.vborderpx,
+<a href="#l1460" class="line" id="l1460">   1460</a> 			winy + win.ch +
+<a href="#l1461" class="line" id="l1461">   1461</a> 			((winy + win.ch &gt;= win.vborderpx + win.th)? win.h : 0));
+<a href="#l1462" class="line" id="l1462">   1462</a> 	}
+<a href="#l1463" class="line" id="l1463">   1463</a> 	if (winx + width &gt;= win.hborderpx + win.tw) {
+<a href="#l1464" class="line" id="l1464">   1464</a> 		xclear(winx + width, (y == 0)? 0 : winy, win.w,
+<a href="#l1465" class="line" id="l1465">   1465</a> 			((winy + win.ch &gt;= win.vborderpx + win.th)? win.h : (winy + win.ch)));
+<a href="#l1466" class="line" id="l1466">   1466</a> 	}
+<a href="#l1467" class="line" id="l1467">   1467</a> 	if (y == 0)
+<a href="#l1468" class="line" id="l1468">   1468</a> 		xclear(winx, 0, winx + width, win.hborderpx);
+<a href="#l1469" class="line" id="l1469">   1469</a> 	if (winy + win.ch &gt;= win.vborderpx + win.th)
+<a href="#l1470" class="line" id="l1470">   1470</a> 		xclear(winx, winy + win.ch, winx + width, win.h);
+<a href="#l1471" class="line" id="l1471">   1471</a> 
+<a href="#l1472" class="line" id="l1472">   1472</a> 	/* Clean up the region we want to draw to. */
+<a href="#l1473" class="line" id="l1473">   1473</a> 	XftDrawRect(xw.draw, bg, winx, winy, width, win.ch);
+<a href="#l1474" class="line" id="l1474">   1474</a> 
+<a href="#l1475" class="line" id="l1475">   1475</a> 	/* Set the clip region because Xft is sometimes dirty. */
+<a href="#l1476" class="line" id="l1476">   1476</a> 	r.x = 0;
+<a href="#l1477" class="line" id="l1477">   1477</a> 	r.y = 0;
+<a href="#l1478" class="line" id="l1478">   1478</a> 	r.height = win.ch;
+<a href="#l1479" class="line" id="l1479">   1479</a> 	r.width = width;
+<a href="#l1480" class="line" id="l1480">   1480</a> 	XftDrawSetClipRectangles(xw.draw, winx, winy, &amp;r, 1);
+<a href="#l1481" class="line" id="l1481">   1481</a> 
+<a href="#l1482" class="line" id="l1482">   1482</a> 	/* Render the glyphs. */
+<a href="#l1483" class="line" id="l1483">   1483</a> 	XftDrawGlyphFontSpec(xw.draw, fg, specs, len);
+<a href="#l1484" class="line" id="l1484">   1484</a> 
+<a href="#l1485" class="line" id="l1485">   1485</a> 	/* Render underline and strikethrough. */
+<a href="#l1486" class="line" id="l1486">   1486</a> 	if (base.mode &amp; ATTR_UNDERLINE) {
+<a href="#l1487" class="line" id="l1487">   1487</a> 		XftDrawRect(xw.draw, fg, winx, winy + dc.font.ascent + 1,
+<a href="#l1488" class="line" id="l1488">   1488</a> 				width, 1);
+<a href="#l1489" class="line" id="l1489">   1489</a> 	}
+<a href="#l1490" class="line" id="l1490">   1490</a> 
+<a href="#l1491" class="line" id="l1491">   1491</a> 	if (base.mode &amp; ATTR_STRUCK) {
+<a href="#l1492" class="line" id="l1492">   1492</a> 		XftDrawRect(xw.draw, fg, winx, winy + 2 * dc.font.ascent / 3,
+<a href="#l1493" class="line" id="l1493">   1493</a> 				width, 1);
+<a href="#l1494" class="line" id="l1494">   1494</a> 	}
+<a href="#l1495" class="line" id="l1495">   1495</a> 
+<a href="#l1496" class="line" id="l1496">   1496</a> 	/* Reset clip to none. */
+<a href="#l1497" class="line" id="l1497">   1497</a> 	XftDrawSetClip(xw.draw, 0);
+<a href="#l1498" class="line" id="l1498">   1498</a> }
+<a href="#l1499" class="line" id="l1499">   1499</a> 
+<a href="#l1500" class="line" id="l1500">   1500</a> void
+<a href="#l1501" class="line" id="l1501">   1501</a> xdrawglyph(Glyph g, int x, int y)
+<a href="#l1502" class="line" id="l1502">   1502</a> {
+<a href="#l1503" class="line" id="l1503">   1503</a> 	int numspecs;
+<a href="#l1504" class="line" id="l1504">   1504</a> 	XftGlyphFontSpec spec;
+<a href="#l1505" class="line" id="l1505">   1505</a> 
+<a href="#l1506" class="line" id="l1506">   1506</a> 	numspecs = xmakeglyphfontspecs(&amp;spec, &amp;g, 1, x, y);
+<a href="#l1507" class="line" id="l1507">   1507</a> 	xdrawglyphfontspecs(&amp;spec, g, numspecs, x, y);
+<a href="#l1508" class="line" id="l1508">   1508</a> }
+<a href="#l1509" class="line" id="l1509">   1509</a> 
+<a href="#l1510" class="line" id="l1510">   1510</a> void
+<a href="#l1511" class="line" id="l1511">   1511</a> xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+<a href="#l1512" class="line" id="l1512">   1512</a> {
+<a href="#l1513" class="line" id="l1513">   1513</a> 	Color drawcol;
+<a href="#l1514" class="line" id="l1514">   1514</a> 
+<a href="#l1515" class="line" id="l1515">   1515</a> 	/* remove the old cursor */
+<a href="#l1516" class="line" id="l1516">   1516</a> 	if (selected(ox, oy))
+<a href="#l1517" class="line" id="l1517">   1517</a> 		og.mode ^= ATTR_REVERSE;
+<a href="#l1518" class="line" id="l1518">   1518</a> 	xdrawglyph(og, ox, oy);
+<a href="#l1519" class="line" id="l1519">   1519</a> 
+<a href="#l1520" class="line" id="l1520">   1520</a> 	if (IS_SET(MODE_HIDE))
+<a href="#l1521" class="line" id="l1521">   1521</a> 		return;
+<a href="#l1522" class="line" id="l1522">   1522</a> 
+<a href="#l1523" class="line" id="l1523">   1523</a> 	/*
+<a href="#l1524" class="line" id="l1524">   1524</a> 	 * Select the right color for the right mode.
+<a href="#l1525" class="line" id="l1525">   1525</a> 	 */
+<a href="#l1526" class="line" id="l1526">   1526</a> 	g.mode &amp;= ATTR_BOLD|ATTR_ITALIC|ATTR_UNDERLINE|ATTR_STRUCK|ATTR_WIDE;
+<a href="#l1527" class="line" id="l1527">   1527</a> 
+<a href="#l1528" class="line" id="l1528">   1528</a> 	if (IS_SET(MODE_REVERSE)) {
+<a href="#l1529" class="line" id="l1529">   1529</a> 		g.mode |= ATTR_REVERSE;
+<a href="#l1530" class="line" id="l1530">   1530</a> 		g.bg = defaultfg;
+<a href="#l1531" class="line" id="l1531">   1531</a> 		if (selected(cx, cy)) {
+<a href="#l1532" class="line" id="l1532">   1532</a> 			drawcol = dc.col[defaultcs];
+<a href="#l1533" class="line" id="l1533">   1533</a> 			g.fg = defaultrcs;
+<a href="#l1534" class="line" id="l1534">   1534</a> 		} else {
+<a href="#l1535" class="line" id="l1535">   1535</a> 			drawcol = dc.col[defaultrcs];
+<a href="#l1536" class="line" id="l1536">   1536</a> 			g.fg = defaultcs;
+<a href="#l1537" class="line" id="l1537">   1537</a> 		}
+<a href="#l1538" class="line" id="l1538">   1538</a> 	} else {
+<a href="#l1539" class="line" id="l1539">   1539</a> 		if (selected(cx, cy)) {
+<a href="#l1540" class="line" id="l1540">   1540</a> 			g.fg = defaultfg;
+<a href="#l1541" class="line" id="l1541">   1541</a> 			g.bg = defaultrcs;
+<a href="#l1542" class="line" id="l1542">   1542</a> 		} else {
+<a href="#l1543" class="line" id="l1543">   1543</a> 			g.fg = defaultbg;
+<a href="#l1544" class="line" id="l1544">   1544</a> 			g.bg = defaultcs;
+<a href="#l1545" class="line" id="l1545">   1545</a> 		}
+<a href="#l1546" class="line" id="l1546">   1546</a> 		drawcol = dc.col[g.bg];
+<a href="#l1547" class="line" id="l1547">   1547</a> 	}
+<a href="#l1548" class="line" id="l1548">   1548</a> 
+<a href="#l1549" class="line" id="l1549">   1549</a> 	/* draw the new one */
+<a href="#l1550" class="line" id="l1550">   1550</a> 	if (IS_SET(MODE_FOCUSED)) {
+<a href="#l1551" class="line" id="l1551">   1551</a> 		switch (win.cursor) {
+<a href="#l1552" class="line" id="l1552">   1552</a> 		case 7: /* st extension: snowman (U+2603) */
+<a href="#l1553" class="line" id="l1553">   1553</a> 			g.u = 0x2603;
+<a href="#l1554" class="line" id="l1554">   1554</a> 		case 0: /* Blinking Block */
+<a href="#l1555" class="line" id="l1555">   1555</a> 		case 1: /* Blinking Block (Default) */
+<a href="#l1556" class="line" id="l1556">   1556</a> 		case 2: /* Steady Block */
+<a href="#l1557" class="line" id="l1557">   1557</a> 			xdrawglyph(g, cx, cy);
+<a href="#l1558" class="line" id="l1558">   1558</a> 			break;
+<a href="#l1559" class="line" id="l1559">   1559</a> 		case 3: /* Blinking Underline */
+<a href="#l1560" class="line" id="l1560">   1560</a> 		case 4: /* Steady Underline */
+<a href="#l1561" class="line" id="l1561">   1561</a> 			XftDrawRect(xw.draw, &amp;drawcol,
+<a href="#l1562" class="line" id="l1562">   1562</a> 					win.hborderpx + cx * win.cw,
+<a href="#l1563" class="line" id="l1563">   1563</a> 					win.vborderpx + (cy + 1) * win.ch - \
+<a href="#l1564" class="line" id="l1564">   1564</a> 						cursorthickness,
+<a href="#l1565" class="line" id="l1565">   1565</a> 					win.cw, cursorthickness);
+<a href="#l1566" class="line" id="l1566">   1566</a> 			break;
+<a href="#l1567" class="line" id="l1567">   1567</a> 		case 5: /* Blinking bar */
+<a href="#l1568" class="line" id="l1568">   1568</a> 		case 6: /* Steady bar */
+<a href="#l1569" class="line" id="l1569">   1569</a> 			XftDrawRect(xw.draw, &amp;drawcol,
+<a href="#l1570" class="line" id="l1570">   1570</a> 					win.hborderpx + cx * win.cw,
+<a href="#l1571" class="line" id="l1571">   1571</a> 					win.vborderpx + cy * win.ch,
+<a href="#l1572" class="line" id="l1572">   1572</a> 					cursorthickness, win.ch);
+<a href="#l1573" class="line" id="l1573">   1573</a> 			break;
+<a href="#l1574" class="line" id="l1574">   1574</a> 		}
+<a href="#l1575" class="line" id="l1575">   1575</a> 	} else {
+<a href="#l1576" class="line" id="l1576">   1576</a> 		XftDrawRect(xw.draw, &amp;drawcol,
+<a href="#l1577" class="line" id="l1577">   1577</a> 				win.hborderpx + cx * win.cw,
+<a href="#l1578" class="line" id="l1578">   1578</a> 				win.vborderpx + cy * win.ch,
+<a href="#l1579" class="line" id="l1579">   1579</a> 				win.cw - 1, 1);
+<a href="#l1580" class="line" id="l1580">   1580</a> 		XftDrawRect(xw.draw, &amp;drawcol,
+<a href="#l1581" class="line" id="l1581">   1581</a> 				win.hborderpx + cx * win.cw,
+<a href="#l1582" class="line" id="l1582">   1582</a> 				win.vborderpx + cy * win.ch,
+<a href="#l1583" class="line" id="l1583">   1583</a> 				1, win.ch - 1);
+<a href="#l1584" class="line" id="l1584">   1584</a> 		XftDrawRect(xw.draw, &amp;drawcol,
+<a href="#l1585" class="line" id="l1585">   1585</a> 				win.hborderpx + (cx + 1) * win.cw - 1,
+<a href="#l1586" class="line" id="l1586">   1586</a> 				win.vborderpx + cy * win.ch,
+<a href="#l1587" class="line" id="l1587">   1587</a> 				1, win.ch - 1);
+<a href="#l1588" class="line" id="l1588">   1588</a> 		XftDrawRect(xw.draw, &amp;drawcol,
+<a href="#l1589" class="line" id="l1589">   1589</a> 				win.hborderpx + cx * win.cw,
+<a href="#l1590" class="line" id="l1590">   1590</a> 				win.vborderpx + (cy + 1) * win.ch - 1,
+<a href="#l1591" class="line" id="l1591">   1591</a> 				win.cw, 1);
+<a href="#l1592" class="line" id="l1592">   1592</a> 	}
+<a href="#l1593" class="line" id="l1593">   1593</a> }
+<a href="#l1594" class="line" id="l1594">   1594</a> 
+<a href="#l1595" class="line" id="l1595">   1595</a> void
+<a href="#l1596" class="line" id="l1596">   1596</a> xsetenv(void)
+<a href="#l1597" class="line" id="l1597">   1597</a> {
+<a href="#l1598" class="line" id="l1598">   1598</a> 	char buf[sizeof(long) * 8 + 1];
+<a href="#l1599" class="line" id="l1599">   1599</a> 
+<a href="#l1600" class="line" id="l1600">   1600</a> 	snprintf(buf, sizeof(buf), &quot;%lu&quot;, xw.win);
+<a href="#l1601" class="line" id="l1601">   1601</a> 	setenv(&quot;WINDOWID&quot;, buf, 1);
+<a href="#l1602" class="line" id="l1602">   1602</a> }
+<a href="#l1603" class="line" id="l1603">   1603</a> 
+<a href="#l1604" class="line" id="l1604">   1604</a> void
+<a href="#l1605" class="line" id="l1605">   1605</a> xsettitle(char *p)
+<a href="#l1606" class="line" id="l1606">   1606</a> {
+<a href="#l1607" class="line" id="l1607">   1607</a> 	XTextProperty prop;
+<a href="#l1608" class="line" id="l1608">   1608</a> 	DEFAULT(p, opt_title);
+<a href="#l1609" class="line" id="l1609">   1609</a> 
+<a href="#l1610" class="line" id="l1610">   1610</a> 	Xutf8TextListToTextProperty(xw.dpy, &amp;p, 1, XUTF8StringStyle,
+<a href="#l1611" class="line" id="l1611">   1611</a> 			&amp;prop);
+<a href="#l1612" class="line" id="l1612">   1612</a> 	XSetWMName(xw.dpy, xw.win, &amp;prop);
+<a href="#l1613" class="line" id="l1613">   1613</a> 	XSetTextProperty(xw.dpy, xw.win, &amp;prop, xw.netwmname);
+<a href="#l1614" class="line" id="l1614">   1614</a> 	XFree(prop.value);
+<a href="#l1615" class="line" id="l1615">   1615</a> }
+<a href="#l1616" class="line" id="l1616">   1616</a> 
+<a href="#l1617" class="line" id="l1617">   1617</a> int
+<a href="#l1618" class="line" id="l1618">   1618</a> xstartdraw(void)
+<a href="#l1619" class="line" id="l1619">   1619</a> {
+<a href="#l1620" class="line" id="l1620">   1620</a> 	return IS_SET(MODE_VISIBLE);
+<a href="#l1621" class="line" id="l1621">   1621</a> }
+<a href="#l1622" class="line" id="l1622">   1622</a> 
+<a href="#l1623" class="line" id="l1623">   1623</a> void
+<a href="#l1624" class="line" id="l1624">   1624</a> xdrawline(Line line, int x1, int y1, int x2)
+<a href="#l1625" class="line" id="l1625">   1625</a> {
+<a href="#l1626" class="line" id="l1626">   1626</a> 	int i, x, ox, numspecs;
+<a href="#l1627" class="line" id="l1627">   1627</a> 	Glyph base, new;
+<a href="#l1628" class="line" id="l1628">   1628</a> 	XftGlyphFontSpec *specs = xw.specbuf;
+<a href="#l1629" class="line" id="l1629">   1629</a> 
+<a href="#l1630" class="line" id="l1630">   1630</a> 	numspecs = xmakeglyphfontspecs(specs, &amp;line[x1], x2 - x1, x1, y1);
+<a href="#l1631" class="line" id="l1631">   1631</a> 	i = ox = 0;
+<a href="#l1632" class="line" id="l1632">   1632</a> 	for (x = x1; x &lt; x2 &amp;&amp; i &lt; numspecs; x++) {
+<a href="#l1633" class="line" id="l1633">   1633</a> 		new = line[x];
+<a href="#l1634" class="line" id="l1634">   1634</a> 		if (new.mode == ATTR_WDUMMY)
+<a href="#l1635" class="line" id="l1635">   1635</a> 			continue;
+<a href="#l1636" class="line" id="l1636">   1636</a> 		if (selected(x, y1))
+<a href="#l1637" class="line" id="l1637">   1637</a> 			new.mode ^= ATTR_REVERSE;
+<a href="#l1638" class="line" id="l1638">   1638</a> 		if (i &gt; 0 &amp;&amp; ATTRCMP(base, new)) {
+<a href="#l1639" class="line" id="l1639">   1639</a> 			xdrawglyphfontspecs(specs, base, i, ox, y1);
+<a href="#l1640" class="line" id="l1640">   1640</a> 			specs += i;
+<a href="#l1641" class="line" id="l1641">   1641</a> 			numspecs -= i;
+<a href="#l1642" class="line" id="l1642">   1642</a> 			i = 0;
+<a href="#l1643" class="line" id="l1643">   1643</a> 		}
+<a href="#l1644" class="line" id="l1644">   1644</a> 		if (i == 0) {
+<a href="#l1645" class="line" id="l1645">   1645</a> 			ox = x;
+<a href="#l1646" class="line" id="l1646">   1646</a> 			base = new;
+<a href="#l1647" class="line" id="l1647">   1647</a> 		}
+<a href="#l1648" class="line" id="l1648">   1648</a> 		i++;
+<a href="#l1649" class="line" id="l1649">   1649</a> 	}
+<a href="#l1650" class="line" id="l1650">   1650</a> 	if (i &gt; 0)
+<a href="#l1651" class="line" id="l1651">   1651</a> 		xdrawglyphfontspecs(specs, base, i, ox, y1);
+<a href="#l1652" class="line" id="l1652">   1652</a> }
+<a href="#l1653" class="line" id="l1653">   1653</a> 
+<a href="#l1654" class="line" id="l1654">   1654</a> void
+<a href="#l1655" class="line" id="l1655">   1655</a> xfinishdraw(void)
+<a href="#l1656" class="line" id="l1656">   1656</a> {
+<a href="#l1657" class="line" id="l1657">   1657</a> 	XCopyArea(xw.dpy, xw.buf, xw.win, dc.gc, 0, 0, win.w,
+<a href="#l1658" class="line" id="l1658">   1658</a> 			win.h, 0, 0);
+<a href="#l1659" class="line" id="l1659">   1659</a> 	XSetForeground(xw.dpy, dc.gc,
+<a href="#l1660" class="line" id="l1660">   1660</a> 			dc.col[IS_SET(MODE_REVERSE)?
+<a href="#l1661" class="line" id="l1661">   1661</a> 				defaultfg : defaultbg].pixel);
+<a href="#l1662" class="line" id="l1662">   1662</a> }
+<a href="#l1663" class="line" id="l1663">   1663</a> 
+<a href="#l1664" class="line" id="l1664">   1664</a> void
+<a href="#l1665" class="line" id="l1665">   1665</a> xximspot(int x, int y)
+<a href="#l1666" class="line" id="l1666">   1666</a> {
+<a href="#l1667" class="line" id="l1667">   1667</a> 	XPoint spot = { borderpx + x * win.cw, borderpx + (y + 1) * win.ch };
+<a href="#l1668" class="line" id="l1668">   1668</a> 	XVaNestedList attr = XVaCreateNestedList(0, XNSpotLocation, &amp;spot, NULL);
+<a href="#l1669" class="line" id="l1669">   1669</a> 
+<a href="#l1670" class="line" id="l1670">   1670</a> 	XSetICValues(xw.xic, XNPreeditAttributes, attr, NULL);
+<a href="#l1671" class="line" id="l1671">   1671</a> 	XFree(attr);
+<a href="#l1672" class="line" id="l1672">   1672</a> }
+<a href="#l1673" class="line" id="l1673">   1673</a> 
+<a href="#l1674" class="line" id="l1674">   1674</a> void
+<a href="#l1675" class="line" id="l1675">   1675</a> expose(XEvent *ev)
+<a href="#l1676" class="line" id="l1676">   1676</a> {
+<a href="#l1677" class="line" id="l1677">   1677</a> 	redraw();
+<a href="#l1678" class="line" id="l1678">   1678</a> }
+<a href="#l1679" class="line" id="l1679">   1679</a> 
+<a href="#l1680" class="line" id="l1680">   1680</a> void
+<a href="#l1681" class="line" id="l1681">   1681</a> visibility(XEvent *ev)
+<a href="#l1682" class="line" id="l1682">   1682</a> {
+<a href="#l1683" class="line" id="l1683">   1683</a> 	XVisibilityEvent *e = &amp;ev-&gt;xvisibility;
+<a href="#l1684" class="line" id="l1684">   1684</a> 
+<a href="#l1685" class="line" id="l1685">   1685</a> 	MODBIT(win.mode, e-&gt;state != VisibilityFullyObscured, MODE_VISIBLE);
+<a href="#l1686" class="line" id="l1686">   1686</a> }
+<a href="#l1687" class="line" id="l1687">   1687</a> 
+<a href="#l1688" class="line" id="l1688">   1688</a> void
+<a href="#l1689" class="line" id="l1689">   1689</a> unmap(XEvent *ev)
+<a href="#l1690" class="line" id="l1690">   1690</a> {
+<a href="#l1691" class="line" id="l1691">   1691</a> 	win.mode &amp;= ~MODE_VISIBLE;
+<a href="#l1692" class="line" id="l1692">   1692</a> }
+<a href="#l1693" class="line" id="l1693">   1693</a> 
+<a href="#l1694" class="line" id="l1694">   1694</a> void
+<a href="#l1695" class="line" id="l1695">   1695</a> xsetpointermotion(int set)
+<a href="#l1696" class="line" id="l1696">   1696</a> {
+<a href="#l1697" class="line" id="l1697">   1697</a> 	if (!set &amp;&amp; !xw.pointerisvisible)
+<a href="#l1698" class="line" id="l1698">   1698</a> 		return;
+<a href="#l1699" class="line" id="l1699">   1699</a> 	MODBIT(xw.attrs.event_mask, set, PointerMotionMask);
+<a href="#l1700" class="line" id="l1700">   1700</a> 	XChangeWindowAttributes(xw.dpy, xw.win, CWEventMask, &amp;xw.attrs);
+<a href="#l1701" class="line" id="l1701">   1701</a> }
+<a href="#l1702" class="line" id="l1702">   1702</a> 
+<a href="#l1703" class="line" id="l1703">   1703</a> void
+<a href="#l1704" class="line" id="l1704">   1704</a> xsetmode(int set, unsigned int flags)
+<a href="#l1705" class="line" id="l1705">   1705</a> {
+<a href="#l1706" class="line" id="l1706">   1706</a> 	int mode = win.mode;
+<a href="#l1707" class="line" id="l1707">   1707</a> 	MODBIT(win.mode, set, flags);
+<a href="#l1708" class="line" id="l1708">   1708</a> 	if ((win.mode &amp; MODE_REVERSE) != (mode &amp; MODE_REVERSE))
+<a href="#l1709" class="line" id="l1709">   1709</a> 		redraw();
+<a href="#l1710" class="line" id="l1710">   1710</a> }
+<a href="#l1711" class="line" id="l1711">   1711</a> 
+<a href="#l1712" class="line" id="l1712">   1712</a> int
+<a href="#l1713" class="line" id="l1713">   1713</a> xsetcursor(int cursor)
+<a href="#l1714" class="line" id="l1714">   1714</a> {
+<a href="#l1715" class="line" id="l1715">   1715</a> 	DEFAULT(cursor, 1);
+<a href="#l1716" class="line" id="l1716">   1716</a> 	if (!BETWEEN(cursor, 0, 6))
+<a href="#l1717" class="line" id="l1717">   1717</a> 		return 1;
+<a href="#l1718" class="line" id="l1718">   1718</a> 	win.cursor = cursor;
+<a href="#l1719" class="line" id="l1719">   1719</a> 	return 0;
+<a href="#l1720" class="line" id="l1720">   1720</a> }
+<a href="#l1721" class="line" id="l1721">   1721</a> 
+<a href="#l1722" class="line" id="l1722">   1722</a> void
+<a href="#l1723" class="line" id="l1723">   1723</a> xseturgency(int add)
+<a href="#l1724" class="line" id="l1724">   1724</a> {
+<a href="#l1725" class="line" id="l1725">   1725</a> 	XWMHints *h = XGetWMHints(xw.dpy, xw.win);
+<a href="#l1726" class="line" id="l1726">   1726</a> 
+<a href="#l1727" class="line" id="l1727">   1727</a> 	MODBIT(h-&gt;flags, add, XUrgencyHint);
+<a href="#l1728" class="line" id="l1728">   1728</a> 	XSetWMHints(xw.dpy, xw.win, h);
+<a href="#l1729" class="line" id="l1729">   1729</a> 	XFree(h);
+<a href="#l1730" class="line" id="l1730">   1730</a> }
+<a href="#l1731" class="line" id="l1731">   1731</a> 
+<a href="#l1732" class="line" id="l1732">   1732</a> void
+<a href="#l1733" class="line" id="l1733">   1733</a> xbell(void)
+<a href="#l1734" class="line" id="l1734">   1734</a> {
+<a href="#l1735" class="line" id="l1735">   1735</a> 	if (!(IS_SET(MODE_FOCUSED)))
+<a href="#l1736" class="line" id="l1736">   1736</a> 		xseturgency(1);
+<a href="#l1737" class="line" id="l1737">   1737</a> 	if (bellvolume)
+<a href="#l1738" class="line" id="l1738">   1738</a> 		XkbBell(xw.dpy, xw.win, bellvolume, (Atom)NULL);
+<a href="#l1739" class="line" id="l1739">   1739</a> }
+<a href="#l1740" class="line" id="l1740">   1740</a> 
+<a href="#l1741" class="line" id="l1741">   1741</a> void
+<a href="#l1742" class="line" id="l1742">   1742</a> focus(XEvent *ev)
+<a href="#l1743" class="line" id="l1743">   1743</a> {
+<a href="#l1744" class="line" id="l1744">   1744</a> 	XFocusChangeEvent *e = &amp;ev-&gt;xfocus;
+<a href="#l1745" class="line" id="l1745">   1745</a> 
+<a href="#l1746" class="line" id="l1746">   1746</a> 	if (e-&gt;mode == NotifyGrab)
+<a href="#l1747" class="line" id="l1747">   1747</a> 		return;
+<a href="#l1748" class="line" id="l1748">   1748</a> 
+<a href="#l1749" class="line" id="l1749">   1749</a> 	if (ev-&gt;type == FocusIn) {
+<a href="#l1750" class="line" id="l1750">   1750</a> 		XSetICFocus(xw.xic);
+<a href="#l1751" class="line" id="l1751">   1751</a> 		win.mode |= MODE_FOCUSED;
+<a href="#l1752" class="line" id="l1752">   1752</a> 		xseturgency(0);
+<a href="#l1753" class="line" id="l1753">   1753</a> 		if (IS_SET(MODE_FOCUS))
+<a href="#l1754" class="line" id="l1754">   1754</a> 			ttywrite(&quot;\033[I&quot;, 3, 0);
+<a href="#l1755" class="line" id="l1755">   1755</a> 	} else {
+<a href="#l1756" class="line" id="l1756">   1756</a> 		XUnsetICFocus(xw.xic);
+<a href="#l1757" class="line" id="l1757">   1757</a> 		win.mode &amp;= ~MODE_FOCUSED;
+<a href="#l1758" class="line" id="l1758">   1758</a> 		if (IS_SET(MODE_FOCUS))
+<a href="#l1759" class="line" id="l1759">   1759</a> 			ttywrite(&quot;\033[O&quot;, 3, 0);
+<a href="#l1760" class="line" id="l1760">   1760</a> 	}
+<a href="#l1761" class="line" id="l1761">   1761</a> }
+<a href="#l1762" class="line" id="l1762">   1762</a> 
+<a href="#l1763" class="line" id="l1763">   1763</a> int
+<a href="#l1764" class="line" id="l1764">   1764</a> match(uint mask, uint state)
+<a href="#l1765" class="line" id="l1765">   1765</a> {
+<a href="#l1766" class="line" id="l1766">   1766</a> 	return mask == XK_ANY_MOD || mask == (state &amp; ~ignoremod);
+<a href="#l1767" class="line" id="l1767">   1767</a> }
+<a href="#l1768" class="line" id="l1768">   1768</a> 
+<a href="#l1769" class="line" id="l1769">   1769</a> char*
+<a href="#l1770" class="line" id="l1770">   1770</a> kmap(KeySym k, uint state)
+<a href="#l1771" class="line" id="l1771">   1771</a> {
+<a href="#l1772" class="line" id="l1772">   1772</a> 	Key *kp;
+<a href="#l1773" class="line" id="l1773">   1773</a> 	int i;
+<a href="#l1774" class="line" id="l1774">   1774</a> 
+<a href="#l1775" class="line" id="l1775">   1775</a> 	/* Check for mapped keys out of X11 function keys. */
+<a href="#l1776" class="line" id="l1776">   1776</a> 	for (i = 0; i &lt; LEN(mappedkeys); i++) {
+<a href="#l1777" class="line" id="l1777">   1777</a> 		if (mappedkeys[i] == k)
+<a href="#l1778" class="line" id="l1778">   1778</a> 			break;
+<a href="#l1779" class="line" id="l1779">   1779</a> 	}
+<a href="#l1780" class="line" id="l1780">   1780</a> 	if (i == LEN(mappedkeys)) {
+<a href="#l1781" class="line" id="l1781">   1781</a> 		if ((k &amp; 0xFFFF) &lt; 0xFD00)
+<a href="#l1782" class="line" id="l1782">   1782</a> 			return NULL;
+<a href="#l1783" class="line" id="l1783">   1783</a> 	}
+<a href="#l1784" class="line" id="l1784">   1784</a> 
+<a href="#l1785" class="line" id="l1785">   1785</a> 	for (kp = key; kp &lt; key + LEN(key); kp++) {
+<a href="#l1786" class="line" id="l1786">   1786</a> 		if (kp-&gt;k != k)
+<a href="#l1787" class="line" id="l1787">   1787</a> 			continue;
+<a href="#l1788" class="line" id="l1788">   1788</a> 
+<a href="#l1789" class="line" id="l1789">   1789</a> 		if (!match(kp-&gt;mask, state))
+<a href="#l1790" class="line" id="l1790">   1790</a> 			continue;
+<a href="#l1791" class="line" id="l1791">   1791</a> 
+<a href="#l1792" class="line" id="l1792">   1792</a> 		if (IS_SET(MODE_APPKEYPAD) ? kp-&gt;appkey &lt; 0 : kp-&gt;appkey &gt; 0)
+<a href="#l1793" class="line" id="l1793">   1793</a> 			continue;
+<a href="#l1794" class="line" id="l1794">   1794</a> 		if (IS_SET(MODE_NUMLOCK) &amp;&amp; kp-&gt;appkey == 2)
+<a href="#l1795" class="line" id="l1795">   1795</a> 			continue;
+<a href="#l1796" class="line" id="l1796">   1796</a> 
+<a href="#l1797" class="line" id="l1797">   1797</a> 		if (IS_SET(MODE_APPCURSOR) ? kp-&gt;appcursor &lt; 0 : kp-&gt;appcursor &gt; 0)
+<a href="#l1798" class="line" id="l1798">   1798</a> 			continue;
+<a href="#l1799" class="line" id="l1799">   1799</a> 
+<a href="#l1800" class="line" id="l1800">   1800</a> 		return kp-&gt;s;
+<a href="#l1801" class="line" id="l1801">   1801</a> 	}
+<a href="#l1802" class="line" id="l1802">   1802</a> 
+<a href="#l1803" class="line" id="l1803">   1803</a> 	return NULL;
+<a href="#l1804" class="line" id="l1804">   1804</a> }
+<a href="#l1805" class="line" id="l1805">   1805</a> 
+<a href="#l1806" class="line" id="l1806">   1806</a> void
+<a href="#l1807" class="line" id="l1807">   1807</a> kpress(XEvent *ev)
+<a href="#l1808" class="line" id="l1808">   1808</a> {
+<a href="#l1809" class="line" id="l1809">   1809</a> 	XKeyEvent *e = &amp;ev-&gt;xkey;
+<a href="#l1810" class="line" id="l1810">   1810</a> 	KeySym ksym;
+<a href="#l1811" class="line" id="l1811">   1811</a> 	char buf[32], *customkey;
+<a href="#l1812" class="line" id="l1812">   1812</a> 	int len;
+<a href="#l1813" class="line" id="l1813">   1813</a> 	Rune c;
+<a href="#l1814" class="line" id="l1814">   1814</a> 	Status status;
+<a href="#l1815" class="line" id="l1815">   1815</a> 	Shortcut *bp;
+<a href="#l1816" class="line" id="l1816">   1816</a> 
+<a href="#l1817" class="line" id="l1817">   1817</a> 	if (xw.pointerisvisible) {
+<a href="#l1818" class="line" id="l1818">   1818</a> 		XDefineCursor(xw.dpy, xw.win, xw.bpointer);
+<a href="#l1819" class="line" id="l1819">   1819</a> 		xsetpointermotion(1);
+<a href="#l1820" class="line" id="l1820">   1820</a> 		xw.pointerisvisible = 0;
+<a href="#l1821" class="line" id="l1821">   1821</a> 	}
+<a href="#l1822" class="line" id="l1822">   1822</a> 
+<a href="#l1823" class="line" id="l1823">   1823</a> 	if (IS_SET(MODE_KBDLOCK))
+<a href="#l1824" class="line" id="l1824">   1824</a> 		return;
+<a href="#l1825" class="line" id="l1825">   1825</a> 
+<a href="#l1826" class="line" id="l1826">   1826</a> 	len = XmbLookupString(xw.xic, e, buf, sizeof buf, &amp;ksym, &amp;status);
+<a href="#l1827" class="line" id="l1827">   1827</a> 	/* 1. shortcuts */
+<a href="#l1828" class="line" id="l1828">   1828</a> 	for (bp = shortcuts; bp &lt; shortcuts + LEN(shortcuts); bp++) {
+<a href="#l1829" class="line" id="l1829">   1829</a> 		if (ksym == bp-&gt;keysym &amp;&amp; match(bp-&gt;mod, e-&gt;state)) {
+<a href="#l1830" class="line" id="l1830">   1830</a> 			bp-&gt;func(&amp;(bp-&gt;arg));
+<a href="#l1831" class="line" id="l1831">   1831</a> 			return;
+<a href="#l1832" class="line" id="l1832">   1832</a> 		}
+<a href="#l1833" class="line" id="l1833">   1833</a> 	}
+<a href="#l1834" class="line" id="l1834">   1834</a> 
+<a href="#l1835" class="line" id="l1835">   1835</a> 	/* 2. custom keys from config.h */
+<a href="#l1836" class="line" id="l1836">   1836</a> 	if ((customkey = kmap(ksym, e-&gt;state))) {
+<a href="#l1837" class="line" id="l1837">   1837</a> 		ttywrite(customkey, strlen(customkey), 1);
+<a href="#l1838" class="line" id="l1838">   1838</a> 		return;
+<a href="#l1839" class="line" id="l1839">   1839</a> 	}
+<a href="#l1840" class="line" id="l1840">   1840</a> 
+<a href="#l1841" class="line" id="l1841">   1841</a> 	/* 3. composed string from input method */
+<a href="#l1842" class="line" id="l1842">   1842</a> 	if (len == 0)
+<a href="#l1843" class="line" id="l1843">   1843</a> 		return;
+<a href="#l1844" class="line" id="l1844">   1844</a> 	if (len == 1 &amp;&amp; e-&gt;state &amp; Mod1Mask) {
+<a href="#l1845" class="line" id="l1845">   1845</a> 		if (IS_SET(MODE_8BIT)) {
+<a href="#l1846" class="line" id="l1846">   1846</a> 			if (*buf &lt; 0177) {
+<a href="#l1847" class="line" id="l1847">   1847</a> 				c = *buf | 0x80;
+<a href="#l1848" class="line" id="l1848">   1848</a> 				len = utf8encode(c, buf);
+<a href="#l1849" class="line" id="l1849">   1849</a> 			}
+<a href="#l1850" class="line" id="l1850">   1850</a> 		} else {
+<a href="#l1851" class="line" id="l1851">   1851</a> 			buf[1] = buf[0];
+<a href="#l1852" class="line" id="l1852">   1852</a> 			buf[0] = &#39;\033&#39;;
+<a href="#l1853" class="line" id="l1853">   1853</a> 			len = 2;
+<a href="#l1854" class="line" id="l1854">   1854</a> 		}
+<a href="#l1855" class="line" id="l1855">   1855</a> 	}
+<a href="#l1856" class="line" id="l1856">   1856</a> 	ttywrite(buf, len, 1);
+<a href="#l1857" class="line" id="l1857">   1857</a> }
+<a href="#l1858" class="line" id="l1858">   1858</a> 
+<a href="#l1859" class="line" id="l1859">   1859</a> 
+<a href="#l1860" class="line" id="l1860">   1860</a> void
+<a href="#l1861" class="line" id="l1861">   1861</a> cmessage(XEvent *e)
+<a href="#l1862" class="line" id="l1862">   1862</a> {
+<a href="#l1863" class="line" id="l1863">   1863</a> 	/*
+<a href="#l1864" class="line" id="l1864">   1864</a> 	 * See xembed specs
+<a href="#l1865" class="line" id="l1865">   1865</a> 	 *  http://standards.freedesktop.org/xembed-spec/xembed-spec-latest.html
+<a href="#l1866" class="line" id="l1866">   1866</a> 	 */
+<a href="#l1867" class="line" id="l1867">   1867</a> 	if (e-&gt;xclient.message_type == xw.xembed &amp;&amp; e-&gt;xclient.format == 32) {
+<a href="#l1868" class="line" id="l1868">   1868</a> 		if (e-&gt;xclient.data.l[1] == XEMBED_FOCUS_IN) {
+<a href="#l1869" class="line" id="l1869">   1869</a> 			win.mode |= MODE_FOCUSED;
+<a href="#l1870" class="line" id="l1870">   1870</a> 			xseturgency(0);
+<a href="#l1871" class="line" id="l1871">   1871</a> 		} else if (e-&gt;xclient.data.l[1] == XEMBED_FOCUS_OUT) {
+<a href="#l1872" class="line" id="l1872">   1872</a> 			win.mode &amp;= ~MODE_FOCUSED;
+<a href="#l1873" class="line" id="l1873">   1873</a> 		}
+<a href="#l1874" class="line" id="l1874">   1874</a> 	} else if (e-&gt;xclient.data.l[0] == xw.wmdeletewin) {
+<a href="#l1875" class="line" id="l1875">   1875</a> 		ttyhangup();
+<a href="#l1876" class="line" id="l1876">   1876</a> 		exit(0);
+<a href="#l1877" class="line" id="l1877">   1877</a> 	}
+<a href="#l1878" class="line" id="l1878">   1878</a> }
+<a href="#l1879" class="line" id="l1879">   1879</a> 
+<a href="#l1880" class="line" id="l1880">   1880</a> void
+<a href="#l1881" class="line" id="l1881">   1881</a> resize(XEvent *e)
+<a href="#l1882" class="line" id="l1882">   1882</a> {
+<a href="#l1883" class="line" id="l1883">   1883</a> 	if (e-&gt;xconfigure.width == win.w &amp;&amp; e-&gt;xconfigure.height == win.h)
+<a href="#l1884" class="line" id="l1884">   1884</a> 		return;
+<a href="#l1885" class="line" id="l1885">   1885</a> 
+<a href="#l1886" class="line" id="l1886">   1886</a> 	cresize(e-&gt;xconfigure.width, e-&gt;xconfigure.height);
+<a href="#l1887" class="line" id="l1887">   1887</a> }
+<a href="#l1888" class="line" id="l1888">   1888</a> 
+<a href="#l1889" class="line" id="l1889">   1889</a> void
+<a href="#l1890" class="line" id="l1890">   1890</a> run(void)
+<a href="#l1891" class="line" id="l1891">   1891</a> {
+<a href="#l1892" class="line" id="l1892">   1892</a> 	XEvent ev;
+<a href="#l1893" class="line" id="l1893">   1893</a> 	int w = win.w, h = win.h;
+<a href="#l1894" class="line" id="l1894">   1894</a> 	fd_set rfd;
+<a href="#l1895" class="line" id="l1895">   1895</a> 	int xfd = XConnectionNumber(xw.dpy), xev, blinkset = 0, dodraw = 0;
+<a href="#l1896" class="line" id="l1896">   1896</a> 	int ttyfd;
+<a href="#l1897" class="line" id="l1897">   1897</a> 	struct timespec drawtimeout, *tv = NULL, now, last, lastblink;
+<a href="#l1898" class="line" id="l1898">   1898</a> 	long deltatime;
+<a href="#l1899" class="line" id="l1899">   1899</a> 
+<a href="#l1900" class="line" id="l1900">   1900</a> 	/* Waiting for window mapping */
+<a href="#l1901" class="line" id="l1901">   1901</a> 	do {
+<a href="#l1902" class="line" id="l1902">   1902</a> 		XNextEvent(xw.dpy, &amp;ev);
+<a href="#l1903" class="line" id="l1903">   1903</a> 		/*
+<a href="#l1904" class="line" id="l1904">   1904</a> 		 * This XFilterEvent call is required because of XOpenIM. It
+<a href="#l1905" class="line" id="l1905">   1905</a> 		 * does filter out the key event and some client message for
+<a href="#l1906" class="line" id="l1906">   1906</a> 		 * the input method too.
+<a href="#l1907" class="line" id="l1907">   1907</a> 		 */
+<a href="#l1908" class="line" id="l1908">   1908</a> 		if (XFilterEvent(&amp;ev, None))
+<a href="#l1909" class="line" id="l1909">   1909</a> 			continue;
+<a href="#l1910" class="line" id="l1910">   1910</a> 		if (ev.type == ConfigureNotify) {
+<a href="#l1911" class="line" id="l1911">   1911</a> 			w = ev.xconfigure.width;
+<a href="#l1912" class="line" id="l1912">   1912</a> 			h = ev.xconfigure.height;
+<a href="#l1913" class="line" id="l1913">   1913</a> 		}
+<a href="#l1914" class="line" id="l1914">   1914</a> 	} while (ev.type != MapNotify);
+<a href="#l1915" class="line" id="l1915">   1915</a> 
+<a href="#l1916" class="line" id="l1916">   1916</a> 	ttyfd = ttynew(opt_line, shell, opt_io, opt_cmd);
+<a href="#l1917" class="line" id="l1917">   1917</a> 	cresize(w, h);
+<a href="#l1918" class="line" id="l1918">   1918</a> 
+<a href="#l1919" class="line" id="l1919">   1919</a> 	clock_gettime(CLOCK_MONOTONIC, &amp;last);
+<a href="#l1920" class="line" id="l1920">   1920</a> 	lastblink = last;
+<a href="#l1921" class="line" id="l1921">   1921</a> 
+<a href="#l1922" class="line" id="l1922">   1922</a> 	for (xev = actionfps;;) {
+<a href="#l1923" class="line" id="l1923">   1923</a> 		FD_ZERO(&amp;rfd);
+<a href="#l1924" class="line" id="l1924">   1924</a> 		FD_SET(ttyfd, &amp;rfd);
+<a href="#l1925" class="line" id="l1925">   1925</a> 		FD_SET(xfd, &amp;rfd);
+<a href="#l1926" class="line" id="l1926">   1926</a> 
+<a href="#l1927" class="line" id="l1927">   1927</a> 		if (pselect(MAX(xfd, ttyfd)+1, &amp;rfd, NULL, NULL, tv, NULL) &lt; 0) {
+<a href="#l1928" class="line" id="l1928">   1928</a> 			if (errno == EINTR)
+<a href="#l1929" class="line" id="l1929">   1929</a> 				continue;
+<a href="#l1930" class="line" id="l1930">   1930</a> 			die(&quot;select failed: %s\n&quot;, strerror(errno));
+<a href="#l1931" class="line" id="l1931">   1931</a> 		}
+<a href="#l1932" class="line" id="l1932">   1932</a> 		if (FD_ISSET(ttyfd, &amp;rfd)) {
+<a href="#l1933" class="line" id="l1933">   1933</a> 			ttyread();
+<a href="#l1934" class="line" id="l1934">   1934</a> 			if (blinktimeout) {
+<a href="#l1935" class="line" id="l1935">   1935</a> 				blinkset = tattrset(ATTR_BLINK);
+<a href="#l1936" class="line" id="l1936">   1936</a> 				if (!blinkset)
+<a href="#l1937" class="line" id="l1937">   1937</a> 					MODBIT(win.mode, 0, MODE_BLINK);
+<a href="#l1938" class="line" id="l1938">   1938</a> 			}
+<a href="#l1939" class="line" id="l1939">   1939</a> 		}
+<a href="#l1940" class="line" id="l1940">   1940</a> 
+<a href="#l1941" class="line" id="l1941">   1941</a> 		if (FD_ISSET(xfd, &amp;rfd))
+<a href="#l1942" class="line" id="l1942">   1942</a> 			xev = actionfps;
+<a href="#l1943" class="line" id="l1943">   1943</a> 
+<a href="#l1944" class="line" id="l1944">   1944</a> 		clock_gettime(CLOCK_MONOTONIC, &amp;now);
+<a href="#l1945" class="line" id="l1945">   1945</a> 		drawtimeout.tv_sec = 0;
+<a href="#l1946" class="line" id="l1946">   1946</a> 		drawtimeout.tv_nsec =  (1000 * 1E6)/ xfps;
+<a href="#l1947" class="line" id="l1947">   1947</a> 		tv = &amp;drawtimeout;
+<a href="#l1948" class="line" id="l1948">   1948</a> 
+<a href="#l1949" class="line" id="l1949">   1949</a> 		dodraw = 0;
+<a href="#l1950" class="line" id="l1950">   1950</a> 		if (blinktimeout &amp;&amp; TIMEDIFF(now, lastblink) &gt; blinktimeout) {
+<a href="#l1951" class="line" id="l1951">   1951</a> 			tsetdirtattr(ATTR_BLINK);
+<a href="#l1952" class="line" id="l1952">   1952</a> 			win.mode ^= MODE_BLINK;
+<a href="#l1953" class="line" id="l1953">   1953</a> 			lastblink = now;
+<a href="#l1954" class="line" id="l1954">   1954</a> 			dodraw = 1;
+<a href="#l1955" class="line" id="l1955">   1955</a> 		}
+<a href="#l1956" class="line" id="l1956">   1956</a> 		deltatime = TIMEDIFF(now, last);
+<a href="#l1957" class="line" id="l1957">   1957</a> 		if (deltatime &gt; 1000 / (xev ? xfps : actionfps)) {
+<a href="#l1958" class="line" id="l1958">   1958</a> 			dodraw = 1;
+<a href="#l1959" class="line" id="l1959">   1959</a> 			last = now;
+<a href="#l1960" class="line" id="l1960">   1960</a> 		}
+<a href="#l1961" class="line" id="l1961">   1961</a> 
+<a href="#l1962" class="line" id="l1962">   1962</a> 		if (dodraw) {
+<a href="#l1963" class="line" id="l1963">   1963</a> 			while (XPending(xw.dpy)) {
+<a href="#l1964" class="line" id="l1964">   1964</a> 				XNextEvent(xw.dpy, &amp;ev);
+<a href="#l1965" class="line" id="l1965">   1965</a> 				if (XFilterEvent(&amp;ev, None))
+<a href="#l1966" class="line" id="l1966">   1966</a> 					continue;
+<a href="#l1967" class="line" id="l1967">   1967</a> 				if (handler[ev.type])
+<a href="#l1968" class="line" id="l1968">   1968</a> 					(handler[ev.type])(&amp;ev);
+<a href="#l1969" class="line" id="l1969">   1969</a> 			}
+<a href="#l1970" class="line" id="l1970">   1970</a> 
+<a href="#l1971" class="line" id="l1971">   1971</a> 			draw();
+<a href="#l1972" class="line" id="l1972">   1972</a> 			XFlush(xw.dpy);
+<a href="#l1973" class="line" id="l1973">   1973</a> 
+<a href="#l1974" class="line" id="l1974">   1974</a> 			if (xev &amp;&amp; !FD_ISSET(xfd, &amp;rfd))
+<a href="#l1975" class="line" id="l1975">   1975</a> 				xev--;
+<a href="#l1976" class="line" id="l1976">   1976</a> 			if (!FD_ISSET(ttyfd, &amp;rfd) &amp;&amp; !FD_ISSET(xfd, &amp;rfd)) {
+<a href="#l1977" class="line" id="l1977">   1977</a> 				if (blinkset) {
+<a href="#l1978" class="line" id="l1978">   1978</a> 					if (TIMEDIFF(now, lastblink) \
+<a href="#l1979" class="line" id="l1979">   1979</a> 							&gt; blinktimeout) {
+<a href="#l1980" class="line" id="l1980">   1980</a> 						drawtimeout.tv_nsec = 1000;
+<a href="#l1981" class="line" id="l1981">   1981</a> 					} else {
+<a href="#l1982" class="line" id="l1982">   1982</a> 						drawtimeout.tv_nsec = (1E6 * \
+<a href="#l1983" class="line" id="l1983">   1983</a> 							(blinktimeout - \
+<a href="#l1984" class="line" id="l1984">   1984</a> 							TIMEDIFF(now,
+<a href="#l1985" class="line" id="l1985">   1985</a> 								lastblink)));
+<a href="#l1986" class="line" id="l1986">   1986</a> 					}
+<a href="#l1987" class="line" id="l1987">   1987</a> 					drawtimeout.tv_sec = \
+<a href="#l1988" class="line" id="l1988">   1988</a> 					    drawtimeout.tv_nsec / 1E9;
+<a href="#l1989" class="line" id="l1989">   1989</a> 					drawtimeout.tv_nsec %= (long)1E9;
+<a href="#l1990" class="line" id="l1990">   1990</a> 				} else {
+<a href="#l1991" class="line" id="l1991">   1991</a> 					tv = NULL;
+<a href="#l1992" class="line" id="l1992">   1992</a> 				}
+<a href="#l1993" class="line" id="l1993">   1993</a> 			}
+<a href="#l1994" class="line" id="l1994">   1994</a> 		}
+<a href="#l1995" class="line" id="l1995">   1995</a> 	}
+<a href="#l1996" class="line" id="l1996">   1996</a> }
+<a href="#l1997" class="line" id="l1997">   1997</a> 
+<a href="#l1998" class="line" id="l1998">   1998</a> void
+<a href="#l1999" class="line" id="l1999">   1999</a> usage(void)
+<a href="#l2000" class="line" id="l2000">   2000</a> {
+<a href="#l2001" class="line" id="l2001">   2001</a> 	die(&quot;usage: %s [-aiv] [-c class] [-f font] [-g geometry]&quot;
+<a href="#l2002" class="line" id="l2002">   2002</a> 	    &quot; [-n name] [-o file]\n&quot;
+<a href="#l2003" class="line" id="l2003">   2003</a> 	    &quot;          [-T title] [-t title] [-w windowid]&quot;
+<a href="#l2004" class="line" id="l2004">   2004</a> 	    &quot; [[-e] command [args ...]]\n&quot;
+<a href="#l2005" class="line" id="l2005">   2005</a> 	    &quot;       %s [-aiv] [-c class] [-f font] [-g geometry]&quot;
+<a href="#l2006" class="line" id="l2006">   2006</a> 	    &quot; [-n name] [-o file]\n&quot;
+<a href="#l2007" class="line" id="l2007">   2007</a> 	    &quot;          [-T title] [-t title] [-w windowid] -l line&quot;
+<a href="#l2008" class="line" id="l2008">   2008</a> 	    &quot; [stty_args ...]\n&quot;, argv0, argv0);
+<a href="#l2009" class="line" id="l2009">   2009</a> }
+<a href="#l2010" class="line" id="l2010">   2010</a> 
+<a href="#l2011" class="line" id="l2011">   2011</a> int
+<a href="#l2012" class="line" id="l2012">   2012</a> main(int argc, char *argv[])
+<a href="#l2013" class="line" id="l2013">   2013</a> {
+<a href="#l2014" class="line" id="l2014">   2014</a> 	xw.l = xw.t = 0;
+<a href="#l2015" class="line" id="l2015">   2015</a> 	xw.isfixed = False;
+<a href="#l2016" class="line" id="l2016">   2016</a> 	win.cursor = cursorshape;
+<a href="#l2017" class="line" id="l2017">   2017</a> 
+<a href="#l2018" class="line" id="l2018">   2018</a> 	ARGBEGIN {
+<a href="#l2019" class="line" id="l2019">   2019</a> 	case &#39;a&#39;:
+<a href="#l2020" class="line" id="l2020">   2020</a> 		allowaltscreen = 0;
+<a href="#l2021" class="line" id="l2021">   2021</a> 		break;
+<a href="#l2022" class="line" id="l2022">   2022</a> 	case &#39;c&#39;:
+<a href="#l2023" class="line" id="l2023">   2023</a> 		opt_class = EARGF(usage());
+<a href="#l2024" class="line" id="l2024">   2024</a> 		break;
+<a href="#l2025" class="line" id="l2025">   2025</a> 	case &#39;e&#39;:
+<a href="#l2026" class="line" id="l2026">   2026</a> 		if (argc &gt; 0)
+<a href="#l2027" class="line" id="l2027">   2027</a> 			--argc, ++argv;
+<a href="#l2028" class="line" id="l2028">   2028</a> 		goto run;
+<a href="#l2029" class="line" id="l2029">   2029</a> 	case &#39;f&#39;:
+<a href="#l2030" class="line" id="l2030">   2030</a> 		opt_font = EARGF(usage());
+<a href="#l2031" class="line" id="l2031">   2031</a> 		break;
+<a href="#l2032" class="line" id="l2032">   2032</a> 	case &#39;g&#39;:
+<a href="#l2033" class="line" id="l2033">   2033</a> 		xw.gm = XParseGeometry(EARGF(usage()),
+<a href="#l2034" class="line" id="l2034">   2034</a> 				&amp;xw.l, &amp;xw.t, &amp;cols, &amp;rows);
+<a href="#l2035" class="line" id="l2035">   2035</a> 		break;
+<a href="#l2036" class="line" id="l2036">   2036</a> 	case &#39;i&#39;:
+<a href="#l2037" class="line" id="l2037">   2037</a> 		xw.isfixed = 1;
+<a href="#l2038" class="line" id="l2038">   2038</a> 		break;
+<a href="#l2039" class="line" id="l2039">   2039</a> 	case &#39;o&#39;:
+<a href="#l2040" class="line" id="l2040">   2040</a> 		opt_io = EARGF(usage());
+<a href="#l2041" class="line" id="l2041">   2041</a> 		break;
+<a href="#l2042" class="line" id="l2042">   2042</a> 	case &#39;l&#39;:
+<a href="#l2043" class="line" id="l2043">   2043</a> 		opt_line = EARGF(usage());
+<a href="#l2044" class="line" id="l2044">   2044</a> 		break;
+<a href="#l2045" class="line" id="l2045">   2045</a> 	case &#39;n&#39;:
+<a href="#l2046" class="line" id="l2046">   2046</a> 		opt_name = EARGF(usage());
+<a href="#l2047" class="line" id="l2047">   2047</a> 		break;
+<a href="#l2048" class="line" id="l2048">   2048</a> 	case &#39;t&#39;:
+<a href="#l2049" class="line" id="l2049">   2049</a> 	case &#39;T&#39;:
+<a href="#l2050" class="line" id="l2050">   2050</a> 		opt_title = EARGF(usage());
+<a href="#l2051" class="line" id="l2051">   2051</a> 		break;
+<a href="#l2052" class="line" id="l2052">   2052</a> 	case &#39;w&#39;:
+<a href="#l2053" class="line" id="l2053">   2053</a> 		opt_embed = EARGF(usage());
+<a href="#l2054" class="line" id="l2054">   2054</a> 		break;
+<a href="#l2055" class="line" id="l2055">   2055</a> 	case &#39;v&#39;:
+<a href="#l2056" class="line" id="l2056">   2056</a> 		die(&quot;%s &quot; VERSION &quot;\n&quot;, argv0);
+<a href="#l2057" class="line" id="l2057">   2057</a> 		break;
+<a href="#l2058" class="line" id="l2058">   2058</a> 	default:
+<a href="#l2059" class="line" id="l2059">   2059</a> 		usage();
+<a href="#l2060" class="line" id="l2060">   2060</a> 	} ARGEND;
+<a href="#l2061" class="line" id="l2061">   2061</a> 
+<a href="#l2062" class="line" id="l2062">   2062</a> run:
+<a href="#l2063" class="line" id="l2063">   2063</a> 	if (argc &gt; 0) /* eat all remaining arguments */
+<a href="#l2064" class="line" id="l2064">   2064</a> 		opt_cmd = argv;
+<a href="#l2065" class="line" id="l2065">   2065</a> 
+<a href="#l2066" class="line" id="l2066">   2066</a> 	if (!opt_title)
+<a href="#l2067" class="line" id="l2067">   2067</a> 		opt_title = (opt_line || !opt_cmd) ? &quot;st&quot; : opt_cmd[0];
+<a href="#l2068" class="line" id="l2068">   2068</a> 
+<a href="#l2069" class="line" id="l2069">   2069</a> 	setlocale(LC_CTYPE, &quot;&quot;);
+<a href="#l2070" class="line" id="l2070">   2070</a> 	XSetLocaleModifiers(&quot;&quot;);
+<a href="#l2071" class="line" id="l2071">   2071</a> 	cols = MAX(cols, 1);
+<a href="#l2072" class="line" id="l2072">   2072</a> 	rows = MAX(rows, 1);
+<a href="#l2073" class="line" id="l2073">   2073</a> 	tnew(cols, rows);
+<a href="#l2074" class="line" id="l2074">   2074</a> 	xinit(cols, rows);
+<a href="#l2075" class="line" id="l2075">   2075</a> 	xsetenv();
+<a href="#l2076" class="line" id="l2076">   2076</a> 	selinit();
+<a href="#l2077" class="line" id="l2077">   2077</a> 	run();
+<a href="#l2078" class="line" id="l2078">   2078</a> 
+<a href="#l2079" class="line" id="l2079">   2079</a> 	return 0;
+<a href="#l2080" class="line" id="l2080">   2080</a> }
+</pre>
+</div>
+</body>
+</html>

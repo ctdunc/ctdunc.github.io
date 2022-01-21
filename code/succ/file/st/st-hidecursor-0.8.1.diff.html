@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>st-hidecursor-0.8.1.diff - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> st-hidecursor-0.8.1.diff (2589B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> diff --git a/x.c b/x.c
+<a href="#l2" class="line" id="l2">      2</a> index c343ba2..a40de8c 100644
+<a href="#l3" class="line" id="l3">      3</a> --- a/x.c
+<a href="#l4" class="line" id="l4">      4</a> +++ b/x.c
+<a href="#l5" class="line" id="l5">      5</a> @@ -96,6 +96,11 @@ typedef struct {
+<a href="#l6" class="line" id="l6">      6</a>  	Draw draw;
+<a href="#l7" class="line" id="l7">      7</a>  	Visual *vis;
+<a href="#l8" class="line" id="l8">      8</a>  	XSetWindowAttributes attrs;
+<a href="#l9" class="line" id="l9">      9</a> +	/* Here, we use the term *pointer* to differentiate the cursor
+<a href="#l10" class="line" id="l10">     10</a> +	 * one sees when hovering the mouse over the terminal from, e.g.,
+<a href="#l11" class="line" id="l11">     11</a> +	 * a green rectangle where text would be entered. */
+<a href="#l12" class="line" id="l12">     12</a> +	Cursor vpointer, bpointer; /* visible and hidden pointers */
+<a href="#l13" class="line" id="l13">     13</a> +	int pointerisvisible;
+<a href="#l14" class="line" id="l14">     14</a>  	int scr;
+<a href="#l15" class="line" id="l15">     15</a>  	int isfixed; /* is fixed geometry? */
+<a href="#l16" class="line" id="l16">     16</a>  	int l, t; /* left and top offset */
+<a href="#l17" class="line" id="l17">     17</a> @@ -652,6 +657,13 @@ brelease(XEvent *e)
+<a href="#l18" class="line" id="l18">     18</a>  void
+<a href="#l19" class="line" id="l19">     19</a>  bmotion(XEvent *e)
+<a href="#l20" class="line" id="l20">     20</a>  {
+<a href="#l21" class="line" id="l21">     21</a> +	if (!xw.pointerisvisible) {
+<a href="#l22" class="line" id="l22">     22</a> +		XDefineCursor(xw.dpy, xw.win, xw.vpointer);
+<a href="#l23" class="line" id="l23">     23</a> +		xw.pointerisvisible = 1;
+<a href="#l24" class="line" id="l24">     24</a> +		if (!IS_SET(MODE_MOUSEMANY))
+<a href="#l25" class="line" id="l25">     25</a> +			xsetpointermotion(0);
+<a href="#l26" class="line" id="l26">     26</a> +	}
+<a href="#l27" class="line" id="l27">     27</a> +
+<a href="#l28" class="line" id="l28">     28</a>  	if (IS_SET(MODE_MOUSE) &amp;&amp; !(e-&gt;xbutton.state &amp; forceselmod)) {
+<a href="#l29" class="line" id="l29">     29</a>  		mousereport(e);
+<a href="#l30" class="line" id="l30">     30</a>  		return;
+<a href="#l31" class="line" id="l31">     31</a> @@ -997,10 +1009,10 @@ void
+<a href="#l32" class="line" id="l32">     32</a>  xinit(int cols, int rows)
+<a href="#l33" class="line" id="l33">     33</a>  {
+<a href="#l34" class="line" id="l34">     34</a>  	XGCValues gcvalues;
+<a href="#l35" class="line" id="l35">     35</a> -	Cursor cursor;
+<a href="#l36" class="line" id="l36">     36</a>  	Window parent;
+<a href="#l37" class="line" id="l37">     37</a>  	pid_t thispid = getpid();
+<a href="#l38" class="line" id="l38">     38</a>  	XColor xmousefg, xmousebg;
+<a href="#l39" class="line" id="l39">     39</a> +	Pixmap blankpm;
+<a href="#l40" class="line" id="l40">     40</a>  
+<a href="#l41" class="line" id="l41">     41</a>  	if (!(xw.dpy = XOpenDisplay(NULL)))
+<a href="#l42" class="line" id="l42">     42</a>  		die(&quot;Can&#39;t open display\n&quot;);
+<a href="#l43" class="line" id="l43">     43</a> @@ -1076,8 +1088,9 @@ xinit(int cols, int rows)
+<a href="#l44" class="line" id="l44">     44</a>  		die(&quot;XCreateIC failed. Could not obtain input method.\n&quot;);
+<a href="#l45" class="line" id="l45">     45</a>  
+<a href="#l46" class="line" id="l46">     46</a>  	/* white cursor, black outline */
+<a href="#l47" class="line" id="l47">     47</a> -	cursor = XCreateFontCursor(xw.dpy, mouseshape);
+<a href="#l48" class="line" id="l48">     48</a> -	XDefineCursor(xw.dpy, xw.win, cursor);
+<a href="#l49" class="line" id="l49">     49</a> +	xw.pointerisvisible = 1;
+<a href="#l50" class="line" id="l50">     50</a> +	xw.vpointer = XCreateFontCursor(xw.dpy, mouseshape);
+<a href="#l51" class="line" id="l51">     51</a> +	XDefineCursor(xw.dpy, xw.win, xw.vpointer);
+<a href="#l52" class="line" id="l52">     52</a>  
+<a href="#l53" class="line" id="l53">     53</a>  	if (XParseColor(xw.dpy, xw.cmap, colorname[mousefg], &amp;xmousefg) == 0) {
+<a href="#l54" class="line" id="l54">     54</a>  		xmousefg.red   = 0xffff;
+<a href="#l55" class="line" id="l55">     55</a> @@ -1091,7 +1104,10 @@ xinit(int cols, int rows)
+<a href="#l56" class="line" id="l56">     56</a>  		xmousebg.blue  = 0x0000;
+<a href="#l57" class="line" id="l57">     57</a>  	}
+<a href="#l58" class="line" id="l58">     58</a>  
+<a href="#l59" class="line" id="l59">     59</a> -	XRecolorCursor(xw.dpy, cursor, &amp;xmousefg, &amp;xmousebg);
+<a href="#l60" class="line" id="l60">     60</a> +	XRecolorCursor(xw.dpy, xw.vpointer, &amp;xmousefg, &amp;xmousebg);
+<a href="#l61" class="line" id="l61">     61</a> +	blankpm = XCreateBitmapFromData(xw.dpy, xw.win, &amp;(char){0}, 1, 1);
+<a href="#l62" class="line" id="l62">     62</a> +	xw.bpointer = XCreatePixmapCursor(xw.dpy, blankpm, blankpm,
+<a href="#l63" class="line" id="l63">     63</a> +					  &amp;xmousefg, &amp;xmousebg, 0, 0);
+<a href="#l64" class="line" id="l64">     64</a>  
+<a href="#l65" class="line" id="l65">     65</a>  	xw.xembed = XInternAtom(xw.dpy, &quot;_XEMBED&quot;, False);
+<a href="#l66" class="line" id="l66">     66</a>  	xw.wmdeletewin = XInternAtom(xw.dpy, &quot;WM_DELETE_WINDOW&quot;, False);
+<a href="#l67" class="line" id="l67">     67</a> @@ -1574,6 +1590,8 @@ unmap(XEvent *ev)
+<a href="#l68" class="line" id="l68">     68</a>  void
+<a href="#l69" class="line" id="l69">     69</a>  xsetpointermotion(int set)
+<a href="#l70" class="line" id="l70">     70</a>  {
+<a href="#l71" class="line" id="l71">     71</a> +	if (!set &amp;&amp; !xw.pointerisvisible)
+<a href="#l72" class="line" id="l72">     72</a> +		return;
+<a href="#l73" class="line" id="l73">     73</a>  	MODBIT(xw.attrs.event_mask, set, PointerMotionMask);
+<a href="#l74" class="line" id="l74">     74</a>  	XChangeWindowAttributes(xw.dpy, xw.win, CWEventMask, &amp;xw.attrs);
+<a href="#l75" class="line" id="l75">     75</a>  }
+<a href="#l76" class="line" id="l76">     76</a> @@ -1692,6 +1710,12 @@ kpress(XEvent *ev)
+<a href="#l77" class="line" id="l77">     77</a>  	Status status;
+<a href="#l78" class="line" id="l78">     78</a>  	Shortcut *bp;
+<a href="#l79" class="line" id="l79">     79</a>  
+<a href="#l80" class="line" id="l80">     80</a> +	if (xw.pointerisvisible) {
+<a href="#l81" class="line" id="l81">     81</a> +		XDefineCursor(xw.dpy, xw.win, xw.bpointer);
+<a href="#l82" class="line" id="l82">     82</a> +		xsetpointermotion(1);
+<a href="#l83" class="line" id="l83">     83</a> +		xw.pointerisvisible = 0;
+<a href="#l84" class="line" id="l84">     84</a> +	}
+<a href="#l85" class="line" id="l85">     85</a> +
+<a href="#l86" class="line" id="l86">     86</a>  	if (IS_SET(MODE_KBDLOCK))
+<a href="#l87" class="line" id="l87">     87</a>  		return;
+<a href="#l88" class="line" id="l88">     88</a>  
+</pre>
+</div>
+</body>
+</html>

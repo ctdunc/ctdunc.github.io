@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>pythonrc.py - config - Config; personal dotfiles and other utilities.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="config Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>config</h1><span class="desc">Config; personal dotfiles and other utilities.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a> | <a href="../../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> pythonrc.py (290B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> import os
+<a href="#l2" class="line" id="l2">      2</a> import readline
+<a href="#l3" class="line" id="l3">      3</a> import atexit
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> readline_history_file = os.path.join(os.path.expanduser(&quot;~&quot;), &quot;.cache/python/.python_history&quot;)
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> try: 
+<a href="#l8" class="line" id="l8">      8</a>     readline.read_history_file(readline_history_file)
+<a href="#l9" class="line" id="l9">      9</a> except IOError:
+<a href="#l10" class="line" id="l10">     10</a>     pass
+<a href="#l11" class="line" id="l11">     11</a> atexit.register(readline.write_history_file, readline_history_file)
+</pre>
+</div>
+</body>
+</html>

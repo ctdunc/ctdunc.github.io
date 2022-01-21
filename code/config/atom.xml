@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>config, branch HEAD</title>
+<subtitle>Config; personal dotfiles and other utilities.
+</subtitle>
+<entry>
+<id>1bd3376c1e46258ef81de51ea2ef82b525b1094d</id>
+<published>2019-12-08T02:03:01Z</published>
+<updated>2019-12-08T02:03:01Z</updated>
+<title type="text">doom riced</title>
+<link rel="alternate" type="text/html" href="commit/1bd3376c1e46258ef81de51ea2ef82b525b1094d.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 1bd3376c1e46258ef81de51ea2ef82b525b1094d
+parent 32dba7e96f34dad1d126b9a5cbe69d78e9529951
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Sat,  7 Dec 2019 18:03:01 -0800
+
+doom riced
+
+</content>
+</entry>
+<entry>
+<id>32dba7e96f34dad1d126b9a5cbe69d78e9529951</id>
+<published>2019-10-31T17:54:54Z</published>
+<updated>2019-10-31T17:54:54Z</updated>
+<title type="text">new com</title>
+<link rel="alternate" type="text/html" href="commit/32dba7e96f34dad1d126b9a5cbe69d78e9529951.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 32dba7e96f34dad1d126b9a5cbe69d78e9529951
+parent eaddca883d023b98ccfb8336e95f3dec4fe85391
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:54:54 -0700
+
+new com
+
+</content>
+</entry>
+<entry>
+<id>eaddca883d023b98ccfb8336e95f3dec4fe85391</id>
+<published>2019-10-31T17:51:21Z</published>
+<updated>2019-10-31T17:51:21Z</updated>
+<title type="text">new com</title>
+<link rel="alternate" type="text/html" href="commit/eaddca883d023b98ccfb8336e95f3dec4fe85391.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit eaddca883d023b98ccfb8336e95f3dec4fe85391
+parent 72730d1c1dae1c2ea0e52a3647edcf548f7c88ad
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:51:21 -0700
+
+new com
+
+</content>
+</entry>
+<entry>
+<id>72730d1c1dae1c2ea0e52a3647edcf548f7c88ad</id>
+<published>2019-10-31T17:50:07Z</published>
+<updated>2019-10-31T17:50:07Z</updated>
+<title type="text">new com</title>
+<link rel="alternate" type="text/html" href="commit/72730d1c1dae1c2ea0e52a3647edcf548f7c88ad.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 72730d1c1dae1c2ea0e52a3647edcf548f7c88ad
+parent 9e3cde6f82be6b80cffc97a3a039b8b84ad3a20e
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:50:07 -0700
+
+new com
+
+</content>
+</entry>
+<entry>
+<id>9e3cde6f82be6b80cffc97a3a039b8b84ad3a20e</id>
+<published>2019-10-31T17:49:24Z</published>
+<updated>2019-10-31T17:49:24Z</updated>
+<title type="text">new com</title>
+<link rel="alternate" type="text/html" href="commit/9e3cde6f82be6b80cffc97a3a039b8b84ad3a20e.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 9e3cde6f82be6b80cffc97a3a039b8b84ad3a20e
+parent 4aea6a5c884b0ea3ce15be123312f9ff3af15e76
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:49:24 -0700
+
+new com
+
+</content>
+</entry>
+<entry>
+<id>4aea6a5c884b0ea3ce15be123312f9ff3af15e76</id>
+<published>2019-10-31T17:47:15Z</published>
+<updated>2019-10-31T17:47:15Z</updated>
+<title type="text">new com</title>
+<link rel="alternate" type="text/html" href="commit/4aea6a5c884b0ea3ce15be123312f9ff3af15e76.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 4aea6a5c884b0ea3ce15be123312f9ff3af15e76
+parent 000053c8c6bcd63a7dec10ba109c9671dcc28c06
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:47:15 -0700
+
+new com
+
+</content>
+</entry>
+<entry>
+<id>000053c8c6bcd63a7dec10ba109c9671dcc28c06</id>
+<published>2019-10-31T17:45:18Z</published>
+<updated>2019-10-31T17:45:18Z</updated>
+<title type="text">new com</title>
+<link rel="alternate" type="text/html" href="commit/000053c8c6bcd63a7dec10ba109c9671dcc28c06.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 000053c8c6bcd63a7dec10ba109c9671dcc28c06
+parent 7187769f5a5266e89220d1926fbe1015e253f31c
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:45:18 -0700
+
+new com
+
+</content>
+</entry>
+<entry>
+<id>7187769f5a5266e89220d1926fbe1015e253f31c</id>
+<published>2019-10-31T17:38:20Z</published>
+<updated>2019-10-31T17:38:20Z</updated>
+<title type="text">new test</title>
+<link rel="alternate" type="text/html" href="commit/7187769f5a5266e89220d1926fbe1015e253f31c.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 7187769f5a5266e89220d1926fbe1015e253f31c
+parent d9e9a6e44cfc8e37af636c877b4a746e1f6e3d2e
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:38:20 -0700
+
+new test
+
+</content>
+</entry>
+<entry>
+<id>d9e9a6e44cfc8e37af636c877b4a746e1f6e3d2e</id>
+<published>2019-10-31T17:27:21Z</published>
+<updated>2019-10-31T17:27:21Z</updated>
+<title type="text">test change</title>
+<link rel="alternate" type="text/html" href="commit/d9e9a6e44cfc8e37af636c877b4a746e1f6e3d2e.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit d9e9a6e44cfc8e37af636c877b4a746e1f6e3d2e
+parent 37baa7d73f6aa145f3b575b85e23dcde29dad558
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:27:21 -0700
+
+test change
+
+</content>
+</entry>
+<entry>
+<id>37baa7d73f6aa145f3b575b85e23dcde29dad558</id>
+<published>2019-10-31T17:26:11Z</published>
+<updated>2019-10-31T17:26:11Z</updated>
+<title type="text">test change</title>
+<link rel="alternate" type="text/html" href="commit/37baa7d73f6aa145f3b575b85e23dcde29dad558.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 37baa7d73f6aa145f3b575b85e23dcde29dad558
+parent 6ed16fd2c4bcc883b700efd88e7ff49945806525
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Thu, 31 Oct 2019 10:26:11 -0700
+
+test change
+
+</content>
+</entry>
+<entry>
+<id>6ed16fd2c4bcc883b700efd88e7ff49945806525</id>
+<published>2019-10-30T16:37:08Z</published>
+<updated>2019-10-30T16:37:08Z</updated>
+<title type="text">small changes to profile + vimrc</title>
+<link rel="alternate" type="text/html" href="commit/6ed16fd2c4bcc883b700efd88e7ff49945806525.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 6ed16fd2c4bcc883b700efd88e7ff49945806525
+parent 4d3204447f3ee1808c0bae4582246f6a1c600074
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Wed, 30 Oct 2019 09:37:08 -0700
+
+small changes to profile + vimrc
+
+</content>
+</entry>
+<entry>
+<id>4d3204447f3ee1808c0bae4582246f6a1c600074</id>
+<published>2019-10-25T17:53:45Z</published>
+<updated>2019-10-25T17:53:45Z</updated>
+<title type="text">readme updates and new license</title>
+<link rel="alternate" type="text/html" href="commit/4d3204447f3ee1808c0bae4582246f6a1c600074.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit 4d3204447f3ee1808c0bae4582246f6a1c600074
+parent f97802724136139e622eeb90eb46aefd29fc3f7e
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Fri, 25 Oct 2019 10:53:45 -0700
+
+readme updates and new license
+
+</content>
+</entry>
+<entry>
+<id>f97802724136139e622eeb90eb46aefd29fc3f7e</id>
+<published>2019-10-23T17:47:36Z</published>
+<updated>2019-10-23T17:47:36Z</updated>
+<title type="text">initial commit</title>
+<link rel="alternate" type="text/html" href="commit/f97802724136139e622eeb90eb46aefd29fc3f7e.html" /><author><name>Connor Duncan</name>
+<email>connor@connorduncan.xyz</email>
+</author>
+<content type="text">commit f97802724136139e622eeb90eb46aefd29fc3f7e
+Author: Connor Duncan &lt;connor@connorduncan.xyz&gt;
+Date:   Wed, 23 Oct 2019 10:47:36 -0700
+
+initial commit
+
+</content>
+</entry>
+</feed>

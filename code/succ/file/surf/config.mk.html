@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>config.mk - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> config.mk (840B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> # surf version
+<a href="#l2" class="line" id="l2">      2</a> VERSION = 2.0
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> # Customize below to fit your system
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a> # paths
+<a href="#l7" class="line" id="l7">      7</a> PREFIX = /usr/local
+<a href="#l8" class="line" id="l8">      8</a> MANPREFIX = $(PREFIX)/share/man
+<a href="#l9" class="line" id="l9">      9</a> LIBPREFIX = $(PREFIX)/lib
+<a href="#l10" class="line" id="l10">     10</a> LIBDIR = $(LIBPREFIX)/surf
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> X11INC = `pkg-config --cflags x11`
+<a href="#l13" class="line" id="l13">     13</a> X11LIB = `pkg-config --libs x11`
+<a href="#l14" class="line" id="l14">     14</a> 
+<a href="#l15" class="line" id="l15">     15</a> GTKINC = `pkg-config --cflags gtk+-3.0 gcr-3 webkit2gtk-4.0`
+<a href="#l16" class="line" id="l16">     16</a> GTKLIB = `pkg-config --libs gtk+-3.0 gcr-3 webkit2gtk-4.0`
+<a href="#l17" class="line" id="l17">     17</a> WEBEXTINC = `pkg-config --cflags webkit2gtk-4.0 webkit2gtk-web-extension-4.0`
+<a href="#l18" class="line" id="l18">     18</a> WEBEXTLIBS = `pkg-config --libs webkit2gtk-4.0 webkit2gtk-web-extension-4.0`
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a> # includes and libs
+<a href="#l21" class="line" id="l21">     21</a> INCS = $(X11INC) $(GTKINC)
+<a href="#l22" class="line" id="l22">     22</a> LIBS = $(X11LIB) $(GTKLIB) -lgthread-2.0
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> # flags
+<a href="#l25" class="line" id="l25">     25</a> CPPFLAGS = -DVERSION=\&quot;$(VERSION)\&quot; -DWEBEXTDIR=\&quot;$(LIBDIR)\&quot; \
+<a href="#l26" class="line" id="l26">     26</a>            -D_DEFAULT_SOURCE -DGCR_API_SUBJECT_TO_CHANGE
+<a href="#l27" class="line" id="l27">     27</a> SURFCFLAGS = $(INCS) $(CPPFLAGS) -fPIC
+<a href="#l28" class="line" id="l28">     28</a> WEBEXTCFLAGS = -fPIC $(WEBEXTINC)
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a> # compiler
+<a href="#l31" class="line" id="l31">     31</a> #CC = c99
+</pre>
+</div>
+</body>
+</html>

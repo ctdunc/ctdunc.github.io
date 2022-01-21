@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>vimrc - config - Config; personal dotfiles and other utilities.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="config Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>config</h1><span class="desc">Config; personal dotfiles and other utilities.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a> | <a href="../../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> vimrc (1494B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> set nocompatible
+<a href="#l2" class="line" id="l2">      2</a> 
+<a href="#l3" class="line" id="l3">      3</a> &quot;Enable Vundle
+<a href="#l4" class="line" id="l4">      4</a> set rtp+=~/config/vim/plug/bundle/Vundle.vim
+<a href="#l5" class="line" id="l5">      5</a> let g:tex_flavor=&#39;tex&#39;
+<a href="#l6" class="line" id="l6">      6</a> &quot;Get my own ftplugins
+<a href="#l7" class="line" id="l7">      7</a> set rtp+=~/config/vim
+<a href="#l8" class="line" id="l8">      8</a> let vimDir = &#39;~/config/vim&#39;
+<a href="#l9" class="line" id="l9">      9</a> call vundle#rc(expand(vimDir . &#39;/plug/bundle&#39;))
+<a href="#l10" class="line" id="l10">     10</a> call vundle#begin()
+<a href="#l11" class="line" id="l11">     11</a> Plugin &#39;VundleVim/Vundle.vim&#39;
+<a href="#l12" class="line" id="l12">     12</a> Plugin &#39;itchyny/lightline.vim&#39;
+<a href="#l13" class="line" id="l13">     13</a> Plugin &#39;airblade/vim-gitgutter&#39;
+<a href="#l14" class="line" id="l14">     14</a> Plugin &#39;tpope/vim-surround&#39;
+<a href="#l15" class="line" id="l15">     15</a> Plugin &#39;tpope/vim-fugitive&#39;
+<a href="#l16" class="line" id="l16">     16</a> Plugin &#39;neomake/neomake&#39;
+<a href="#l17" class="line" id="l17">     17</a> call vundle#end()
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> filetype plugin indent on
+<a href="#l20" class="line" id="l20">     20</a> &quot;set defaults
+<a href="#l21" class="line" id="l21">     21</a> set splitright
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> &quot;allow backspacing over autoindent, line breaks, and start of insert action
+<a href="#l24" class="line" id="l24">     24</a> set backspace=indent,eol,start
+<a href="#l25" class="line" id="l25">     25</a> 
+<a href="#l26" class="line" id="l26">     26</a> &quot;stop certain movements from going to first character of line.
+<a href="#l27" class="line" id="l27">     27</a> set nostartofline
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a> &quot;display cursor position on the last line of screen or in status line
+<a href="#l30" class="line" id="l30">     30</a> set ruler
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> &quot;hybrid number
+<a href="#l33" class="line" id="l33">     33</a> set number relativenumber
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> &quot;start laststatus
+<a href="#l36" class="line" id="l36">     36</a> set laststatus=2
+<a href="#l37" class="line" id="l37">     37</a> let g:lightline = {
+<a href="#l38" class="line" id="l38">     38</a>       \ &#39;colorscheme&#39;:&#39;default&#39;, 
+<a href="#l39" class="line" id="l39">     39</a>       \ &#39;active&#39;: {
+<a href="#l40" class="line" id="l40">     40</a>       \		&#39;left&#39;: [ [&#39;mode&#39;, &#39;paste&#39;],
+<a href="#l41" class="line" id="l41">     41</a>       \			  [&#39;gitbranch&#39;, &#39;readonly&#39;, &#39;filename&#39;, &#39;modified&#39;] ]
+<a href="#l42" class="line" id="l42">     42</a>       \ },
+<a href="#l43" class="line" id="l43">     43</a>       \ &#39;component_function&#39; : {
+<a href="#l44" class="line" id="l44">     44</a>       \		&#39;gitbranch&#39; : &#39;fugitive#head&#39;
+<a href="#l45" class="line" id="l45">     45</a>       \ },
+<a href="#l46" class="line" id="l46">     46</a>       \ }
+<a href="#l47" class="line" id="l47">     47</a> 
+<a href="#l48" class="line" id="l48">     48</a> &quot;character and word counts mapped to F-5
+<a href="#l49" class="line" id="l49">     49</a> map &lt;F5&gt; :!wc &lt;C-R&gt;%&lt;CR&gt;
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> &quot;spell check set to F-6
+<a href="#l52" class="line" id="l52">     52</a> map &lt;F6&gt; :setlocal spell! spelllang=en_us&lt;CR&gt;
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a> &quot;navigation with guides
+<a href="#l55" class="line" id="l55">     55</a> inoremap &lt;Space&gt;&lt;Tab&gt; &lt;Esc&gt;/&lt;++&gt;&lt;Enter&gt;&quot;_c4l
+<a href="#l56" class="line" id="l56">     56</a> vnoremap &lt;Space&gt;&lt;Tab&gt; &lt;Esc&gt;/&lt;++&gt;&lt;Enter&gt;&quot;_c4l
+<a href="#l57" class="line" id="l57">     57</a> map &lt;Space&gt;&lt;Tab&gt; &lt;Esc&gt;/&lt;++&gt;&lt;Enter&gt;&quot;_c4l
+<a href="#l58" class="line" id="l58">     58</a> 
+<a href="#l59" class="line" id="l59">     59</a> &quot;skip to errors
+<a href="#l60" class="line" id="l60">     60</a> nnoremap  &lt;Tab&gt; :lnext&lt;cr&gt;
+<a href="#l61" class="line" id="l61">     61</a> nnoremap &lt;S-Tab&gt; :lprev&lt;cr&gt;
+<a href="#l62" class="line" id="l62">     62</a> 
+<a href="#l63" class="line" id="l63">     63</a> syntax on
+</pre>
+</div>
+</body>
+</html>

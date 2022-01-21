@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>small changes to profile + vimrc - config - Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</title>
+<link rel="icon" type="image/png" href="../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="config Atom Feed" href="../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../"><img src="../logo.png" alt="" width="32" height="32" /></a></td><td><h1>config</h1><span class="desc">Unnamed repository; edit this file &#39;description&#39; to name the repository.
+</span></td></tr><tr><td></td><td>
+<a href="../log.html">Log</a> | <a href="../files.html">Files</a> | <a href="../refs.html">Refs</a> | <a href="../file/README.html">README</a> | <a href="../file/LICENSE.html">LICENSE</a></td></tr></table>
+<hr/>
+<div id="content">
+<pre><b>commit</b> <a href="../commit/6ed16fd2c4bcc883b700efd88e7ff49945806525.html">6ed16fd2c4bcc883b700efd88e7ff49945806525</a>
+<b>parent</b> <a href="../commit/4d3204447f3ee1808c0bae4582246f6a1c600074.html">4d3204447f3ee1808c0bae4582246f6a1c600074</a>
+<b>Author:</b> Connor Duncan &lt;<a href="mailto:connor@connorduncan.xyz">connor@connorduncan.xyz</a>&gt;
+<b>Date:</b>   Wed, 30 Oct 2019 09:37:08 -0700
+
+small changes to profile + vimrc
+
+<b>Diffstat:</b>
+<table><tr><td class="M">M</td><td><a href="#h0">sh/profile</a></td><td> | </td><td class="num">2</td><td><span class="i">+</span><span class="d">-</span></td></tr>
+<tr><td class="M">M</td><td><a href="#h1">vim/vimrc</a></td><td> | </td><td class="num">2</td><td><span class="i">+</span><span class="d">-</span></td></tr>
+</table></pre><pre>2 files changed, 2 insertions(+), 2 deletions(-)
+<hr/><b>diff --git a/<a id="h0" href="../file/sh/profile.html">sh/profile</a> b/<a href="../file/sh/profile.html">sh/profile</a></b>
+<a href="#h0-0" id="h0-0" class="h">@@ -5,7 +5,7 @@ export PYTHONSTARTUP=$HOME/config/sh/pythonrc.py
+</a> export HTOPRC=$HOME/config/htop/htoprc
+ 
+ # Personal Exports
+<a href="#h0-0-3" id="h0-0-3" class="d">-export PATH=&quot;$HOME/.local/lib/:$PATH&quot;
+</a><a href="#h0-0-4" id="h0-0-4" class="i">+export PATH=&quot;$HOME/.local/lib:$HOME/.local/lib/vim:$PATH&quot;
+</a> export VISUAL=&quot;/usr/bin/vim&quot;
+ export EDITOR=&quot;/usr/bin/vim&quot;
+ 
+<b>diff --git a/<a id="h1" href="../file/vim/vimrc.html">vim/vimrc</a> b/<a href="../file/vim/vimrc.html">vim/vimrc</a></b>
+<a href="#h1-0" id="h1-0" class="h">@@ -3,7 +3,7 @@ colorscheme elflord
+</a> 
+ &quot;Enable Vundle
+ set rtp+=~/config/vim/plug/bundle/Vundle.vim
+<a href="#h1-0-3" id="h1-0-3" class="d">-
+</a><a href="#h1-0-4" id="h1-0-4" class="i">+let g:tex_flavor=&#39;tex&#39;
+</a> &quot;Get my own ftplugins
+ set rtp+=~/config/vim
+ let vimDir = &#39;~/config/vim&#39;
+</pre>
+</div>
+</body>
+</html>

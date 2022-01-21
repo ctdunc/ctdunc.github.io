@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>surf.c - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> surf.c (53283B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> /* See LICENSE file for copyright and license details.
+<a href="#l2" class="line" id="l2">      2</a>  *
+<a href="#l3" class="line" id="l3">      3</a>  * To understand surf, start reading main().
+<a href="#l4" class="line" id="l4">      4</a>  */
+<a href="#l5" class="line" id="l5">      5</a> #include &lt;sys/file.h&gt;
+<a href="#l6" class="line" id="l6">      6</a> #include &lt;sys/types.h&gt;
+<a href="#l7" class="line" id="l7">      7</a> #include &lt;sys/wait.h&gt;
+<a href="#l8" class="line" id="l8">      8</a> #include &lt;glib.h&gt;
+<a href="#l9" class="line" id="l9">      9</a> #include &lt;libgen.h&gt;
+<a href="#l10" class="line" id="l10">     10</a> #include &lt;limits.h&gt;
+<a href="#l11" class="line" id="l11">     11</a> #include &lt;pwd.h&gt;
+<a href="#l12" class="line" id="l12">     12</a> #include &lt;regex.h&gt;
+<a href="#l13" class="line" id="l13">     13</a> #include &lt;signal.h&gt;
+<a href="#l14" class="line" id="l14">     14</a> #include &lt;stdio.h&gt;
+<a href="#l15" class="line" id="l15">     15</a> #include &lt;stdlib.h&gt;
+<a href="#l16" class="line" id="l16">     16</a> #include &lt;string.h&gt;
+<a href="#l17" class="line" id="l17">     17</a> #include &lt;unistd.h&gt;
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> #include &lt;gdk/gdk.h&gt;
+<a href="#l20" class="line" id="l20">     20</a> #include &lt;gdk/gdkkeysyms.h&gt;
+<a href="#l21" class="line" id="l21">     21</a> #include &lt;gdk/gdkx.h&gt;
+<a href="#l22" class="line" id="l22">     22</a> #include &lt;glib/gstdio.h&gt;
+<a href="#l23" class="line" id="l23">     23</a> #include &lt;gtk/gtk.h&gt;
+<a href="#l24" class="line" id="l24">     24</a> #include &lt;gtk/gtkx.h&gt;
+<a href="#l25" class="line" id="l25">     25</a> #include &lt;gcr/gcr.h&gt;
+<a href="#l26" class="line" id="l26">     26</a> #include &lt;JavaScriptCore/JavaScript.h&gt;
+<a href="#l27" class="line" id="l27">     27</a> #include &lt;webkit2/webkit2.h&gt;
+<a href="#l28" class="line" id="l28">     28</a> #include &lt;X11/X.h&gt;
+<a href="#l29" class="line" id="l29">     29</a> #include &lt;X11/Xatom.h&gt;
+<a href="#l30" class="line" id="l30">     30</a> #include &lt;glib.h&gt;
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> #include &quot;arg.h&quot;
+<a href="#l33" class="line" id="l33">     33</a> #include &quot;common.h&quot;
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> #define LENGTH(x)               (sizeof(x) / sizeof(x[0]))
+<a href="#l36" class="line" id="l36">     36</a> #define CLEANMASK(mask)         (mask &amp; (MODKEY|GDK_SHIFT_MASK))
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> enum { AtomFind, AtomGo, AtomUri, AtomLast };
+<a href="#l39" class="line" id="l39">     39</a> 
+<a href="#l40" class="line" id="l40">     40</a> enum {
+<a href="#l41" class="line" id="l41">     41</a> 	OnDoc   = WEBKIT_HIT_TEST_RESULT_CONTEXT_DOCUMENT,
+<a href="#l42" class="line" id="l42">     42</a> 	OnLink  = WEBKIT_HIT_TEST_RESULT_CONTEXT_LINK,
+<a href="#l43" class="line" id="l43">     43</a> 	OnImg   = WEBKIT_HIT_TEST_RESULT_CONTEXT_IMAGE,
+<a href="#l44" class="line" id="l44">     44</a> 	OnMedia = WEBKIT_HIT_TEST_RESULT_CONTEXT_MEDIA,
+<a href="#l45" class="line" id="l45">     45</a> 	OnEdit  = WEBKIT_HIT_TEST_RESULT_CONTEXT_EDITABLE,
+<a href="#l46" class="line" id="l46">     46</a> 	OnBar   = WEBKIT_HIT_TEST_RESULT_CONTEXT_SCROLLBAR,
+<a href="#l47" class="line" id="l47">     47</a> 	OnSel   = WEBKIT_HIT_TEST_RESULT_CONTEXT_SELECTION,
+<a href="#l48" class="line" id="l48">     48</a> 	OnAny   = OnDoc | OnLink | OnImg | OnMedia | OnEdit | OnBar | OnSel,
+<a href="#l49" class="line" id="l49">     49</a> };
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> typedef enum {
+<a href="#l52" class="line" id="l52">     52</a> 	AcceleratedCanvas,
+<a href="#l53" class="line" id="l53">     53</a> 	AccessMicrophone,
+<a href="#l54" class="line" id="l54">     54</a> 	AccessWebcam,
+<a href="#l55" class="line" id="l55">     55</a> 	CaretBrowsing,
+<a href="#l56" class="line" id="l56">     56</a> 	Certificate,
+<a href="#l57" class="line" id="l57">     57</a> 	CookiePolicies,
+<a href="#l58" class="line" id="l58">     58</a> 	DiskCache,
+<a href="#l59" class="line" id="l59">     59</a> 	DefaultCharset,
+<a href="#l60" class="line" id="l60">     60</a> 	DNSPrefetch,
+<a href="#l61" class="line" id="l61">     61</a> 	FileURLsCrossAccess,
+<a href="#l62" class="line" id="l62">     62</a> 	FontSize,
+<a href="#l63" class="line" id="l63">     63</a> 	FrameFlattening,
+<a href="#l64" class="line" id="l64">     64</a> 	Geolocation,
+<a href="#l65" class="line" id="l65">     65</a> 	HideBackground,
+<a href="#l66" class="line" id="l66">     66</a> 	Inspector,
+<a href="#l67" class="line" id="l67">     67</a> 	Java,
+<a href="#l68" class="line" id="l68">     68</a> 	JavaScript,
+<a href="#l69" class="line" id="l69">     69</a> 	KioskMode,
+<a href="#l70" class="line" id="l70">     70</a> 	LoadImages,
+<a href="#l71" class="line" id="l71">     71</a> 	MediaManualPlay,
+<a href="#l72" class="line" id="l72">     72</a> 	Plugins,
+<a href="#l73" class="line" id="l73">     73</a> 	PreferredLanguages,
+<a href="#l74" class="line" id="l74">     74</a> 	RunInFullscreen,
+<a href="#l75" class="line" id="l75">     75</a> 	ScrollBars,
+<a href="#l76" class="line" id="l76">     76</a> 	ShowIndicators,
+<a href="#l77" class="line" id="l77">     77</a> 	SiteQuirks,
+<a href="#l78" class="line" id="l78">     78</a> 	SmoothScrolling,
+<a href="#l79" class="line" id="l79">     79</a> 	SpellChecking,
+<a href="#l80" class="line" id="l80">     80</a> 	SpellLanguages,
+<a href="#l81" class="line" id="l81">     81</a> 	StrictTLS,
+<a href="#l82" class="line" id="l82">     82</a> 	Style,
+<a href="#l83" class="line" id="l83">     83</a> 	WebGL,
+<a href="#l84" class="line" id="l84">     84</a> 	ZoomLevel,
+<a href="#l85" class="line" id="l85">     85</a> 	ParameterLast
+<a href="#l86" class="line" id="l86">     86</a> } ParamName;
+<a href="#l87" class="line" id="l87">     87</a> 
+<a href="#l88" class="line" id="l88">     88</a> typedef union {
+<a href="#l89" class="line" id="l89">     89</a> 	int i;
+<a href="#l90" class="line" id="l90">     90</a> 	float f;
+<a href="#l91" class="line" id="l91">     91</a> 	const void *v;
+<a href="#l92" class="line" id="l92">     92</a> } Arg;
+<a href="#l93" class="line" id="l93">     93</a> 
+<a href="#l94" class="line" id="l94">     94</a> typedef struct {
+<a href="#l95" class="line" id="l95">     95</a> 	Arg val;
+<a href="#l96" class="line" id="l96">     96</a> 	int prio;
+<a href="#l97" class="line" id="l97">     97</a> } Parameter;
+<a href="#l98" class="line" id="l98">     98</a> 
+<a href="#l99" class="line" id="l99">     99</a> typedef struct Client {
+<a href="#l100" class="line" id="l100">    100</a> 	GtkWidget *win;
+<a href="#l101" class="line" id="l101">    101</a> 	WebKitWebView *view;
+<a href="#l102" class="line" id="l102">    102</a> 	WebKitWebInspector *inspector;
+<a href="#l103" class="line" id="l103">    103</a> 	WebKitFindController *finder;
+<a href="#l104" class="line" id="l104">    104</a> 	WebKitHitTestResult *mousepos;
+<a href="#l105" class="line" id="l105">    105</a> 	GTlsCertificate *cert, *failedcert;
+<a href="#l106" class="line" id="l106">    106</a> 	GTlsCertificateFlags tlserr;
+<a href="#l107" class="line" id="l107">    107</a> 	Window xid;
+<a href="#l108" class="line" id="l108">    108</a> 	unsigned long pageid;
+<a href="#l109" class="line" id="l109">    109</a> 	int progress, fullscreen, https, insecure, errorpage;
+<a href="#l110" class="line" id="l110">    110</a> 	const char *title, *overtitle, *targeturi;
+<a href="#l111" class="line" id="l111">    111</a> 	const char *needle;
+<a href="#l112" class="line" id="l112">    112</a> 	struct Client *next;
+<a href="#l113" class="line" id="l113">    113</a> } Client;
+<a href="#l114" class="line" id="l114">    114</a> 
+<a href="#l115" class="line" id="l115">    115</a> typedef struct {
+<a href="#l116" class="line" id="l116">    116</a> 	guint mod;
+<a href="#l117" class="line" id="l117">    117</a> 	guint keyval;
+<a href="#l118" class="line" id="l118">    118</a> 	void (*func)(Client *c, const Arg *a);
+<a href="#l119" class="line" id="l119">    119</a> 	const Arg arg;
+<a href="#l120" class="line" id="l120">    120</a> } Key;
+<a href="#l121" class="line" id="l121">    121</a> 
+<a href="#l122" class="line" id="l122">    122</a> typedef struct {
+<a href="#l123" class="line" id="l123">    123</a> 	unsigned int target;
+<a href="#l124" class="line" id="l124">    124</a> 	unsigned int mask;
+<a href="#l125" class="line" id="l125">    125</a> 	guint button;
+<a href="#l126" class="line" id="l126">    126</a> 	void (*func)(Client *c, const Arg *a, WebKitHitTestResult *h);
+<a href="#l127" class="line" id="l127">    127</a> 	const Arg arg;
+<a href="#l128" class="line" id="l128">    128</a> 	unsigned int stopevent;
+<a href="#l129" class="line" id="l129">    129</a> } Button;
+<a href="#l130" class="line" id="l130">    130</a> 
+<a href="#l131" class="line" id="l131">    131</a> typedef struct {
+<a href="#l132" class="line" id="l132">    132</a> 	const char *uri;
+<a href="#l133" class="line" id="l133">    133</a> 	Parameter config[ParameterLast];
+<a href="#l134" class="line" id="l134">    134</a> 	regex_t re;
+<a href="#l135" class="line" id="l135">    135</a> } UriParameters;
+<a href="#l136" class="line" id="l136">    136</a> 
+<a href="#l137" class="line" id="l137">    137</a> typedef struct {
+<a href="#l138" class="line" id="l138">    138</a> 	char *regex;
+<a href="#l139" class="line" id="l139">    139</a> 	char *file;
+<a href="#l140" class="line" id="l140">    140</a> 	regex_t re;
+<a href="#l141" class="line" id="l141">    141</a> } SiteSpecific;
+<a href="#l142" class="line" id="l142">    142</a> 
+<a href="#l143" class="line" id="l143">    143</a> /* Surf */
+<a href="#l144" class="line" id="l144">    144</a> static void usage(void);
+<a href="#l145" class="line" id="l145">    145</a> static void setup(void);
+<a href="#l146" class="line" id="l146">    146</a> static void sigchld(int unused);
+<a href="#l147" class="line" id="l147">    147</a> static void sighup(int unused);
+<a href="#l148" class="line" id="l148">    148</a> static char *buildfile(const char *path);
+<a href="#l149" class="line" id="l149">    149</a> static char *buildpath(const char *path);
+<a href="#l150" class="line" id="l150">    150</a> static char *untildepath(const char *path);
+<a href="#l151" class="line" id="l151">    151</a> static const char *getuserhomedir(const char *user);
+<a href="#l152" class="line" id="l152">    152</a> static const char *getcurrentuserhomedir(void);
+<a href="#l153" class="line" id="l153">    153</a> static Client *newclient(Client *c);
+<a href="#l154" class="line" id="l154">    154</a> static void loaduri(Client *c, const Arg *a);
+<a href="#l155" class="line" id="l155">    155</a> static const char *geturi(Client *c);
+<a href="#l156" class="line" id="l156">    156</a> static void setatom(Client *c, int a, const char *v);
+<a href="#l157" class="line" id="l157">    157</a> static const char *getatom(Client *c, int a);
+<a href="#l158" class="line" id="l158">    158</a> static void updatetitle(Client *c);
+<a href="#l159" class="line" id="l159">    159</a> static void gettogglestats(Client *c);
+<a href="#l160" class="line" id="l160">    160</a> static void getpagestats(Client *c);
+<a href="#l161" class="line" id="l161">    161</a> static WebKitCookieAcceptPolicy cookiepolicy_get(void);
+<a href="#l162" class="line" id="l162">    162</a> static char cookiepolicy_set(const WebKitCookieAcceptPolicy p);
+<a href="#l163" class="line" id="l163">    163</a> static void seturiparameters(Client *c, const char *uri, ParamName *params);
+<a href="#l164" class="line" id="l164">    164</a> static void setparameter(Client *c, int refresh, ParamName p, const Arg *a);
+<a href="#l165" class="line" id="l165">    165</a> static const char *getcert(const char *uri);
+<a href="#l166" class="line" id="l166">    166</a> static void setcert(Client *c, const char *file);
+<a href="#l167" class="line" id="l167">    167</a> static const char *getstyle(const char *uri);
+<a href="#l168" class="line" id="l168">    168</a> static void setstyle(Client *c, const char *file);
+<a href="#l169" class="line" id="l169">    169</a> static void runscript(Client *c);
+<a href="#l170" class="line" id="l170">    170</a> static void evalscript(Client *c, const char *jsstr, ...);
+<a href="#l171" class="line" id="l171">    171</a> static void updatewinid(Client *c);
+<a href="#l172" class="line" id="l172">    172</a> static void handleplumb(Client *c, const char *uri);
+<a href="#l173" class="line" id="l173">    173</a> static void newwindow(Client *c, const Arg *a, int noembed);
+<a href="#l174" class="line" id="l174">    174</a> static void spawn(Client *c, const Arg *a);
+<a href="#l175" class="line" id="l175">    175</a> static void msgext(Client *c, char type, const Arg *a);
+<a href="#l176" class="line" id="l176">    176</a> static void destroyclient(Client *c);
+<a href="#l177" class="line" id="l177">    177</a> static void cleanup(void);
+<a href="#l178" class="line" id="l178">    178</a> 
+<a href="#l179" class="line" id="l179">    179</a> /* GTK/WebKit */
+<a href="#l180" class="line" id="l180">    180</a> static WebKitWebView *newview(Client *c, WebKitWebView *rv);
+<a href="#l181" class="line" id="l181">    181</a> static void initwebextensions(WebKitWebContext *wc, Client *c);
+<a href="#l182" class="line" id="l182">    182</a> static GtkWidget *createview(WebKitWebView *v, WebKitNavigationAction *a,
+<a href="#l183" class="line" id="l183">    183</a>                              Client *c);
+<a href="#l184" class="line" id="l184">    184</a> static gboolean buttonreleased(GtkWidget *w, GdkEvent *e, Client *c);
+<a href="#l185" class="line" id="l185">    185</a> static GdkFilterReturn processx(GdkXEvent *xevent, GdkEvent *event,
+<a href="#l186" class="line" id="l186">    186</a>                                 gpointer d);
+<a href="#l187" class="line" id="l187">    187</a> static gboolean winevent(GtkWidget *w, GdkEvent *e, Client *c);
+<a href="#l188" class="line" id="l188">    188</a> static gboolean readpipe(GIOChannel *s, GIOCondition ioc, gpointer unused);
+<a href="#l189" class="line" id="l189">    189</a> static void showview(WebKitWebView *v, Client *c);
+<a href="#l190" class="line" id="l190">    190</a> static GtkWidget *createwindow(Client *c);
+<a href="#l191" class="line" id="l191">    191</a> static gboolean loadfailedtls(WebKitWebView *v, gchar *uri,
+<a href="#l192" class="line" id="l192">    192</a>                               GTlsCertificate *cert,
+<a href="#l193" class="line" id="l193">    193</a>                               GTlsCertificateFlags err, Client *c);
+<a href="#l194" class="line" id="l194">    194</a> static void loadchanged(WebKitWebView *v, WebKitLoadEvent e, Client *c);
+<a href="#l195" class="line" id="l195">    195</a> static void progresschanged(WebKitWebView *v, GParamSpec *ps, Client *c);
+<a href="#l196" class="line" id="l196">    196</a> static void titlechanged(WebKitWebView *view, GParamSpec *ps, Client *c);
+<a href="#l197" class="line" id="l197">    197</a> static void mousetargetchanged(WebKitWebView *v, WebKitHitTestResult *h,
+<a href="#l198" class="line" id="l198">    198</a>                                guint modifiers, Client *c);
+<a href="#l199" class="line" id="l199">    199</a> static gboolean permissionrequested(WebKitWebView *v,
+<a href="#l200" class="line" id="l200">    200</a>                                     WebKitPermissionRequest *r, Client *c);
+<a href="#l201" class="line" id="l201">    201</a> static gboolean decidepolicy(WebKitWebView *v, WebKitPolicyDecision *d,
+<a href="#l202" class="line" id="l202">    202</a>                              WebKitPolicyDecisionType dt, Client *c);
+<a href="#l203" class="line" id="l203">    203</a> static void decidenavigation(WebKitPolicyDecision *d, Client *c);
+<a href="#l204" class="line" id="l204">    204</a> static void decidenewwindow(WebKitPolicyDecision *d, Client *c);
+<a href="#l205" class="line" id="l205">    205</a> static void decideresource(WebKitPolicyDecision *d, Client *c);
+<a href="#l206" class="line" id="l206">    206</a> static void insecurecontent(WebKitWebView *v, WebKitInsecureContentEvent e,
+<a href="#l207" class="line" id="l207">    207</a>                             Client *c);
+<a href="#l208" class="line" id="l208">    208</a> static void downloadstarted(WebKitWebContext *wc, WebKitDownload *d,
+<a href="#l209" class="line" id="l209">    209</a>                             Client *c);
+<a href="#l210" class="line" id="l210">    210</a> static void responsereceived(WebKitDownload *d, GParamSpec *ps, Client *c);
+<a href="#l211" class="line" id="l211">    211</a> static void download(Client *c, WebKitURIResponse *r);
+<a href="#l212" class="line" id="l212">    212</a> static void webprocessterminated(WebKitWebView *v,
+<a href="#l213" class="line" id="l213">    213</a>                                  WebKitWebProcessTerminationReason r,
+<a href="#l214" class="line" id="l214">    214</a>                                  Client *c);
+<a href="#l215" class="line" id="l215">    215</a> static void closeview(WebKitWebView *v, Client *c);
+<a href="#l216" class="line" id="l216">    216</a> static void destroywin(GtkWidget* w, Client *c);
+<a href="#l217" class="line" id="l217">    217</a> 
+<a href="#l218" class="line" id="l218">    218</a> /* Hotkeys */
+<a href="#l219" class="line" id="l219">    219</a> static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
+<a href="#l220" class="line" id="l220">    220</a> static void reload(Client *c, const Arg *a);
+<a href="#l221" class="line" id="l221">    221</a> static void print(Client *c, const Arg *a);
+<a href="#l222" class="line" id="l222">    222</a> static void showcert(Client *c, const Arg *a);
+<a href="#l223" class="line" id="l223">    223</a> static void clipboard(Client *c, const Arg *a);
+<a href="#l224" class="line" id="l224">    224</a> static void zoom(Client *c, const Arg *a);
+<a href="#l225" class="line" id="l225">    225</a> static void scrollv(Client *c, const Arg *a);
+<a href="#l226" class="line" id="l226">    226</a> static void scrollh(Client *c, const Arg *a);
+<a href="#l227" class="line" id="l227">    227</a> static void navigate(Client *c, const Arg *a);
+<a href="#l228" class="line" id="l228">    228</a> static void stop(Client *c, const Arg *a);
+<a href="#l229" class="line" id="l229">    229</a> static void toggle(Client *c, const Arg *a);
+<a href="#l230" class="line" id="l230">    230</a> static void togglefullscreen(Client *c, const Arg *a);
+<a href="#l231" class="line" id="l231">    231</a> static void togglecookiepolicy(Client *c, const Arg *a);
+<a href="#l232" class="line" id="l232">    232</a> static void toggleinspector(Client *c, const Arg *a);
+<a href="#l233" class="line" id="l233">    233</a> static void find(Client *c, const Arg *a);
+<a href="#l234" class="line" id="l234">    234</a> 
+<a href="#l235" class="line" id="l235">    235</a> /* Buttons */
+<a href="#l236" class="line" id="l236">    236</a> static void clicknavigate(Client *c, const Arg *a, WebKitHitTestResult *h);
+<a href="#l237" class="line" id="l237">    237</a> static void clicknewwindow(Client *c, const Arg *a, WebKitHitTestResult *h);
+<a href="#l238" class="line" id="l238">    238</a> static void clickexternplayer(Client *c, const Arg *a, WebKitHitTestResult *h);
+<a href="#l239" class="line" id="l239">    239</a> 
+<a href="#l240" class="line" id="l240">    240</a> static char winid[64];
+<a href="#l241" class="line" id="l241">    241</a> static char togglestats[12];
+<a href="#l242" class="line" id="l242">    242</a> static char pagestats[2];
+<a href="#l243" class="line" id="l243">    243</a> static Atom atoms[AtomLast];
+<a href="#l244" class="line" id="l244">    244</a> static Window embed;
+<a href="#l245" class="line" id="l245">    245</a> static int showxid;
+<a href="#l246" class="line" id="l246">    246</a> static int cookiepolicy;
+<a href="#l247" class="line" id="l247">    247</a> static Display *dpy;
+<a href="#l248" class="line" id="l248">    248</a> static Client *clients;
+<a href="#l249" class="line" id="l249">    249</a> static GdkDevice *gdkkb;
+<a href="#l250" class="line" id="l250">    250</a> static char *stylefile;
+<a href="#l251" class="line" id="l251">    251</a> static const char *useragent;
+<a href="#l252" class="line" id="l252">    252</a> static Parameter *curconfig;
+<a href="#l253" class="line" id="l253">    253</a> static int modparams[ParameterLast];
+<a href="#l254" class="line" id="l254">    254</a> static int pipein[2], pipeout[2];
+<a href="#l255" class="line" id="l255">    255</a> char *argv0;
+<a href="#l256" class="line" id="l256">    256</a> 
+<a href="#l257" class="line" id="l257">    257</a> static ParamName loadtransient[] = {
+<a href="#l258" class="line" id="l258">    258</a> 	Certificate,
+<a href="#l259" class="line" id="l259">    259</a> 	CookiePolicies,
+<a href="#l260" class="line" id="l260">    260</a> 	DiskCache,
+<a href="#l261" class="line" id="l261">    261</a> 	DNSPrefetch,
+<a href="#l262" class="line" id="l262">    262</a> 	FileURLsCrossAccess,
+<a href="#l263" class="line" id="l263">    263</a> 	JavaScript,
+<a href="#l264" class="line" id="l264">    264</a> 	LoadImages,
+<a href="#l265" class="line" id="l265">    265</a> 	PreferredLanguages,
+<a href="#l266" class="line" id="l266">    266</a> 	ShowIndicators,
+<a href="#l267" class="line" id="l267">    267</a> 	StrictTLS,
+<a href="#l268" class="line" id="l268">    268</a> 	ParameterLast
+<a href="#l269" class="line" id="l269">    269</a> };
+<a href="#l270" class="line" id="l270">    270</a> 
+<a href="#l271" class="line" id="l271">    271</a> static ParamName loadcommitted[] = {
+<a href="#l272" class="line" id="l272">    272</a> 	AcceleratedCanvas,
+<a href="#l273" class="line" id="l273">    273</a> //	AccessMicrophone,
+<a href="#l274" class="line" id="l274">    274</a> //	AccessWebcam,
+<a href="#l275" class="line" id="l275">    275</a> 	CaretBrowsing,
+<a href="#l276" class="line" id="l276">    276</a> 	DefaultCharset,
+<a href="#l277" class="line" id="l277">    277</a> 	FontSize,
+<a href="#l278" class="line" id="l278">    278</a> 	FrameFlattening,
+<a href="#l279" class="line" id="l279">    279</a> 	Geolocation,
+<a href="#l280" class="line" id="l280">    280</a> 	HideBackground,
+<a href="#l281" class="line" id="l281">    281</a> 	Inspector,
+<a href="#l282" class="line" id="l282">    282</a> 	Java,
+<a href="#l283" class="line" id="l283">    283</a> //	KioskMode,
+<a href="#l284" class="line" id="l284">    284</a> 	MediaManualPlay,
+<a href="#l285" class="line" id="l285">    285</a> 	Plugins,
+<a href="#l286" class="line" id="l286">    286</a> 	RunInFullscreen,
+<a href="#l287" class="line" id="l287">    287</a> 	ScrollBars,
+<a href="#l288" class="line" id="l288">    288</a> 	SiteQuirks,
+<a href="#l289" class="line" id="l289">    289</a> 	SmoothScrolling,
+<a href="#l290" class="line" id="l290">    290</a> 	SpellChecking,
+<a href="#l291" class="line" id="l291">    291</a> 	SpellLanguages,
+<a href="#l292" class="line" id="l292">    292</a> 	Style,
+<a href="#l293" class="line" id="l293">    293</a> 	ZoomLevel,
+<a href="#l294" class="line" id="l294">    294</a> 	ParameterLast
+<a href="#l295" class="line" id="l295">    295</a> };
+<a href="#l296" class="line" id="l296">    296</a> 
+<a href="#l297" class="line" id="l297">    297</a> static ParamName loadfinished[] = {
+<a href="#l298" class="line" id="l298">    298</a> 	ParameterLast
+<a href="#l299" class="line" id="l299">    299</a> };
+<a href="#l300" class="line" id="l300">    300</a> 
+<a href="#l301" class="line" id="l301">    301</a> /* configuration, allows nested code to access above variables */
+<a href="#l302" class="line" id="l302">    302</a> #include &quot;config.h&quot;
+<a href="#l303" class="line" id="l303">    303</a> 
+<a href="#l304" class="line" id="l304">    304</a> void
+<a href="#l305" class="line" id="l305">    305</a> usage(void)
+<a href="#l306" class="line" id="l306">    306</a> {
+<a href="#l307" class="line" id="l307">    307</a> 	die(&quot;usage: surf [-bBdDfFgGiIkKmMnNpPsStTvwxX]\n&quot;
+<a href="#l308" class="line" id="l308">    308</a> 	    &quot;[-a cookiepolicies ] [-c cookiefile] [-C stylefile] [-e xid]\n&quot;
+<a href="#l309" class="line" id="l309">    309</a> 	    &quot;[-r scriptfile] [-u useragent] [-z zoomlevel] [uri]\n&quot;);
+<a href="#l310" class="line" id="l310">    310</a> }
+<a href="#l311" class="line" id="l311">    311</a> 
+<a href="#l312" class="line" id="l312">    312</a> void
+<a href="#l313" class="line" id="l313">    313</a> setup(void)
+<a href="#l314" class="line" id="l314">    314</a> {
+<a href="#l315" class="line" id="l315">    315</a> 	GIOChannel *gchanin;
+<a href="#l316" class="line" id="l316">    316</a> 	GdkDisplay *gdpy;
+<a href="#l317" class="line" id="l317">    317</a> 	int i, j;
+<a href="#l318" class="line" id="l318">    318</a> 
+<a href="#l319" class="line" id="l319">    319</a> 	/* clean up any zombies immediately */
+<a href="#l320" class="line" id="l320">    320</a> 	sigchld(0);
+<a href="#l321" class="line" id="l321">    321</a> 	if (signal(SIGHUP, sighup) == SIG_ERR)
+<a href="#l322" class="line" id="l322">    322</a> 		die(&quot;Can&#39;t install SIGHUP handler&quot;);
+<a href="#l323" class="line" id="l323">    323</a> 
+<a href="#l324" class="line" id="l324">    324</a> 	if (!(dpy = XOpenDisplay(NULL)))
+<a href="#l325" class="line" id="l325">    325</a> 		die(&quot;Can&#39;t open default display&quot;);
+<a href="#l326" class="line" id="l326">    326</a> 
+<a href="#l327" class="line" id="l327">    327</a> 	/* atoms */
+<a href="#l328" class="line" id="l328">    328</a> 	atoms[AtomFind] = XInternAtom(dpy, &quot;_SURF_FIND&quot;, False);
+<a href="#l329" class="line" id="l329">    329</a> 	atoms[AtomGo] = XInternAtom(dpy, &quot;_SURF_GO&quot;, False);
+<a href="#l330" class="line" id="l330">    330</a> 	atoms[AtomUri] = XInternAtom(dpy, &quot;_SURF_URI&quot;, False);
+<a href="#l331" class="line" id="l331">    331</a> 
+<a href="#l332" class="line" id="l332">    332</a> 	gtk_init(NULL, NULL);
+<a href="#l333" class="line" id="l333">    333</a> 
+<a href="#l334" class="line" id="l334">    334</a> 	gdpy = gdk_display_get_default();
+<a href="#l335" class="line" id="l335">    335</a> 
+<a href="#l336" class="line" id="l336">    336</a> 	curconfig = defconfig;
+<a href="#l337" class="line" id="l337">    337</a> 
+<a href="#l338" class="line" id="l338">    338</a> 	/* dirs and files */
+<a href="#l339" class="line" id="l339">    339</a> 	cookiefile = buildfile(cookiefile);
+<a href="#l340" class="line" id="l340">    340</a> 	scriptfile = buildfile(scriptfile);
+<a href="#l341" class="line" id="l341">    341</a> 	cachedir   = buildpath(cachedir);
+<a href="#l342" class="line" id="l342">    342</a> 	certdir    = buildpath(certdir);
+<a href="#l343" class="line" id="l343">    343</a> 
+<a href="#l344" class="line" id="l344">    344</a> 	gdkkb = gdk_seat_get_keyboard(gdk_display_get_default_seat(gdpy));
+<a href="#l345" class="line" id="l345">    345</a> 
+<a href="#l346" class="line" id="l346">    346</a> 	if (pipe(pipeout) &lt; 0 || pipe(pipein) &lt; 0) {
+<a href="#l347" class="line" id="l347">    347</a> 		fputs(&quot;Unable to create pipes\n&quot;, stderr);
+<a href="#l348" class="line" id="l348">    348</a> 	} else {
+<a href="#l349" class="line" id="l349">    349</a> 		gchanin = g_io_channel_unix_new(pipein[0]);
+<a href="#l350" class="line" id="l350">    350</a> 		g_io_channel_set_encoding(gchanin, NULL, NULL);
+<a href="#l351" class="line" id="l351">    351</a> 		g_io_channel_set_close_on_unref(gchanin, TRUE);
+<a href="#l352" class="line" id="l352">    352</a> 		g_io_add_watch(gchanin, G_IO_IN, readpipe, NULL);
+<a href="#l353" class="line" id="l353">    353</a> 	}
+<a href="#l354" class="line" id="l354">    354</a> 
+<a href="#l355" class="line" id="l355">    355</a> 
+<a href="#l356" class="line" id="l356">    356</a> 	for (i = 0; i &lt; LENGTH(certs); ++i) {
+<a href="#l357" class="line" id="l357">    357</a> 		if (!regcomp(&amp;(certs[i].re), certs[i].regex, REG_EXTENDED)) {
+<a href="#l358" class="line" id="l358">    358</a> 			certs[i].file = g_strconcat(certdir, &quot;/&quot;, certs[i].file,
+<a href="#l359" class="line" id="l359">    359</a> 			                            NULL);
+<a href="#l360" class="line" id="l360">    360</a> 		} else {
+<a href="#l361" class="line" id="l361">    361</a> 			fprintf(stderr, &quot;Could not compile regex: %s\n&quot;,
+<a href="#l362" class="line" id="l362">    362</a> 			        certs[i].regex);
+<a href="#l363" class="line" id="l363">    363</a> 			certs[i].regex = NULL;
+<a href="#l364" class="line" id="l364">    364</a> 		}
+<a href="#l365" class="line" id="l365">    365</a> 	}
+<a href="#l366" class="line" id="l366">    366</a> 
+<a href="#l367" class="line" id="l367">    367</a> 	if (!stylefile) {
+<a href="#l368" class="line" id="l368">    368</a> 		styledir = buildpath(styledir);
+<a href="#l369" class="line" id="l369">    369</a> 		for (i = 0; i &lt; LENGTH(styles); ++i) {
+<a href="#l370" class="line" id="l370">    370</a> 			if (!regcomp(&amp;(styles[i].re), styles[i].regex,
+<a href="#l371" class="line" id="l371">    371</a> 			    REG_EXTENDED)) {
+<a href="#l372" class="line" id="l372">    372</a> 				styles[i].file = g_strconcat(styledir, &quot;/&quot;,
+<a href="#l373" class="line" id="l373">    373</a> 				                    styles[i].file, NULL);
+<a href="#l374" class="line" id="l374">    374</a> 			} else {
+<a href="#l375" class="line" id="l375">    375</a> 				fprintf(stderr, &quot;Could not compile regex: %s\n&quot;,
+<a href="#l376" class="line" id="l376">    376</a> 				        styles[i].regex);
+<a href="#l377" class="line" id="l377">    377</a> 				styles[i].regex = NULL;
+<a href="#l378" class="line" id="l378">    378</a> 			}
+<a href="#l379" class="line" id="l379">    379</a> 		}
+<a href="#l380" class="line" id="l380">    380</a> 		g_free(styledir);
+<a href="#l381" class="line" id="l381">    381</a> 	} else {
+<a href="#l382" class="line" id="l382">    382</a> 		stylefile = buildfile(stylefile);
+<a href="#l383" class="line" id="l383">    383</a> 	}
+<a href="#l384" class="line" id="l384">    384</a> 
+<a href="#l385" class="line" id="l385">    385</a> 	for (i = 0; i &lt; LENGTH(uriparams); ++i) {
+<a href="#l386" class="line" id="l386">    386</a> 		if (regcomp(&amp;(uriparams[i].re), uriparams[i].uri,
+<a href="#l387" class="line" id="l387">    387</a> 		    REG_EXTENDED)) {
+<a href="#l388" class="line" id="l388">    388</a> 			fprintf(stderr, &quot;Could not compile regex: %s\n&quot;,
+<a href="#l389" class="line" id="l389">    389</a> 			        uriparams[i].uri);
+<a href="#l390" class="line" id="l390">    390</a> 			uriparams[i].uri = NULL;
+<a href="#l391" class="line" id="l391">    391</a> 			continue;
+<a href="#l392" class="line" id="l392">    392</a> 		}
+<a href="#l393" class="line" id="l393">    393</a> 
+<a href="#l394" class="line" id="l394">    394</a> 		/* copy default parameters with higher priority */
+<a href="#l395" class="line" id="l395">    395</a> 		for (j = 0; j &lt; ParameterLast; ++j) {
+<a href="#l396" class="line" id="l396">    396</a> 			if (defconfig[j].prio &gt;= uriparams[i].config[j].prio)
+<a href="#l397" class="line" id="l397">    397</a> 				uriparams[i].config[j] = defconfig[j];
+<a href="#l398" class="line" id="l398">    398</a> 		}
+<a href="#l399" class="line" id="l399">    399</a> 	}
+<a href="#l400" class="line" id="l400">    400</a> }
+<a href="#l401" class="line" id="l401">    401</a> 
+<a href="#l402" class="line" id="l402">    402</a> void
+<a href="#l403" class="line" id="l403">    403</a> sigchld(int unused)
+<a href="#l404" class="line" id="l404">    404</a> {
+<a href="#l405" class="line" id="l405">    405</a> 	if (signal(SIGCHLD, sigchld) == SIG_ERR)
+<a href="#l406" class="line" id="l406">    406</a> 		die(&quot;Can&#39;t install SIGCHLD handler&quot;);
+<a href="#l407" class="line" id="l407">    407</a> 	while (waitpid(-1, NULL, WNOHANG) &gt; 0)
+<a href="#l408" class="line" id="l408">    408</a> 		;
+<a href="#l409" class="line" id="l409">    409</a> }
+<a href="#l410" class="line" id="l410">    410</a> 
+<a href="#l411" class="line" id="l411">    411</a> void
+<a href="#l412" class="line" id="l412">    412</a> sighup(int unused)
+<a href="#l413" class="line" id="l413">    413</a> {
+<a href="#l414" class="line" id="l414">    414</a> 	Arg a = { .i = 0 };
+<a href="#l415" class="line" id="l415">    415</a> 	Client *c;
+<a href="#l416" class="line" id="l416">    416</a> 
+<a href="#l417" class="line" id="l417">    417</a> 	for (c = clients; c; c = c-&gt;next)
+<a href="#l418" class="line" id="l418">    418</a> 		reload(c, &amp;a);
+<a href="#l419" class="line" id="l419">    419</a> }
+<a href="#l420" class="line" id="l420">    420</a> 
+<a href="#l421" class="line" id="l421">    421</a> char *
+<a href="#l422" class="line" id="l422">    422</a> buildfile(const char *path)
+<a href="#l423" class="line" id="l423">    423</a> {
+<a href="#l424" class="line" id="l424">    424</a> 	char *dname, *bname, *bpath, *fpath;
+<a href="#l425" class="line" id="l425">    425</a> 	FILE *f;
+<a href="#l426" class="line" id="l426">    426</a> 
+<a href="#l427" class="line" id="l427">    427</a> 	dname = g_path_get_dirname(path);
+<a href="#l428" class="line" id="l428">    428</a> 	bname = g_path_get_basename(path);
+<a href="#l429" class="line" id="l429">    429</a> 
+<a href="#l430" class="line" id="l430">    430</a> 	bpath = buildpath(dname);
+<a href="#l431" class="line" id="l431">    431</a> 	g_free(dname);
+<a href="#l432" class="line" id="l432">    432</a> 
+<a href="#l433" class="line" id="l433">    433</a> 	fpath = g_build_filename(bpath, bname, NULL);
+<a href="#l434" class="line" id="l434">    434</a> 	g_free(bpath);
+<a href="#l435" class="line" id="l435">    435</a> 	g_free(bname);
+<a href="#l436" class="line" id="l436">    436</a> 
+<a href="#l437" class="line" id="l437">    437</a> 	if (!(f = fopen(fpath, &quot;a&quot;)))
+<a href="#l438" class="line" id="l438">    438</a> 		die(&quot;Could not open file: %s\n&quot;, fpath);
+<a href="#l439" class="line" id="l439">    439</a> 
+<a href="#l440" class="line" id="l440">    440</a> 	g_chmod(fpath, 0600); /* always */
+<a href="#l441" class="line" id="l441">    441</a> 	fclose(f);
+<a href="#l442" class="line" id="l442">    442</a> 
+<a href="#l443" class="line" id="l443">    443</a> 	return fpath;
+<a href="#l444" class="line" id="l444">    444</a> }
+<a href="#l445" class="line" id="l445">    445</a> 
+<a href="#l446" class="line" id="l446">    446</a> static const char*
+<a href="#l447" class="line" id="l447">    447</a> getuserhomedir(const char *user)
+<a href="#l448" class="line" id="l448">    448</a> {
+<a href="#l449" class="line" id="l449">    449</a> 	struct passwd *pw = getpwnam(user);
+<a href="#l450" class="line" id="l450">    450</a> 
+<a href="#l451" class="line" id="l451">    451</a> 	if (!pw)
+<a href="#l452" class="line" id="l452">    452</a> 		die(&quot;Can&#39;t get user %s login information.\n&quot;, user);
+<a href="#l453" class="line" id="l453">    453</a> 
+<a href="#l454" class="line" id="l454">    454</a> 	return pw-&gt;pw_dir;
+<a href="#l455" class="line" id="l455">    455</a> }
+<a href="#l456" class="line" id="l456">    456</a> 
+<a href="#l457" class="line" id="l457">    457</a> static const char*
+<a href="#l458" class="line" id="l458">    458</a> getcurrentuserhomedir(void)
+<a href="#l459" class="line" id="l459">    459</a> {
+<a href="#l460" class="line" id="l460">    460</a> 	const char *homedir;
+<a href="#l461" class="line" id="l461">    461</a> 	const char *user;
+<a href="#l462" class="line" id="l462">    462</a> 	struct passwd *pw;
+<a href="#l463" class="line" id="l463">    463</a> 
+<a href="#l464" class="line" id="l464">    464</a> 	homedir = getenv(&quot;HOME&quot;);
+<a href="#l465" class="line" id="l465">    465</a> 	if (homedir)
+<a href="#l466" class="line" id="l466">    466</a> 		return homedir;
+<a href="#l467" class="line" id="l467">    467</a> 
+<a href="#l468" class="line" id="l468">    468</a> 	user = getenv(&quot;USER&quot;);
+<a href="#l469" class="line" id="l469">    469</a> 	if (user)
+<a href="#l470" class="line" id="l470">    470</a> 		return getuserhomedir(user);
+<a href="#l471" class="line" id="l471">    471</a> 
+<a href="#l472" class="line" id="l472">    472</a> 	pw = getpwuid(getuid());
+<a href="#l473" class="line" id="l473">    473</a> 	if (!pw)
+<a href="#l474" class="line" id="l474">    474</a> 		die(&quot;Can&#39;t get current user home directory\n&quot;);
+<a href="#l475" class="line" id="l475">    475</a> 
+<a href="#l476" class="line" id="l476">    476</a> 	return pw-&gt;pw_dir;
+<a href="#l477" class="line" id="l477">    477</a> }
+<a href="#l478" class="line" id="l478">    478</a> 
+<a href="#l479" class="line" id="l479">    479</a> char *
+<a href="#l480" class="line" id="l480">    480</a> buildpath(const char *path)
+<a href="#l481" class="line" id="l481">    481</a> {
+<a href="#l482" class="line" id="l482">    482</a> 	char *apath, *fpath;
+<a href="#l483" class="line" id="l483">    483</a> 
+<a href="#l484" class="line" id="l484">    484</a> 	if (path[0] == &#39;~&#39;)
+<a href="#l485" class="line" id="l485">    485</a> 		apath = untildepath(path);
+<a href="#l486" class="line" id="l486">    486</a> 	else
+<a href="#l487" class="line" id="l487">    487</a> 		apath = g_strdup(path);
+<a href="#l488" class="line" id="l488">    488</a> 
+<a href="#l489" class="line" id="l489">    489</a> 	/* creating directory */
+<a href="#l490" class="line" id="l490">    490</a> 	if (g_mkdir_with_parents(apath, 0700) &lt; 0)
+<a href="#l491" class="line" id="l491">    491</a> 		die(&quot;Could not access directory: %s\n&quot;, apath);
+<a href="#l492" class="line" id="l492">    492</a> 
+<a href="#l493" class="line" id="l493">    493</a> 	fpath = realpath(apath, NULL);
+<a href="#l494" class="line" id="l494">    494</a> 	g_free(apath);
+<a href="#l495" class="line" id="l495">    495</a> 
+<a href="#l496" class="line" id="l496">    496</a> 	return fpath;
+<a href="#l497" class="line" id="l497">    497</a> }
+<a href="#l498" class="line" id="l498">    498</a> 
+<a href="#l499" class="line" id="l499">    499</a> char *
+<a href="#l500" class="line" id="l500">    500</a> untildepath(const char *path)
+<a href="#l501" class="line" id="l501">    501</a> {
+<a href="#l502" class="line" id="l502">    502</a>        char *apath, *name, *p;
+<a href="#l503" class="line" id="l503">    503</a>        const char *homedir;
+<a href="#l504" class="line" id="l504">    504</a> 
+<a href="#l505" class="line" id="l505">    505</a>        if (path[1] == &#39;/&#39; || path[1] == &#39;\0&#39;) {
+<a href="#l506" class="line" id="l506">    506</a>                p = (char *)&amp;path[1];
+<a href="#l507" class="line" id="l507">    507</a>                homedir = getcurrentuserhomedir();
+<a href="#l508" class="line" id="l508">    508</a>        } else {
+<a href="#l509" class="line" id="l509">    509</a>                if ((p = strchr(path, &#39;/&#39;)))
+<a href="#l510" class="line" id="l510">    510</a>                        name = g_strndup(&amp;path[1], p - (path + 1));
+<a href="#l511" class="line" id="l511">    511</a>                else
+<a href="#l512" class="line" id="l512">    512</a>                        name = g_strdup(&amp;path[1]);
+<a href="#l513" class="line" id="l513">    513</a> 
+<a href="#l514" class="line" id="l514">    514</a>                homedir = getuserhomedir(name);
+<a href="#l515" class="line" id="l515">    515</a>                g_free(name);
+<a href="#l516" class="line" id="l516">    516</a>        }
+<a href="#l517" class="line" id="l517">    517</a>        apath = g_build_filename(homedir, p, NULL);
+<a href="#l518" class="line" id="l518">    518</a>        return apath;
+<a href="#l519" class="line" id="l519">    519</a> }
+<a href="#l520" class="line" id="l520">    520</a> 
+<a href="#l521" class="line" id="l521">    521</a> Client *
+<a href="#l522" class="line" id="l522">    522</a> newclient(Client *rc)
+<a href="#l523" class="line" id="l523">    523</a> {
+<a href="#l524" class="line" id="l524">    524</a> 	Client *c;
+<a href="#l525" class="line" id="l525">    525</a> 
+<a href="#l526" class="line" id="l526">    526</a> 	if (!(c = calloc(1, sizeof(Client))))
+<a href="#l527" class="line" id="l527">    527</a> 		die(&quot;Cannot malloc!\n&quot;);
+<a href="#l528" class="line" id="l528">    528</a> 
+<a href="#l529" class="line" id="l529">    529</a> 	c-&gt;next = clients;
+<a href="#l530" class="line" id="l530">    530</a> 	clients = c;
+<a href="#l531" class="line" id="l531">    531</a> 
+<a href="#l532" class="line" id="l532">    532</a> 	c-&gt;progress = 100;
+<a href="#l533" class="line" id="l533">    533</a> 	c-&gt;view = newview(c, rc ? rc-&gt;view : NULL);
+<a href="#l534" class="line" id="l534">    534</a> 
+<a href="#l535" class="line" id="l535">    535</a> 	return c;
+<a href="#l536" class="line" id="l536">    536</a> }
+<a href="#l537" class="line" id="l537">    537</a> 
+<a href="#l538" class="line" id="l538">    538</a> void
+<a href="#l539" class="line" id="l539">    539</a> loaduri(Client *c, const Arg *a)
+<a href="#l540" class="line" id="l540">    540</a> {
+<a href="#l541" class="line" id="l541">    541</a> 	struct stat st;
+<a href="#l542" class="line" id="l542">    542</a> 	char *url, *path, *apath;
+<a href="#l543" class="line" id="l543">    543</a> 	const char *uri = a-&gt;v;
+<a href="#l544" class="line" id="l544">    544</a> 
+<a href="#l545" class="line" id="l545">    545</a> 	if (g_strcmp0(uri, &quot;&quot;) == 0)
+<a href="#l546" class="line" id="l546">    546</a> 		return;
+<a href="#l547" class="line" id="l547">    547</a> 
+<a href="#l548" class="line" id="l548">    548</a> 	if (g_str_has_prefix(uri, &quot;http://&quot;)  ||
+<a href="#l549" class="line" id="l549">    549</a> 	    g_str_has_prefix(uri, &quot;https://&quot;) ||
+<a href="#l550" class="line" id="l550">    550</a> 	    g_str_has_prefix(uri, &quot;file://&quot;)  ||
+<a href="#l551" class="line" id="l551">    551</a> 	    g_str_has_prefix(uri, &quot;about:&quot;)) {
+<a href="#l552" class="line" id="l552">    552</a> 		url = g_strdup(uri);
+<a href="#l553" class="line" id="l553">    553</a> 	} else {
+<a href="#l554" class="line" id="l554">    554</a> 		if (uri[0] == &#39;~&#39;)
+<a href="#l555" class="line" id="l555">    555</a> 			apath = untildepath(uri);
+<a href="#l556" class="line" id="l556">    556</a> 		else
+<a href="#l557" class="line" id="l557">    557</a> 			apath = (char *)uri;
+<a href="#l558" class="line" id="l558">    558</a> 		if (!stat(apath, &amp;st) &amp;&amp; (path = realpath(apath, NULL))) {
+<a href="#l559" class="line" id="l559">    559</a> 			url = g_strdup_printf(&quot;file://%s&quot;, path);
+<a href="#l560" class="line" id="l560">    560</a> 			free(path);
+<a href="#l561" class="line" id="l561">    561</a> 		} else {
+<a href="#l562" class="line" id="l562">    562</a> 			url = parseuri(uri);
+<a href="#l563" class="line" id="l563">    563</a> 		}
+<a href="#l564" class="line" id="l564">    564</a> 		if (apath != uri)
+<a href="#l565" class="line" id="l565">    565</a> 			free(apath);
+<a href="#l566" class="line" id="l566">    566</a> 	}
+<a href="#l567" class="line" id="l567">    567</a> 
+<a href="#l568" class="line" id="l568">    568</a> 	setatom(c, AtomUri, url);
+<a href="#l569" class="line" id="l569">    569</a> 
+<a href="#l570" class="line" id="l570">    570</a> 	if (strcmp(url, geturi(c)) == 0) {
+<a href="#l571" class="line" id="l571">    571</a> 		reload(c, a);
+<a href="#l572" class="line" id="l572">    572</a> 	} else {
+<a href="#l573" class="line" id="l573">    573</a> 		webkit_web_view_load_uri(c-&gt;view, url);
+<a href="#l574" class="line" id="l574">    574</a> 		updatetitle(c);
+<a href="#l575" class="line" id="l575">    575</a> 	}
+<a href="#l576" class="line" id="l576">    576</a> 
+<a href="#l577" class="line" id="l577">    577</a> 	g_free(url);
+<a href="#l578" class="line" id="l578">    578</a> }
+<a href="#l579" class="line" id="l579">    579</a> 
+<a href="#l580" class="line" id="l580">    580</a> const char *
+<a href="#l581" class="line" id="l581">    581</a> geturi(Client *c)
+<a href="#l582" class="line" id="l582">    582</a> {
+<a href="#l583" class="line" id="l583">    583</a> 	const char *uri;
+<a href="#l584" class="line" id="l584">    584</a> 
+<a href="#l585" class="line" id="l585">    585</a> 	if (!(uri = webkit_web_view_get_uri(c-&gt;view)))
+<a href="#l586" class="line" id="l586">    586</a> 		uri = &quot;about:blank&quot;;
+<a href="#l587" class="line" id="l587">    587</a> 	return uri;
+<a href="#l588" class="line" id="l588">    588</a> }
+<a href="#l589" class="line" id="l589">    589</a> 
+<a href="#l590" class="line" id="l590">    590</a> void
+<a href="#l591" class="line" id="l591">    591</a> setatom(Client *c, int a, const char *v)
+<a href="#l592" class="line" id="l592">    592</a> {
+<a href="#l593" class="line" id="l593">    593</a> 	XChangeProperty(dpy, c-&gt;xid,
+<a href="#l594" class="line" id="l594">    594</a> 	                atoms[a], XA_STRING, 8, PropModeReplace,
+<a href="#l595" class="line" id="l595">    595</a> 	                (unsigned char *)v, strlen(v) + 1);
+<a href="#l596" class="line" id="l596">    596</a> 	XSync(dpy, False);
+<a href="#l597" class="line" id="l597">    597</a> }
+<a href="#l598" class="line" id="l598">    598</a> 
+<a href="#l599" class="line" id="l599">    599</a> const char *
+<a href="#l600" class="line" id="l600">    600</a> getatom(Client *c, int a)
+<a href="#l601" class="line" id="l601">    601</a> {
+<a href="#l602" class="line" id="l602">    602</a> 	static char buf[BUFSIZ];
+<a href="#l603" class="line" id="l603">    603</a> 	Atom adummy;
+<a href="#l604" class="line" id="l604">    604</a> 	int idummy;
+<a href="#l605" class="line" id="l605">    605</a> 	unsigned long ldummy;
+<a href="#l606" class="line" id="l606">    606</a> 	unsigned char *p = NULL;
+<a href="#l607" class="line" id="l607">    607</a> 
+<a href="#l608" class="line" id="l608">    608</a> 	XSync(dpy, False);
+<a href="#l609" class="line" id="l609">    609</a> 	XGetWindowProperty(dpy, c-&gt;xid, atoms[a], 0L, BUFSIZ, False, XA_STRING,
+<a href="#l610" class="line" id="l610">    610</a> 	                   &amp;adummy, &amp;idummy, &amp;ldummy, &amp;ldummy, &amp;p);
+<a href="#l611" class="line" id="l611">    611</a> 	if (p)
+<a href="#l612" class="line" id="l612">    612</a> 		strncpy(buf, (char *)p, LENGTH(buf) - 1);
+<a href="#l613" class="line" id="l613">    613</a> 	else
+<a href="#l614" class="line" id="l614">    614</a> 		buf[0] = &#39;\0&#39;;
+<a href="#l615" class="line" id="l615">    615</a> 	XFree(p);
+<a href="#l616" class="line" id="l616">    616</a> 
+<a href="#l617" class="line" id="l617">    617</a> 	return buf;
+<a href="#l618" class="line" id="l618">    618</a> }
+<a href="#l619" class="line" id="l619">    619</a> 
+<a href="#l620" class="line" id="l620">    620</a> void
+<a href="#l621" class="line" id="l621">    621</a> updatetitle(Client *c)
+<a href="#l622" class="line" id="l622">    622</a> {
+<a href="#l623" class="line" id="l623">    623</a> 	char *title;
+<a href="#l624" class="line" id="l624">    624</a> 	const char *name = c-&gt;overtitle ? c-&gt;overtitle :
+<a href="#l625" class="line" id="l625">    625</a> 	                   c-&gt;title ? c-&gt;title : &quot;&quot;;
+<a href="#l626" class="line" id="l626">    626</a> 
+<a href="#l627" class="line" id="l627">    627</a> 	if (curconfig[ShowIndicators].val.i) {
+<a href="#l628" class="line" id="l628">    628</a> 		gettogglestats(c);
+<a href="#l629" class="line" id="l629">    629</a> 		getpagestats(c);
+<a href="#l630" class="line" id="l630">    630</a> 
+<a href="#l631" class="line" id="l631">    631</a> 		if (c-&gt;progress != 100)
+<a href="#l632" class="line" id="l632">    632</a> 			title = g_strdup_printf(&quot;[%i%%] %s:%s | %s&quot;,
+<a href="#l633" class="line" id="l633">    633</a> 			        c-&gt;progress, togglestats, pagestats, name);
+<a href="#l634" class="line" id="l634">    634</a> 		else
+<a href="#l635" class="line" id="l635">    635</a> 			title = g_strdup_printf(&quot;%s:%s | %s&quot;,
+<a href="#l636" class="line" id="l636">    636</a> 			        togglestats, pagestats, name);
+<a href="#l637" class="line" id="l637">    637</a> 
+<a href="#l638" class="line" id="l638">    638</a> 		gtk_window_set_title(GTK_WINDOW(c-&gt;win), title);
+<a href="#l639" class="line" id="l639">    639</a> 		g_free(title);
+<a href="#l640" class="line" id="l640">    640</a> 	} else {
+<a href="#l641" class="line" id="l641">    641</a> 		gtk_window_set_title(GTK_WINDOW(c-&gt;win), name);
+<a href="#l642" class="line" id="l642">    642</a> 	}
+<a href="#l643" class="line" id="l643">    643</a> }
+<a href="#l644" class="line" id="l644">    644</a> 
+<a href="#l645" class="line" id="l645">    645</a> void
+<a href="#l646" class="line" id="l646">    646</a> gettogglestats(Client *c)
+<a href="#l647" class="line" id="l647">    647</a> {
+<a href="#l648" class="line" id="l648">    648</a> 	togglestats[0] = cookiepolicy_set(cookiepolicy_get());
+<a href="#l649" class="line" id="l649">    649</a> 	togglestats[1] = curconfig[CaretBrowsing].val.i ?   &#39;C&#39; : &#39;c&#39;;
+<a href="#l650" class="line" id="l650">    650</a> 	togglestats[2] = curconfig[Geolocation].val.i ?     &#39;G&#39; : &#39;g&#39;;
+<a href="#l651" class="line" id="l651">    651</a> 	togglestats[3] = curconfig[DiskCache].val.i ?       &#39;D&#39; : &#39;d&#39;;
+<a href="#l652" class="line" id="l652">    652</a> 	togglestats[4] = curconfig[LoadImages].val.i ?      &#39;I&#39; : &#39;i&#39;;
+<a href="#l653" class="line" id="l653">    653</a> 	togglestats[5] = curconfig[JavaScript].val.i ?      &#39;S&#39; : &#39;s&#39;;
+<a href="#l654" class="line" id="l654">    654</a> 	togglestats[6] = curconfig[Plugins].val.i ?         &#39;V&#39; : &#39;v&#39;;
+<a href="#l655" class="line" id="l655">    655</a> 	togglestats[7] = curconfig[Style].val.i ?           &#39;M&#39; : &#39;m&#39;;
+<a href="#l656" class="line" id="l656">    656</a> 	togglestats[8] = curconfig[FrameFlattening].val.i ? &#39;F&#39; : &#39;f&#39;;
+<a href="#l657" class="line" id="l657">    657</a> 	togglestats[9] = curconfig[Certificate].val.i ?     &#39;X&#39; : &#39;x&#39;;
+<a href="#l658" class="line" id="l658">    658</a> 	togglestats[10] = curconfig[StrictTLS].val.i ?      &#39;T&#39; : &#39;t&#39;;
+<a href="#l659" class="line" id="l659">    659</a> 	togglestats[11] = &#39;\0&#39;;
+<a href="#l660" class="line" id="l660">    660</a> }
+<a href="#l661" class="line" id="l661">    661</a> 
+<a href="#l662" class="line" id="l662">    662</a> void
+<a href="#l663" class="line" id="l663">    663</a> getpagestats(Client *c)
+<a href="#l664" class="line" id="l664">    664</a> {
+<a href="#l665" class="line" id="l665">    665</a> 	if (c-&gt;https)
+<a href="#l666" class="line" id="l666">    666</a> 		pagestats[0] = (c-&gt;tlserr || c-&gt;insecure) ?  &#39;U&#39; : &#39;T&#39;;
+<a href="#l667" class="line" id="l667">    667</a> 	else
+<a href="#l668" class="line" id="l668">    668</a> 		pagestats[0] = &#39;-&#39;;
+<a href="#l669" class="line" id="l669">    669</a> 	pagestats[1] = &#39;\0&#39;;
+<a href="#l670" class="line" id="l670">    670</a> }
+<a href="#l671" class="line" id="l671">    671</a> 
+<a href="#l672" class="line" id="l672">    672</a> WebKitCookieAcceptPolicy
+<a href="#l673" class="line" id="l673">    673</a> cookiepolicy_get(void)
+<a href="#l674" class="line" id="l674">    674</a> {
+<a href="#l675" class="line" id="l675">    675</a> 	switch (((char *)curconfig[CookiePolicies].val.v)[cookiepolicy]) {
+<a href="#l676" class="line" id="l676">    676</a> 	case &#39;a&#39;:
+<a href="#l677" class="line" id="l677">    677</a> 		return WEBKIT_COOKIE_POLICY_ACCEPT_NEVER;
+<a href="#l678" class="line" id="l678">    678</a> 	case &#39;@&#39;:
+<a href="#l679" class="line" id="l679">    679</a> 		return WEBKIT_COOKIE_POLICY_ACCEPT_NO_THIRD_PARTY;
+<a href="#l680" class="line" id="l680">    680</a> 	default: /* fallthrough */
+<a href="#l681" class="line" id="l681">    681</a> 	case &#39;A&#39;:
+<a href="#l682" class="line" id="l682">    682</a> 		return WEBKIT_COOKIE_POLICY_ACCEPT_ALWAYS;
+<a href="#l683" class="line" id="l683">    683</a> 	}
+<a href="#l684" class="line" id="l684">    684</a> }
+<a href="#l685" class="line" id="l685">    685</a> 
+<a href="#l686" class="line" id="l686">    686</a> char
+<a href="#l687" class="line" id="l687">    687</a> cookiepolicy_set(const WebKitCookieAcceptPolicy p)
+<a href="#l688" class="line" id="l688">    688</a> {
+<a href="#l689" class="line" id="l689">    689</a> 	switch (p) {
+<a href="#l690" class="line" id="l690">    690</a> 	case WEBKIT_COOKIE_POLICY_ACCEPT_NEVER:
+<a href="#l691" class="line" id="l691">    691</a> 		return &#39;a&#39;;
+<a href="#l692" class="line" id="l692">    692</a> 	case WEBKIT_COOKIE_POLICY_ACCEPT_NO_THIRD_PARTY:
+<a href="#l693" class="line" id="l693">    693</a> 		return &#39;@&#39;;
+<a href="#l694" class="line" id="l694">    694</a> 	default: /* fallthrough */
+<a href="#l695" class="line" id="l695">    695</a> 	case WEBKIT_COOKIE_POLICY_ACCEPT_ALWAYS:
+<a href="#l696" class="line" id="l696">    696</a> 		return &#39;A&#39;;
+<a href="#l697" class="line" id="l697">    697</a> 	}
+<a href="#l698" class="line" id="l698">    698</a> }
+<a href="#l699" class="line" id="l699">    699</a> 
+<a href="#l700" class="line" id="l700">    700</a> void
+<a href="#l701" class="line" id="l701">    701</a> seturiparameters(Client *c, const char *uri, ParamName *params)
+<a href="#l702" class="line" id="l702">    702</a> {
+<a href="#l703" class="line" id="l703">    703</a> 	Parameter *config, *uriconfig = NULL;
+<a href="#l704" class="line" id="l704">    704</a> 	int i, p;
+<a href="#l705" class="line" id="l705">    705</a> 
+<a href="#l706" class="line" id="l706">    706</a> 	for (i = 0; i &lt; LENGTH(uriparams); ++i) {
+<a href="#l707" class="line" id="l707">    707</a> 		if (uriparams[i].uri &amp;&amp;
+<a href="#l708" class="line" id="l708">    708</a> 		    !regexec(&amp;(uriparams[i].re), uri, 0, NULL, 0)) {
+<a href="#l709" class="line" id="l709">    709</a> 			uriconfig = uriparams[i].config;
+<a href="#l710" class="line" id="l710">    710</a> 			break;
+<a href="#l711" class="line" id="l711">    711</a> 		}
+<a href="#l712" class="line" id="l712">    712</a> 	}
+<a href="#l713" class="line" id="l713">    713</a> 
+<a href="#l714" class="line" id="l714">    714</a> 	curconfig = uriconfig ? uriconfig : defconfig;
+<a href="#l715" class="line" id="l715">    715</a> 
+<a href="#l716" class="line" id="l716">    716</a> 	for (i = 0; (p = params[i]) != ParameterLast; ++i) {
+<a href="#l717" class="line" id="l717">    717</a> 		switch(p) {
+<a href="#l718" class="line" id="l718">    718</a> 		default: /* FALLTHROUGH */
+<a href="#l719" class="line" id="l719">    719</a> 			if (!(defconfig[p].prio &lt; curconfig[p].prio ||
+<a href="#l720" class="line" id="l720">    720</a> 			    defconfig[p].prio &lt; modparams[p]))
+<a href="#l721" class="line" id="l721">    721</a> 				continue;
+<a href="#l722" class="line" id="l722">    722</a> 		case Certificate:
+<a href="#l723" class="line" id="l723">    723</a> 		case CookiePolicies:
+<a href="#l724" class="line" id="l724">    724</a> 		case Style:
+<a href="#l725" class="line" id="l725">    725</a> 			setparameter(c, 0, p, &amp;curconfig[p].val);
+<a href="#l726" class="line" id="l726">    726</a> 		}
+<a href="#l727" class="line" id="l727">    727</a> 	}
+<a href="#l728" class="line" id="l728">    728</a> }
+<a href="#l729" class="line" id="l729">    729</a> 
+<a href="#l730" class="line" id="l730">    730</a> void
+<a href="#l731" class="line" id="l731">    731</a> setparameter(Client *c, int refresh, ParamName p, const Arg *a)
+<a href="#l732" class="line" id="l732">    732</a> {
+<a href="#l733" class="line" id="l733">    733</a> 	GdkRGBA bgcolor = { 0 };
+<a href="#l734" class="line" id="l734">    734</a> 	WebKitSettings *s = webkit_web_view_get_settings(c-&gt;view);
+<a href="#l735" class="line" id="l735">    735</a> 
+<a href="#l736" class="line" id="l736">    736</a> 	modparams[p] = curconfig[p].prio;
+<a href="#l737" class="line" id="l737">    737</a> 
+<a href="#l738" class="line" id="l738">    738</a> 	switch (p) {
+<a href="#l739" class="line" id="l739">    739</a> 	case AcceleratedCanvas:
+<a href="#l740" class="line" id="l740">    740</a> 		webkit_settings_set_enable_accelerated_2d_canvas(s, a-&gt;i);
+<a href="#l741" class="line" id="l741">    741</a> 		break;
+<a href="#l742" class="line" id="l742">    742</a> 	case AccessMicrophone:
+<a href="#l743" class="line" id="l743">    743</a> 		return; /* do nothing */
+<a href="#l744" class="line" id="l744">    744</a> 	case AccessWebcam:
+<a href="#l745" class="line" id="l745">    745</a> 		return; /* do nothing */
+<a href="#l746" class="line" id="l746">    746</a> 	case CaretBrowsing:
+<a href="#l747" class="line" id="l747">    747</a> 		webkit_settings_set_enable_caret_browsing(s, a-&gt;i);
+<a href="#l748" class="line" id="l748">    748</a> 		refresh = 0;
+<a href="#l749" class="line" id="l749">    749</a> 		break;
+<a href="#l750" class="line" id="l750">    750</a> 	case Certificate:
+<a href="#l751" class="line" id="l751">    751</a> 		if (a-&gt;i)
+<a href="#l752" class="line" id="l752">    752</a> 			setcert(c, geturi(c));
+<a href="#l753" class="line" id="l753">    753</a> 		return; /* do not update */
+<a href="#l754" class="line" id="l754">    754</a> 	case CookiePolicies:
+<a href="#l755" class="line" id="l755">    755</a> 		webkit_cookie_manager_set_accept_policy(
+<a href="#l756" class="line" id="l756">    756</a> 		    webkit_web_context_get_cookie_manager(
+<a href="#l757" class="line" id="l757">    757</a> 		    webkit_web_view_get_context(c-&gt;view)),
+<a href="#l758" class="line" id="l758">    758</a> 		    cookiepolicy_get());
+<a href="#l759" class="line" id="l759">    759</a> 		refresh = 0;
+<a href="#l760" class="line" id="l760">    760</a> 		break;
+<a href="#l761" class="line" id="l761">    761</a> 	case DiskCache:
+<a href="#l762" class="line" id="l762">    762</a> 		webkit_web_context_set_cache_model(
+<a href="#l763" class="line" id="l763">    763</a> 		    webkit_web_view_get_context(c-&gt;view), a-&gt;i ?
+<a href="#l764" class="line" id="l764">    764</a> 		    WEBKIT_CACHE_MODEL_WEB_BROWSER :
+<a href="#l765" class="line" id="l765">    765</a> 		    WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER);
+<a href="#l766" class="line" id="l766">    766</a> 		return; /* do not update */
+<a href="#l767" class="line" id="l767">    767</a> 	case DefaultCharset:
+<a href="#l768" class="line" id="l768">    768</a> 		webkit_settings_set_default_charset(s, a-&gt;v);
+<a href="#l769" class="line" id="l769">    769</a> 		return; /* do not update */
+<a href="#l770" class="line" id="l770">    770</a> 	case DNSPrefetch:
+<a href="#l771" class="line" id="l771">    771</a> 		webkit_settings_set_enable_dns_prefetching(s, a-&gt;i);
+<a href="#l772" class="line" id="l772">    772</a> 		return; /* do not update */
+<a href="#l773" class="line" id="l773">    773</a> 	case FileURLsCrossAccess:
+<a href="#l774" class="line" id="l774">    774</a> 		webkit_settings_set_allow_file_access_from_file_urls(s, a-&gt;i);
+<a href="#l775" class="line" id="l775">    775</a> 		webkit_settings_set_allow_universal_access_from_file_urls(s, a-&gt;i);
+<a href="#l776" class="line" id="l776">    776</a> 		return; /* do not update */
+<a href="#l777" class="line" id="l777">    777</a> 	case FontSize:
+<a href="#l778" class="line" id="l778">    778</a> 		webkit_settings_set_default_font_size(s, a-&gt;i);
+<a href="#l779" class="line" id="l779">    779</a> 		return; /* do not update */
+<a href="#l780" class="line" id="l780">    780</a> 	case FrameFlattening:
+<a href="#l781" class="line" id="l781">    781</a> 		webkit_settings_set_enable_frame_flattening(s, a-&gt;i);
+<a href="#l782" class="line" id="l782">    782</a> 		break;
+<a href="#l783" class="line" id="l783">    783</a> 	case Geolocation:
+<a href="#l784" class="line" id="l784">    784</a> 		refresh = 0;
+<a href="#l785" class="line" id="l785">    785</a> 		break;
+<a href="#l786" class="line" id="l786">    786</a> 	case HideBackground:
+<a href="#l787" class="line" id="l787">    787</a> 		if (a-&gt;i)
+<a href="#l788" class="line" id="l788">    788</a> 			webkit_web_view_set_background_color(c-&gt;view, &amp;bgcolor);
+<a href="#l789" class="line" id="l789">    789</a> 		return; /* do not update */
+<a href="#l790" class="line" id="l790">    790</a> 	case Inspector:
+<a href="#l791" class="line" id="l791">    791</a> 		webkit_settings_set_enable_developer_extras(s, a-&gt;i);
+<a href="#l792" class="line" id="l792">    792</a> 		return; /* do not update */
+<a href="#l793" class="line" id="l793">    793</a> 	case Java:
+<a href="#l794" class="line" id="l794">    794</a> 		webkit_settings_set_enable_java(s, a-&gt;i);
+<a href="#l795" class="line" id="l795">    795</a> 		return; /* do not update */
+<a href="#l796" class="line" id="l796">    796</a> 	case JavaScript:
+<a href="#l797" class="line" id="l797">    797</a> 		webkit_settings_set_enable_javascript(s, a-&gt;i);
+<a href="#l798" class="line" id="l798">    798</a> 		break;
+<a href="#l799" class="line" id="l799">    799</a> 	case KioskMode:
+<a href="#l800" class="line" id="l800">    800</a> 		return; /* do nothing */
+<a href="#l801" class="line" id="l801">    801</a> 	case LoadImages:
+<a href="#l802" class="line" id="l802">    802</a> 		webkit_settings_set_auto_load_images(s, a-&gt;i);
+<a href="#l803" class="line" id="l803">    803</a> 		break;
+<a href="#l804" class="line" id="l804">    804</a> 	case MediaManualPlay:
+<a href="#l805" class="line" id="l805">    805</a> 		webkit_settings_set_media_playback_requires_user_gesture(s, a-&gt;i);
+<a href="#l806" class="line" id="l806">    806</a> 		break;
+<a href="#l807" class="line" id="l807">    807</a> 	case Plugins:
+<a href="#l808" class="line" id="l808">    808</a> 		webkit_settings_set_enable_plugins(s, a-&gt;i);
+<a href="#l809" class="line" id="l809">    809</a> 		break;
+<a href="#l810" class="line" id="l810">    810</a> 	case PreferredLanguages:
+<a href="#l811" class="line" id="l811">    811</a> 		return; /* do nothing */
+<a href="#l812" class="line" id="l812">    812</a> 	case RunInFullscreen:
+<a href="#l813" class="line" id="l813">    813</a> 		return; /* do nothing */
+<a href="#l814" class="line" id="l814">    814</a> 	case ScrollBars:
+<a href="#l815" class="line" id="l815">    815</a> 		/* Disabled until we write some WebKitWebExtension for
+<a href="#l816" class="line" id="l816">    816</a> 		 * manipulating the DOM directly.
+<a href="#l817" class="line" id="l817">    817</a> 		enablescrollbars = !enablescrollbars;
+<a href="#l818" class="line" id="l818">    818</a> 		evalscript(c, &quot;document.documentElement.style.overflow = &#39;%s&#39;&quot;,
+<a href="#l819" class="line" id="l819">    819</a> 		    enablescrollbars ? &quot;auto&quot; : &quot;hidden&quot;);
+<a href="#l820" class="line" id="l820">    820</a> 		*/
+<a href="#l821" class="line" id="l821">    821</a> 		return; /* do not update */
+<a href="#l822" class="line" id="l822">    822</a> 	case ShowIndicators:
+<a href="#l823" class="line" id="l823">    823</a> 		break;
+<a href="#l824" class="line" id="l824">    824</a> 	case SmoothScrolling:
+<a href="#l825" class="line" id="l825">    825</a> 		webkit_settings_set_enable_smooth_scrolling(s, a-&gt;i);
+<a href="#l826" class="line" id="l826">    826</a> 		return; /* do not update */
+<a href="#l827" class="line" id="l827">    827</a> 	case SiteQuirks:
+<a href="#l828" class="line" id="l828">    828</a> 		webkit_settings_set_enable_site_specific_quirks(s, a-&gt;i);
+<a href="#l829" class="line" id="l829">    829</a> 		break;
+<a href="#l830" class="line" id="l830">    830</a> 	case SpellChecking:
+<a href="#l831" class="line" id="l831">    831</a> 		webkit_web_context_set_spell_checking_enabled(
+<a href="#l832" class="line" id="l832">    832</a> 		    webkit_web_view_get_context(c-&gt;view), a-&gt;i);
+<a href="#l833" class="line" id="l833">    833</a> 		return; /* do not update */
+<a href="#l834" class="line" id="l834">    834</a> 	case SpellLanguages:
+<a href="#l835" class="line" id="l835">    835</a> 		return; /* do nothing */
+<a href="#l836" class="line" id="l836">    836</a> 	case StrictTLS:
+<a href="#l837" class="line" id="l837">    837</a> 		webkit_web_context_set_tls_errors_policy(
+<a href="#l838" class="line" id="l838">    838</a> 		    webkit_web_view_get_context(c-&gt;view), a-&gt;i ?
+<a href="#l839" class="line" id="l839">    839</a> 		    WEBKIT_TLS_ERRORS_POLICY_FAIL :
+<a href="#l840" class="line" id="l840">    840</a> 		    WEBKIT_TLS_ERRORS_POLICY_IGNORE);
+<a href="#l841" class="line" id="l841">    841</a> 		break;
+<a href="#l842" class="line" id="l842">    842</a> 	case Style:
+<a href="#l843" class="line" id="l843">    843</a> 		webkit_user_content_manager_remove_all_style_sheets(
+<a href="#l844" class="line" id="l844">    844</a> 		    webkit_web_view_get_user_content_manager(c-&gt;view));
+<a href="#l845" class="line" id="l845">    845</a> 		if (a-&gt;i)
+<a href="#l846" class="line" id="l846">    846</a> 			setstyle(c, getstyle(geturi(c)));
+<a href="#l847" class="line" id="l847">    847</a> 		refresh = 0;
+<a href="#l848" class="line" id="l848">    848</a> 		break;
+<a href="#l849" class="line" id="l849">    849</a> 	case WebGL:
+<a href="#l850" class="line" id="l850">    850</a> 		webkit_settings_set_enable_webgl(s, a-&gt;i);
+<a href="#l851" class="line" id="l851">    851</a> 		break;
+<a href="#l852" class="line" id="l852">    852</a> 	case ZoomLevel:
+<a href="#l853" class="line" id="l853">    853</a> 		webkit_web_view_set_zoom_level(c-&gt;view, a-&gt;f);
+<a href="#l854" class="line" id="l854">    854</a> 		return; /* do not update */
+<a href="#l855" class="line" id="l855">    855</a> 	default:
+<a href="#l856" class="line" id="l856">    856</a> 		return; /* do nothing */
+<a href="#l857" class="line" id="l857">    857</a> 	}
+<a href="#l858" class="line" id="l858">    858</a> 
+<a href="#l859" class="line" id="l859">    859</a> 	updatetitle(c);
+<a href="#l860" class="line" id="l860">    860</a> 	if (refresh)
+<a href="#l861" class="line" id="l861">    861</a> 		reload(c, a);
+<a href="#l862" class="line" id="l862">    862</a> }
+<a href="#l863" class="line" id="l863">    863</a> 
+<a href="#l864" class="line" id="l864">    864</a> const char *
+<a href="#l865" class="line" id="l865">    865</a> getcert(const char *uri)
+<a href="#l866" class="line" id="l866">    866</a> {
+<a href="#l867" class="line" id="l867">    867</a> 	int i;
+<a href="#l868" class="line" id="l868">    868</a> 
+<a href="#l869" class="line" id="l869">    869</a> 	for (i = 0; i &lt; LENGTH(certs); ++i) {
+<a href="#l870" class="line" id="l870">    870</a> 		if (certs[i].regex &amp;&amp;
+<a href="#l871" class="line" id="l871">    871</a> 		    !regexec(&amp;(certs[i].re), uri, 0, NULL, 0))
+<a href="#l872" class="line" id="l872">    872</a> 			return certs[i].file;
+<a href="#l873" class="line" id="l873">    873</a> 	}
+<a href="#l874" class="line" id="l874">    874</a> 
+<a href="#l875" class="line" id="l875">    875</a> 	return NULL;
+<a href="#l876" class="line" id="l876">    876</a> }
+<a href="#l877" class="line" id="l877">    877</a> 
+<a href="#l878" class="line" id="l878">    878</a> void
+<a href="#l879" class="line" id="l879">    879</a> setcert(Client *c, const char *uri)
+<a href="#l880" class="line" id="l880">    880</a> {
+<a href="#l881" class="line" id="l881">    881</a> 	const char *file = getcert(uri);
+<a href="#l882" class="line" id="l882">    882</a> 	char *host;
+<a href="#l883" class="line" id="l883">    883</a> 	GTlsCertificate *cert;
+<a href="#l884" class="line" id="l884">    884</a> 
+<a href="#l885" class="line" id="l885">    885</a> 	if (!file)
+<a href="#l886" class="line" id="l886">    886</a> 		return;
+<a href="#l887" class="line" id="l887">    887</a> 
+<a href="#l888" class="line" id="l888">    888</a> 	if (!(cert = g_tls_certificate_new_from_file(file, NULL))) {
+<a href="#l889" class="line" id="l889">    889</a> 		fprintf(stderr, &quot;Could not read certificate file: %s\n&quot;, file);
+<a href="#l890" class="line" id="l890">    890</a> 		return;
+<a href="#l891" class="line" id="l891">    891</a> 	}
+<a href="#l892" class="line" id="l892">    892</a> 
+<a href="#l893" class="line" id="l893">    893</a> 	if ((uri = strstr(uri, &quot;https://&quot;))) {
+<a href="#l894" class="line" id="l894">    894</a> 		uri += sizeof(&quot;https://&quot;) - 1;
+<a href="#l895" class="line" id="l895">    895</a> 		host = g_strndup(uri, strchr(uri, &#39;/&#39;) - uri);
+<a href="#l896" class="line" id="l896">    896</a> 		webkit_web_context_allow_tls_certificate_for_host(
+<a href="#l897" class="line" id="l897">    897</a> 		    webkit_web_view_get_context(c-&gt;view), cert, host);
+<a href="#l898" class="line" id="l898">    898</a> 		g_free(host);
+<a href="#l899" class="line" id="l899">    899</a> 	}
+<a href="#l900" class="line" id="l900">    900</a> 
+<a href="#l901" class="line" id="l901">    901</a> 	g_object_unref(cert);
+<a href="#l902" class="line" id="l902">    902</a> 
+<a href="#l903" class="line" id="l903">    903</a> }
+<a href="#l904" class="line" id="l904">    904</a> 
+<a href="#l905" class="line" id="l905">    905</a> const char *
+<a href="#l906" class="line" id="l906">    906</a> getstyle(const char *uri)
+<a href="#l907" class="line" id="l907">    907</a> {
+<a href="#l908" class="line" id="l908">    908</a> 	int i;
+<a href="#l909" class="line" id="l909">    909</a> 
+<a href="#l910" class="line" id="l910">    910</a> 	if (stylefile)
+<a href="#l911" class="line" id="l911">    911</a> 		return stylefile;
+<a href="#l912" class="line" id="l912">    912</a> 
+<a href="#l913" class="line" id="l913">    913</a> 	for (i = 0; i &lt; LENGTH(styles); ++i) {
+<a href="#l914" class="line" id="l914">    914</a> 		if (styles[i].regex &amp;&amp;
+<a href="#l915" class="line" id="l915">    915</a> 		    !regexec(&amp;(styles[i].re), uri, 0, NULL, 0))
+<a href="#l916" class="line" id="l916">    916</a> 			return styles[i].file;
+<a href="#l917" class="line" id="l917">    917</a> 	}
+<a href="#l918" class="line" id="l918">    918</a> 
+<a href="#l919" class="line" id="l919">    919</a> 	return &quot;&quot;;
+<a href="#l920" class="line" id="l920">    920</a> }
+<a href="#l921" class="line" id="l921">    921</a> 
+<a href="#l922" class="line" id="l922">    922</a> void
+<a href="#l923" class="line" id="l923">    923</a> setstyle(Client *c, const char *file)
+<a href="#l924" class="line" id="l924">    924</a> {
+<a href="#l925" class="line" id="l925">    925</a> 	gchar *style;
+<a href="#l926" class="line" id="l926">    926</a> 
+<a href="#l927" class="line" id="l927">    927</a> 	if (!g_file_get_contents(file, &amp;style, NULL, NULL)) {
+<a href="#l928" class="line" id="l928">    928</a> 		fprintf(stderr, &quot;Could not read style file: %s\n&quot;, file);
+<a href="#l929" class="line" id="l929">    929</a> 		return;
+<a href="#l930" class="line" id="l930">    930</a> 	}
+<a href="#l931" class="line" id="l931">    931</a> 
+<a href="#l932" class="line" id="l932">    932</a> 	webkit_user_content_manager_add_style_sheet(
+<a href="#l933" class="line" id="l933">    933</a> 	    webkit_web_view_get_user_content_manager(c-&gt;view),
+<a href="#l934" class="line" id="l934">    934</a> 	    webkit_user_style_sheet_new(style,
+<a href="#l935" class="line" id="l935">    935</a> 	    WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES,
+<a href="#l936" class="line" id="l936">    936</a> 	    WEBKIT_USER_STYLE_LEVEL_USER,
+<a href="#l937" class="line" id="l937">    937</a> 	    NULL, NULL));
+<a href="#l938" class="line" id="l938">    938</a> 
+<a href="#l939" class="line" id="l939">    939</a> 	g_free(style);
+<a href="#l940" class="line" id="l940">    940</a> }
+<a href="#l941" class="line" id="l941">    941</a> 
+<a href="#l942" class="line" id="l942">    942</a> void
+<a href="#l943" class="line" id="l943">    943</a> runscript(Client *c)
+<a href="#l944" class="line" id="l944">    944</a> {
+<a href="#l945" class="line" id="l945">    945</a> 	gchar *script;
+<a href="#l946" class="line" id="l946">    946</a> 	gsize l;
+<a href="#l947" class="line" id="l947">    947</a> 
+<a href="#l948" class="line" id="l948">    948</a> 	if (g_file_get_contents(scriptfile, &amp;script, &amp;l, NULL) &amp;&amp; l)
+<a href="#l949" class="line" id="l949">    949</a> 		evalscript(c, &quot;%s&quot;, script);
+<a href="#l950" class="line" id="l950">    950</a> 	g_free(script);
+<a href="#l951" class="line" id="l951">    951</a> }
+<a href="#l952" class="line" id="l952">    952</a> 
+<a href="#l953" class="line" id="l953">    953</a> void
+<a href="#l954" class="line" id="l954">    954</a> evalscript(Client *c, const char *jsstr, ...)
+<a href="#l955" class="line" id="l955">    955</a> {
+<a href="#l956" class="line" id="l956">    956</a> 	va_list ap;
+<a href="#l957" class="line" id="l957">    957</a> 	gchar *script;
+<a href="#l958" class="line" id="l958">    958</a> 
+<a href="#l959" class="line" id="l959">    959</a> 	va_start(ap, jsstr);
+<a href="#l960" class="line" id="l960">    960</a> 	script = g_strdup_vprintf(jsstr, ap);
+<a href="#l961" class="line" id="l961">    961</a> 	va_end(ap);
+<a href="#l962" class="line" id="l962">    962</a> 
+<a href="#l963" class="line" id="l963">    963</a> 	webkit_web_view_run_javascript(c-&gt;view, script, NULL, NULL, NULL);
+<a href="#l964" class="line" id="l964">    964</a> 	g_free(script);
+<a href="#l965" class="line" id="l965">    965</a> }
+<a href="#l966" class="line" id="l966">    966</a> 
+<a href="#l967" class="line" id="l967">    967</a> void
+<a href="#l968" class="line" id="l968">    968</a> updatewinid(Client *c)
+<a href="#l969" class="line" id="l969">    969</a> {
+<a href="#l970" class="line" id="l970">    970</a> 	snprintf(winid, LENGTH(winid), &quot;%lu&quot;, c-&gt;xid);
+<a href="#l971" class="line" id="l971">    971</a> }
+<a href="#l972" class="line" id="l972">    972</a> 
+<a href="#l973" class="line" id="l973">    973</a> void
+<a href="#l974" class="line" id="l974">    974</a> handleplumb(Client *c, const char *uri)
+<a href="#l975" class="line" id="l975">    975</a> {
+<a href="#l976" class="line" id="l976">    976</a> 	Arg a = (Arg)PLUMB(uri);
+<a href="#l977" class="line" id="l977">    977</a> 	spawn(c, &amp;a);
+<a href="#l978" class="line" id="l978">    978</a> }
+<a href="#l979" class="line" id="l979">    979</a> 
+<a href="#l980" class="line" id="l980">    980</a> void
+<a href="#l981" class="line" id="l981">    981</a> newwindow(Client *c, const Arg *a, int noembed)
+<a href="#l982" class="line" id="l982">    982</a> {
+<a href="#l983" class="line" id="l983">    983</a> 	int i = 0;
+<a href="#l984" class="line" id="l984">    984</a> 	char tmp[64];
+<a href="#l985" class="line" id="l985">    985</a> 	const char *cmd[29], *uri;
+<a href="#l986" class="line" id="l986">    986</a> 	const Arg arg = { .v = cmd };
+<a href="#l987" class="line" id="l987">    987</a> 
+<a href="#l988" class="line" id="l988">    988</a> 	cmd[i++] = argv0;
+<a href="#l989" class="line" id="l989">    989</a> 	cmd[i++] = &quot;-a&quot;;
+<a href="#l990" class="line" id="l990">    990</a> 	cmd[i++] = curconfig[CookiePolicies].val.v;
+<a href="#l991" class="line" id="l991">    991</a> 	cmd[i++] = curconfig[ScrollBars].val.i ? &quot;-B&quot; : &quot;-b&quot;;
+<a href="#l992" class="line" id="l992">    992</a> 	if (cookiefile &amp;&amp; g_strcmp0(cookiefile, &quot;&quot;)) {
+<a href="#l993" class="line" id="l993">    993</a> 		cmd[i++] = &quot;-c&quot;;
+<a href="#l994" class="line" id="l994">    994</a> 		cmd[i++] = cookiefile;
+<a href="#l995" class="line" id="l995">    995</a> 	}
+<a href="#l996" class="line" id="l996">    996</a> 	if (stylefile &amp;&amp; g_strcmp0(stylefile, &quot;&quot;)) {
+<a href="#l997" class="line" id="l997">    997</a> 		cmd[i++] = &quot;-C&quot;;
+<a href="#l998" class="line" id="l998">    998</a> 		cmd[i++] = stylefile;
+<a href="#l999" class="line" id="l999">    999</a> 	}
+<a href="#l1000" class="line" id="l1000">   1000</a> 	cmd[i++] = curconfig[DiskCache].val.i ? &quot;-D&quot; : &quot;-d&quot;;
+<a href="#l1001" class="line" id="l1001">   1001</a> 	if (embed &amp;&amp; !noembed) {
+<a href="#l1002" class="line" id="l1002">   1002</a> 		cmd[i++] = &quot;-e&quot;;
+<a href="#l1003" class="line" id="l1003">   1003</a> 		snprintf(tmp, LENGTH(tmp), &quot;%lu&quot;, embed);
+<a href="#l1004" class="line" id="l1004">   1004</a> 		cmd[i++] = tmp;
+<a href="#l1005" class="line" id="l1005">   1005</a> 	}
+<a href="#l1006" class="line" id="l1006">   1006</a> 	cmd[i++] = curconfig[RunInFullscreen].val.i ? &quot;-F&quot; : &quot;-f&quot; ;
+<a href="#l1007" class="line" id="l1007">   1007</a> 	cmd[i++] = curconfig[Geolocation].val.i ?     &quot;-G&quot; : &quot;-g&quot; ;
+<a href="#l1008" class="line" id="l1008">   1008</a> 	cmd[i++] = curconfig[LoadImages].val.i ?      &quot;-I&quot; : &quot;-i&quot; ;
+<a href="#l1009" class="line" id="l1009">   1009</a> 	cmd[i++] = curconfig[KioskMode].val.i ?       &quot;-K&quot; : &quot;-k&quot; ;
+<a href="#l1010" class="line" id="l1010">   1010</a> 	cmd[i++] = curconfig[Style].val.i ?           &quot;-M&quot; : &quot;-m&quot; ;
+<a href="#l1011" class="line" id="l1011">   1011</a> 	cmd[i++] = curconfig[Inspector].val.i ?       &quot;-N&quot; : &quot;-n&quot; ;
+<a href="#l1012" class="line" id="l1012">   1012</a> 	cmd[i++] = curconfig[Plugins].val.i ?         &quot;-P&quot; : &quot;-p&quot; ;
+<a href="#l1013" class="line" id="l1013">   1013</a> 	if (scriptfile &amp;&amp; g_strcmp0(scriptfile, &quot;&quot;)) {
+<a href="#l1014" class="line" id="l1014">   1014</a> 		cmd[i++] = &quot;-r&quot;;
+<a href="#l1015" class="line" id="l1015">   1015</a> 		cmd[i++] = scriptfile;
+<a href="#l1016" class="line" id="l1016">   1016</a> 	}
+<a href="#l1017" class="line" id="l1017">   1017</a> 	cmd[i++] = curconfig[JavaScript].val.i ? &quot;-S&quot; : &quot;-s&quot;;
+<a href="#l1018" class="line" id="l1018">   1018</a> 	cmd[i++] = curconfig[StrictTLS].val.i ? &quot;-T&quot; : &quot;-t&quot;;
+<a href="#l1019" class="line" id="l1019">   1019</a> 	if (fulluseragent &amp;&amp; g_strcmp0(fulluseragent, &quot;&quot;)) {
+<a href="#l1020" class="line" id="l1020">   1020</a> 		cmd[i++] = &quot;-u&quot;;
+<a href="#l1021" class="line" id="l1021">   1021</a> 		cmd[i++] = fulluseragent;
+<a href="#l1022" class="line" id="l1022">   1022</a> 	}
+<a href="#l1023" class="line" id="l1023">   1023</a> 	if (showxid)
+<a href="#l1024" class="line" id="l1024">   1024</a> 		cmd[i++] = &quot;-w&quot;;
+<a href="#l1025" class="line" id="l1025">   1025</a> 	cmd[i++] = curconfig[Certificate].val.i ? &quot;-X&quot; : &quot;-x&quot; ;
+<a href="#l1026" class="line" id="l1026">   1026</a> 	/* do not keep zoom level */
+<a href="#l1027" class="line" id="l1027">   1027</a> 	cmd[i++] = &quot;--&quot;;
+<a href="#l1028" class="line" id="l1028">   1028</a> 	if ((uri = a-&gt;v))
+<a href="#l1029" class="line" id="l1029">   1029</a> 		cmd[i++] = uri;
+<a href="#l1030" class="line" id="l1030">   1030</a> 	cmd[i] = NULL;
+<a href="#l1031" class="line" id="l1031">   1031</a> 
+<a href="#l1032" class="line" id="l1032">   1032</a> 	spawn(c, &amp;arg);
+<a href="#l1033" class="line" id="l1033">   1033</a> }
+<a href="#l1034" class="line" id="l1034">   1034</a> 
+<a href="#l1035" class="line" id="l1035">   1035</a> void
+<a href="#l1036" class="line" id="l1036">   1036</a> spawn(Client *c, const Arg *a)
+<a href="#l1037" class="line" id="l1037">   1037</a> {
+<a href="#l1038" class="line" id="l1038">   1038</a> 	if (fork() == 0) {
+<a href="#l1039" class="line" id="l1039">   1039</a> 		if (dpy)
+<a href="#l1040" class="line" id="l1040">   1040</a> 			close(ConnectionNumber(dpy));
+<a href="#l1041" class="line" id="l1041">   1041</a> 		close(pipein[0]);
+<a href="#l1042" class="line" id="l1042">   1042</a> 		close(pipeout[1]);
+<a href="#l1043" class="line" id="l1043">   1043</a> 		setsid();
+<a href="#l1044" class="line" id="l1044">   1044</a> 		execvp(((char **)a-&gt;v)[0], (char **)a-&gt;v);
+<a href="#l1045" class="line" id="l1045">   1045</a> 		fprintf(stderr, &quot;%s: execvp %s&quot;, argv0, ((char **)a-&gt;v)[0]);
+<a href="#l1046" class="line" id="l1046">   1046</a> 		perror(&quot; failed&quot;);
+<a href="#l1047" class="line" id="l1047">   1047</a> 		exit(1);
+<a href="#l1048" class="line" id="l1048">   1048</a> 	}
+<a href="#l1049" class="line" id="l1049">   1049</a> }
+<a href="#l1050" class="line" id="l1050">   1050</a> 
+<a href="#l1051" class="line" id="l1051">   1051</a> void
+<a href="#l1052" class="line" id="l1052">   1052</a> destroyclient(Client *c)
+<a href="#l1053" class="line" id="l1053">   1053</a> {
+<a href="#l1054" class="line" id="l1054">   1054</a> 	Client *p;
+<a href="#l1055" class="line" id="l1055">   1055</a> 
+<a href="#l1056" class="line" id="l1056">   1056</a> 	webkit_web_view_stop_loading(c-&gt;view);
+<a href="#l1057" class="line" id="l1057">   1057</a> 	/* Not needed, has already been called
+<a href="#l1058" class="line" id="l1058">   1058</a> 	gtk_widget_destroy(c-&gt;win);
+<a href="#l1059" class="line" id="l1059">   1059</a> 	 */
+<a href="#l1060" class="line" id="l1060">   1060</a> 
+<a href="#l1061" class="line" id="l1061">   1061</a> 	for (p = clients; p &amp;&amp; p-&gt;next != c; p = p-&gt;next)
+<a href="#l1062" class="line" id="l1062">   1062</a> 		;
+<a href="#l1063" class="line" id="l1063">   1063</a> 	if (p)
+<a href="#l1064" class="line" id="l1064">   1064</a> 		p-&gt;next = c-&gt;next;
+<a href="#l1065" class="line" id="l1065">   1065</a> 	else
+<a href="#l1066" class="line" id="l1066">   1066</a> 		clients = c-&gt;next;
+<a href="#l1067" class="line" id="l1067">   1067</a> 	free(c);
+<a href="#l1068" class="line" id="l1068">   1068</a> }
+<a href="#l1069" class="line" id="l1069">   1069</a> 
+<a href="#l1070" class="line" id="l1070">   1070</a> void
+<a href="#l1071" class="line" id="l1071">   1071</a> cleanup(void)
+<a href="#l1072" class="line" id="l1072">   1072</a> {
+<a href="#l1073" class="line" id="l1073">   1073</a> 	while (clients)
+<a href="#l1074" class="line" id="l1074">   1074</a> 		destroyclient(clients);
+<a href="#l1075" class="line" id="l1075">   1075</a> 
+<a href="#l1076" class="line" id="l1076">   1076</a> 	close(pipein[0]);
+<a href="#l1077" class="line" id="l1077">   1077</a> 	close(pipeout[1]);
+<a href="#l1078" class="line" id="l1078">   1078</a> 	g_free(cookiefile);
+<a href="#l1079" class="line" id="l1079">   1079</a> 	g_free(scriptfile);
+<a href="#l1080" class="line" id="l1080">   1080</a> 	g_free(stylefile);
+<a href="#l1081" class="line" id="l1081">   1081</a> 	g_free(cachedir);
+<a href="#l1082" class="line" id="l1082">   1082</a> 	XCloseDisplay(dpy);
+<a href="#l1083" class="line" id="l1083">   1083</a> }
+<a href="#l1084" class="line" id="l1084">   1084</a> 
+<a href="#l1085" class="line" id="l1085">   1085</a> WebKitWebView *
+<a href="#l1086" class="line" id="l1086">   1086</a> newview(Client *c, WebKitWebView *rv)
+<a href="#l1087" class="line" id="l1087">   1087</a> {
+<a href="#l1088" class="line" id="l1088">   1088</a> 	WebKitWebView *v;
+<a href="#l1089" class="line" id="l1089">   1089</a> 	WebKitSettings *settings;
+<a href="#l1090" class="line" id="l1090">   1090</a> 	WebKitWebContext *context;
+<a href="#l1091" class="line" id="l1091">   1091</a> 	WebKitCookieManager *cookiemanager;
+<a href="#l1092" class="line" id="l1092">   1092</a> 	WebKitUserContentManager *contentmanager;
+<a href="#l1093" class="line" id="l1093">   1093</a> 
+<a href="#l1094" class="line" id="l1094">   1094</a> 	/* Webview */
+<a href="#l1095" class="line" id="l1095">   1095</a> 	if (rv) {
+<a href="#l1096" class="line" id="l1096">   1096</a> 		v = WEBKIT_WEB_VIEW(webkit_web_view_new_with_related_view(rv));
+<a href="#l1097" class="line" id="l1097">   1097</a> 	} else {
+<a href="#l1098" class="line" id="l1098">   1098</a> 		settings = webkit_settings_new_with_settings(
+<a href="#l1099" class="line" id="l1099">   1099</a> 		   &quot;allow-file-access-from-file-urls&quot;, curconfig[FileURLsCrossAccess].val.i,
+<a href="#l1100" class="line" id="l1100">   1100</a> 		   &quot;allow-universal-access-from-file-urls&quot;, curconfig[FileURLsCrossAccess].val.i,
+<a href="#l1101" class="line" id="l1101">   1101</a> 		   &quot;auto-load-images&quot;, curconfig[LoadImages].val.i,
+<a href="#l1102" class="line" id="l1102">   1102</a> 		   &quot;default-charset&quot;, curconfig[DefaultCharset].val.v,
+<a href="#l1103" class="line" id="l1103">   1103</a> 		   &quot;default-font-size&quot;, curconfig[FontSize].val.i,
+<a href="#l1104" class="line" id="l1104">   1104</a> 		   &quot;enable-caret-browsing&quot;, curconfig[CaretBrowsing].val.i,
+<a href="#l1105" class="line" id="l1105">   1105</a> 		   &quot;enable-developer-extras&quot;, curconfig[Inspector].val.i,
+<a href="#l1106" class="line" id="l1106">   1106</a> 		   &quot;enable-dns-prefetching&quot;, curconfig[DNSPrefetch].val.i,
+<a href="#l1107" class="line" id="l1107">   1107</a> 		   &quot;enable-frame-flattening&quot;, curconfig[FrameFlattening].val.i,
+<a href="#l1108" class="line" id="l1108">   1108</a> 		   &quot;enable-html5-database&quot;, curconfig[DiskCache].val.i,
+<a href="#l1109" class="line" id="l1109">   1109</a> 		   &quot;enable-html5-local-storage&quot;, curconfig[DiskCache].val.i,
+<a href="#l1110" class="line" id="l1110">   1110</a> 		   &quot;enable-java&quot;, curconfig[Java].val.i,
+<a href="#l1111" class="line" id="l1111">   1111</a> 		   &quot;enable-javascript&quot;, curconfig[JavaScript].val.i,
+<a href="#l1112" class="line" id="l1112">   1112</a> 		   &quot;enable-plugins&quot;, curconfig[Plugins].val.i,
+<a href="#l1113" class="line" id="l1113">   1113</a> 		   &quot;enable-accelerated-2d-canvas&quot;, curconfig[AcceleratedCanvas].val.i,
+<a href="#l1114" class="line" id="l1114">   1114</a> 		   &quot;enable-site-specific-quirks&quot;, curconfig[SiteQuirks].val.i,
+<a href="#l1115" class="line" id="l1115">   1115</a> 		   &quot;enable-smooth-scrolling&quot;, curconfig[SmoothScrolling].val.i,
+<a href="#l1116" class="line" id="l1116">   1116</a> 		   &quot;enable-webgl&quot;, curconfig[WebGL].val.i,
+<a href="#l1117" class="line" id="l1117">   1117</a> 		   &quot;media-playback-requires-user-gesture&quot;, curconfig[MediaManualPlay].val.i,
+<a href="#l1118" class="line" id="l1118">   1118</a> 		   NULL);
+<a href="#l1119" class="line" id="l1119">   1119</a> /* For more interesting settings, have a look at
+<a href="#l1120" class="line" id="l1120">   1120</a>  * http://webkitgtk.org/reference/webkit2gtk/stable/WebKitSettings.html */
+<a href="#l1121" class="line" id="l1121">   1121</a> 
+<a href="#l1122" class="line" id="l1122">   1122</a> 		if (strcmp(fulluseragent, &quot;&quot;)) {
+<a href="#l1123" class="line" id="l1123">   1123</a> 			webkit_settings_set_user_agent(settings, fulluseragent);
+<a href="#l1124" class="line" id="l1124">   1124</a> 		} else if (surfuseragent) {
+<a href="#l1125" class="line" id="l1125">   1125</a> 			webkit_settings_set_user_agent_with_application_details(
+<a href="#l1126" class="line" id="l1126">   1126</a> 			    settings, &quot;Surf&quot;, VERSION);
+<a href="#l1127" class="line" id="l1127">   1127</a> 		}
+<a href="#l1128" class="line" id="l1128">   1128</a> 		useragent = webkit_settings_get_user_agent(settings);
+<a href="#l1129" class="line" id="l1129">   1129</a> 
+<a href="#l1130" class="line" id="l1130">   1130</a> 		contentmanager = webkit_user_content_manager_new();
+<a href="#l1131" class="line" id="l1131">   1131</a> 
+<a href="#l1132" class="line" id="l1132">   1132</a> 		context = webkit_web_context_new_with_website_data_manager(
+<a href="#l1133" class="line" id="l1133">   1133</a> 		          webkit_website_data_manager_new(
+<a href="#l1134" class="line" id="l1134">   1134</a> 		          &quot;base-cache-directory&quot;, cachedir,
+<a href="#l1135" class="line" id="l1135">   1135</a> 		          &quot;base-data-directory&quot;, cachedir,
+<a href="#l1136" class="line" id="l1136">   1136</a> 		          NULL));
+<a href="#l1137" class="line" id="l1137">   1137</a> 
+<a href="#l1138" class="line" id="l1138">   1138</a> 		cookiemanager = webkit_web_context_get_cookie_manager(context);
+<a href="#l1139" class="line" id="l1139">   1139</a> 
+<a href="#l1140" class="line" id="l1140">   1140</a> 		/* rendering process model, can be a shared unique one
+<a href="#l1141" class="line" id="l1141">   1141</a> 		 * or one for each view */
+<a href="#l1142" class="line" id="l1142">   1142</a> 		webkit_web_context_set_process_model(context,
+<a href="#l1143" class="line" id="l1143">   1143</a> 		    WEBKIT_PROCESS_MODEL_MULTIPLE_SECONDARY_PROCESSES);
+<a href="#l1144" class="line" id="l1144">   1144</a> 		/* TLS */
+<a href="#l1145" class="line" id="l1145">   1145</a> 		webkit_web_context_set_tls_errors_policy(context,
+<a href="#l1146" class="line" id="l1146">   1146</a> 		    curconfig[StrictTLS].val.i ? WEBKIT_TLS_ERRORS_POLICY_FAIL :
+<a href="#l1147" class="line" id="l1147">   1147</a> 		    WEBKIT_TLS_ERRORS_POLICY_IGNORE);
+<a href="#l1148" class="line" id="l1148">   1148</a> 		/* disk cache */
+<a href="#l1149" class="line" id="l1149">   1149</a> 		webkit_web_context_set_cache_model(context,
+<a href="#l1150" class="line" id="l1150">   1150</a> 		    curconfig[DiskCache].val.i ? WEBKIT_CACHE_MODEL_WEB_BROWSER :
+<a href="#l1151" class="line" id="l1151">   1151</a> 		    WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER);
+<a href="#l1152" class="line" id="l1152">   1152</a> 
+<a href="#l1153" class="line" id="l1153">   1153</a> 		/* Currently only works with text file to be compatible with curl */
+<a href="#l1154" class="line" id="l1154">   1154</a> 		webkit_cookie_manager_set_persistent_storage(cookiemanager,
+<a href="#l1155" class="line" id="l1155">   1155</a> 		    cookiefile, WEBKIT_COOKIE_PERSISTENT_STORAGE_TEXT);
+<a href="#l1156" class="line" id="l1156">   1156</a> 		/* cookie policy */
+<a href="#l1157" class="line" id="l1157">   1157</a> 		webkit_cookie_manager_set_accept_policy(cookiemanager,
+<a href="#l1158" class="line" id="l1158">   1158</a> 		    cookiepolicy_get());
+<a href="#l1159" class="line" id="l1159">   1159</a> 		/* languages */
+<a href="#l1160" class="line" id="l1160">   1160</a> 		webkit_web_context_set_preferred_languages(context,
+<a href="#l1161" class="line" id="l1161">   1161</a> 		    curconfig[PreferredLanguages].val.v);
+<a href="#l1162" class="line" id="l1162">   1162</a> 		webkit_web_context_set_spell_checking_languages(context,
+<a href="#l1163" class="line" id="l1163">   1163</a> 		    curconfig[SpellLanguages].val.v);
+<a href="#l1164" class="line" id="l1164">   1164</a> 		webkit_web_context_set_spell_checking_enabled(context,
+<a href="#l1165" class="line" id="l1165">   1165</a> 		    curconfig[SpellChecking].val.i);
+<a href="#l1166" class="line" id="l1166">   1166</a> 
+<a href="#l1167" class="line" id="l1167">   1167</a> 		g_signal_connect(G_OBJECT(context), &quot;download-started&quot;,
+<a href="#l1168" class="line" id="l1168">   1168</a> 		                 G_CALLBACK(downloadstarted), c);
+<a href="#l1169" class="line" id="l1169">   1169</a> 		g_signal_connect(G_OBJECT(context), &quot;initialize-web-extensions&quot;,
+<a href="#l1170" class="line" id="l1170">   1170</a> 		                 G_CALLBACK(initwebextensions), c);
+<a href="#l1171" class="line" id="l1171">   1171</a> 
+<a href="#l1172" class="line" id="l1172">   1172</a> 		v = g_object_new(WEBKIT_TYPE_WEB_VIEW,
+<a href="#l1173" class="line" id="l1173">   1173</a> 		    &quot;settings&quot;, settings,
+<a href="#l1174" class="line" id="l1174">   1174</a> 		    &quot;user-content-manager&quot;, contentmanager,
+<a href="#l1175" class="line" id="l1175">   1175</a> 		    &quot;web-context&quot;, context,
+<a href="#l1176" class="line" id="l1176">   1176</a> 		    NULL);
+<a href="#l1177" class="line" id="l1177">   1177</a> 	}
+<a href="#l1178" class="line" id="l1178">   1178</a> 
+<a href="#l1179" class="line" id="l1179">   1179</a> 	g_signal_connect(G_OBJECT(v), &quot;notify::estimated-load-progress&quot;,
+<a href="#l1180" class="line" id="l1180">   1180</a> 			 G_CALLBACK(progresschanged), c);
+<a href="#l1181" class="line" id="l1181">   1181</a> 	g_signal_connect(G_OBJECT(v), &quot;notify::title&quot;,
+<a href="#l1182" class="line" id="l1182">   1182</a> 			 G_CALLBACK(titlechanged), c);
+<a href="#l1183" class="line" id="l1183">   1183</a> 	g_signal_connect(G_OBJECT(v), &quot;button-release-event&quot;,
+<a href="#l1184" class="line" id="l1184">   1184</a> 			 G_CALLBACK(buttonreleased), c);
+<a href="#l1185" class="line" id="l1185">   1185</a> 	g_signal_connect(G_OBJECT(v), &quot;close&quot;,
+<a href="#l1186" class="line" id="l1186">   1186</a> 			G_CALLBACK(closeview), c);
+<a href="#l1187" class="line" id="l1187">   1187</a> 	g_signal_connect(G_OBJECT(v), &quot;create&quot;,
+<a href="#l1188" class="line" id="l1188">   1188</a> 			 G_CALLBACK(createview), c);
+<a href="#l1189" class="line" id="l1189">   1189</a> 	g_signal_connect(G_OBJECT(v), &quot;decide-policy&quot;,
+<a href="#l1190" class="line" id="l1190">   1190</a> 			 G_CALLBACK(decidepolicy), c);
+<a href="#l1191" class="line" id="l1191">   1191</a> 	g_signal_connect(G_OBJECT(v), &quot;insecure-content-detected&quot;,
+<a href="#l1192" class="line" id="l1192">   1192</a> 			 G_CALLBACK(insecurecontent), c);
+<a href="#l1193" class="line" id="l1193">   1193</a> 	g_signal_connect(G_OBJECT(v), &quot;load-failed-with-tls-errors&quot;,
+<a href="#l1194" class="line" id="l1194">   1194</a> 			 G_CALLBACK(loadfailedtls), c);
+<a href="#l1195" class="line" id="l1195">   1195</a> 	g_signal_connect(G_OBJECT(v), &quot;load-changed&quot;,
+<a href="#l1196" class="line" id="l1196">   1196</a> 			 G_CALLBACK(loadchanged), c);
+<a href="#l1197" class="line" id="l1197">   1197</a> 	g_signal_connect(G_OBJECT(v), &quot;mouse-target-changed&quot;,
+<a href="#l1198" class="line" id="l1198">   1198</a> 			 G_CALLBACK(mousetargetchanged), c);
+<a href="#l1199" class="line" id="l1199">   1199</a> 	g_signal_connect(G_OBJECT(v), &quot;permission-request&quot;,
+<a href="#l1200" class="line" id="l1200">   1200</a> 			 G_CALLBACK(permissionrequested), c);
+<a href="#l1201" class="line" id="l1201">   1201</a> 	g_signal_connect(G_OBJECT(v), &quot;ready-to-show&quot;,
+<a href="#l1202" class="line" id="l1202">   1202</a> 			 G_CALLBACK(showview), c);
+<a href="#l1203" class="line" id="l1203">   1203</a> 	g_signal_connect(G_OBJECT(v), &quot;web-process-terminated&quot;,
+<a href="#l1204" class="line" id="l1204">   1204</a> 			 G_CALLBACK(webprocessterminated), c);
+<a href="#l1205" class="line" id="l1205">   1205</a> 
+<a href="#l1206" class="line" id="l1206">   1206</a> 	return v;
+<a href="#l1207" class="line" id="l1207">   1207</a> }
+<a href="#l1208" class="line" id="l1208">   1208</a> 
+<a href="#l1209" class="line" id="l1209">   1209</a> static gboolean
+<a href="#l1210" class="line" id="l1210">   1210</a> readpipe(GIOChannel *s, GIOCondition ioc, gpointer unused)
+<a href="#l1211" class="line" id="l1211">   1211</a> {
+<a href="#l1212" class="line" id="l1212">   1212</a> 	static char msg[MSGBUFSZ], msgsz;
+<a href="#l1213" class="line" id="l1213">   1213</a> 	GError *gerr = NULL;
+<a href="#l1214" class="line" id="l1214">   1214</a> 
+<a href="#l1215" class="line" id="l1215">   1215</a> 	if (g_io_channel_read_chars(s, msg, sizeof(msg), NULL, &amp;gerr) !=
+<a href="#l1216" class="line" id="l1216">   1216</a> 	    G_IO_STATUS_NORMAL) {
+<a href="#l1217" class="line" id="l1217">   1217</a> 		fprintf(stderr, &quot;surf: error reading pipe: %s\n&quot;,
+<a href="#l1218" class="line" id="l1218">   1218</a> 		        gerr-&gt;message);
+<a href="#l1219" class="line" id="l1219">   1219</a> 		g_error_free(gerr);
+<a href="#l1220" class="line" id="l1220">   1220</a> 		return TRUE;
+<a href="#l1221" class="line" id="l1221">   1221</a> 	}
+<a href="#l1222" class="line" id="l1222">   1222</a> 	if ((msgsz = msg[0]) &lt; 3) {
+<a href="#l1223" class="line" id="l1223">   1223</a> 		fprintf(stderr, &quot;surf: message too short: %d\n&quot;, msgsz);
+<a href="#l1224" class="line" id="l1224">   1224</a> 		return TRUE;
+<a href="#l1225" class="line" id="l1225">   1225</a> 	}
+<a href="#l1226" class="line" id="l1226">   1226</a> 
+<a href="#l1227" class="line" id="l1227">   1227</a> 	switch (msg[2]) {
+<a href="#l1228" class="line" id="l1228">   1228</a> 	case &#39;i&#39;:
+<a href="#l1229" class="line" id="l1229">   1229</a> 		close(pipein[1]);
+<a href="#l1230" class="line" id="l1230">   1230</a> 		close(pipeout[0]);
+<a href="#l1231" class="line" id="l1231">   1231</a> 		break;
+<a href="#l1232" class="line" id="l1232">   1232</a> 	}
+<a href="#l1233" class="line" id="l1233">   1233</a> 
+<a href="#l1234" class="line" id="l1234">   1234</a> 	return TRUE;
+<a href="#l1235" class="line" id="l1235">   1235</a> }
+<a href="#l1236" class="line" id="l1236">   1236</a> 
+<a href="#l1237" class="line" id="l1237">   1237</a> void
+<a href="#l1238" class="line" id="l1238">   1238</a> initwebextensions(WebKitWebContext *wc, Client *c)
+<a href="#l1239" class="line" id="l1239">   1239</a> {
+<a href="#l1240" class="line" id="l1240">   1240</a> 	GVariant *gv;
+<a href="#l1241" class="line" id="l1241">   1241</a> 
+<a href="#l1242" class="line" id="l1242">   1242</a> 	if (!pipeout[0] || !pipein[1])
+<a href="#l1243" class="line" id="l1243">   1243</a> 		return;
+<a href="#l1244" class="line" id="l1244">   1244</a> 
+<a href="#l1245" class="line" id="l1245">   1245</a> 	gv = g_variant_new(&quot;(ii)&quot;, pipeout[0], pipein[1]);
+<a href="#l1246" class="line" id="l1246">   1246</a> 
+<a href="#l1247" class="line" id="l1247">   1247</a> 	webkit_web_context_set_web_extensions_initialization_user_data(wc, gv);
+<a href="#l1248" class="line" id="l1248">   1248</a> 	webkit_web_context_set_web_extensions_directory(wc, WEBEXTDIR);
+<a href="#l1249" class="line" id="l1249">   1249</a> }
+<a href="#l1250" class="line" id="l1250">   1250</a> 
+<a href="#l1251" class="line" id="l1251">   1251</a> GtkWidget *
+<a href="#l1252" class="line" id="l1252">   1252</a> createview(WebKitWebView *v, WebKitNavigationAction *a, Client *c)
+<a href="#l1253" class="line" id="l1253">   1253</a> {
+<a href="#l1254" class="line" id="l1254">   1254</a> 	Client *n;
+<a href="#l1255" class="line" id="l1255">   1255</a> 
+<a href="#l1256" class="line" id="l1256">   1256</a> 	switch (webkit_navigation_action_get_navigation_type(a)) {
+<a href="#l1257" class="line" id="l1257">   1257</a> 	case WEBKIT_NAVIGATION_TYPE_OTHER: /* fallthrough */
+<a href="#l1258" class="line" id="l1258">   1258</a> 		/*
+<a href="#l1259" class="line" id="l1259">   1259</a> 		 * popup windows of type “other” are almost always triggered
+<a href="#l1260" class="line" id="l1260">   1260</a> 		 * by user gesture, so inverse the logic here
+<a href="#l1261" class="line" id="l1261">   1261</a> 		 */
+<a href="#l1262" class="line" id="l1262">   1262</a> /* instead of this, compare destination uri to mouse-over uri for validating window */
+<a href="#l1263" class="line" id="l1263">   1263</a> 		if (webkit_navigation_action_is_user_gesture(a))
+<a href="#l1264" class="line" id="l1264">   1264</a> 			return NULL;
+<a href="#l1265" class="line" id="l1265">   1265</a> 	case WEBKIT_NAVIGATION_TYPE_LINK_CLICKED: /* fallthrough */
+<a href="#l1266" class="line" id="l1266">   1266</a> 	case WEBKIT_NAVIGATION_TYPE_FORM_SUBMITTED: /* fallthrough */
+<a href="#l1267" class="line" id="l1267">   1267</a> 	case WEBKIT_NAVIGATION_TYPE_BACK_FORWARD: /* fallthrough */
+<a href="#l1268" class="line" id="l1268">   1268</a> 	case WEBKIT_NAVIGATION_TYPE_RELOAD: /* fallthrough */
+<a href="#l1269" class="line" id="l1269">   1269</a> 	case WEBKIT_NAVIGATION_TYPE_FORM_RESUBMITTED:
+<a href="#l1270" class="line" id="l1270">   1270</a> 		n = newclient(c);
+<a href="#l1271" class="line" id="l1271">   1271</a> 		break;
+<a href="#l1272" class="line" id="l1272">   1272</a> 	default:
+<a href="#l1273" class="line" id="l1273">   1273</a> 		return NULL;
+<a href="#l1274" class="line" id="l1274">   1274</a> 	}
+<a href="#l1275" class="line" id="l1275">   1275</a> 
+<a href="#l1276" class="line" id="l1276">   1276</a> 	return GTK_WIDGET(n-&gt;view);
+<a href="#l1277" class="line" id="l1277">   1277</a> }
+<a href="#l1278" class="line" id="l1278">   1278</a> 
+<a href="#l1279" class="line" id="l1279">   1279</a> gboolean
+<a href="#l1280" class="line" id="l1280">   1280</a> buttonreleased(GtkWidget *w, GdkEvent *e, Client *c)
+<a href="#l1281" class="line" id="l1281">   1281</a> {
+<a href="#l1282" class="line" id="l1282">   1282</a> 	WebKitHitTestResultContext element;
+<a href="#l1283" class="line" id="l1283">   1283</a> 	int i;
+<a href="#l1284" class="line" id="l1284">   1284</a> 
+<a href="#l1285" class="line" id="l1285">   1285</a> 	element = webkit_hit_test_result_get_context(c-&gt;mousepos);
+<a href="#l1286" class="line" id="l1286">   1286</a> 
+<a href="#l1287" class="line" id="l1287">   1287</a> 	for (i = 0; i &lt; LENGTH(buttons); ++i) {
+<a href="#l1288" class="line" id="l1288">   1288</a> 		if (element &amp; buttons[i].target &amp;&amp;
+<a href="#l1289" class="line" id="l1289">   1289</a> 		    e-&gt;button.button == buttons[i].button &amp;&amp;
+<a href="#l1290" class="line" id="l1290">   1290</a> 		    CLEANMASK(e-&gt;button.state) == CLEANMASK(buttons[i].mask) &amp;&amp;
+<a href="#l1291" class="line" id="l1291">   1291</a> 		    buttons[i].func) {
+<a href="#l1292" class="line" id="l1292">   1292</a> 			buttons[i].func(c, &amp;buttons[i].arg, c-&gt;mousepos);
+<a href="#l1293" class="line" id="l1293">   1293</a> 			return buttons[i].stopevent;
+<a href="#l1294" class="line" id="l1294">   1294</a> 		}
+<a href="#l1295" class="line" id="l1295">   1295</a> 	}
+<a href="#l1296" class="line" id="l1296">   1296</a> 
+<a href="#l1297" class="line" id="l1297">   1297</a> 	return FALSE;
+<a href="#l1298" class="line" id="l1298">   1298</a> }
+<a href="#l1299" class="line" id="l1299">   1299</a> 
+<a href="#l1300" class="line" id="l1300">   1300</a> GdkFilterReturn
+<a href="#l1301" class="line" id="l1301">   1301</a> processx(GdkXEvent *e, GdkEvent *event, gpointer d)
+<a href="#l1302" class="line" id="l1302">   1302</a> {
+<a href="#l1303" class="line" id="l1303">   1303</a> 	Client *c = (Client *)d;
+<a href="#l1304" class="line" id="l1304">   1304</a> 	XPropertyEvent *ev;
+<a href="#l1305" class="line" id="l1305">   1305</a> 	Arg a;
+<a href="#l1306" class="line" id="l1306">   1306</a> 
+<a href="#l1307" class="line" id="l1307">   1307</a> 	if (((XEvent *)e)-&gt;type == PropertyNotify) {
+<a href="#l1308" class="line" id="l1308">   1308</a> 		ev = &amp;((XEvent *)e)-&gt;xproperty;
+<a href="#l1309" class="line" id="l1309">   1309</a> 		if (ev-&gt;state == PropertyNewValue) {
+<a href="#l1310" class="line" id="l1310">   1310</a> 			if (ev-&gt;atom == atoms[AtomFind]) {
+<a href="#l1311" class="line" id="l1311">   1311</a> 				find(c, NULL);
+<a href="#l1312" class="line" id="l1312">   1312</a> 
+<a href="#l1313" class="line" id="l1313">   1313</a> 				return GDK_FILTER_REMOVE;
+<a href="#l1314" class="line" id="l1314">   1314</a> 			} else if (ev-&gt;atom == atoms[AtomGo]) {
+<a href="#l1315" class="line" id="l1315">   1315</a> 				a.v = getatom(c, AtomGo);
+<a href="#l1316" class="line" id="l1316">   1316</a> 				loaduri(c, &amp;a);
+<a href="#l1317" class="line" id="l1317">   1317</a> 
+<a href="#l1318" class="line" id="l1318">   1318</a> 				return GDK_FILTER_REMOVE;
+<a href="#l1319" class="line" id="l1319">   1319</a> 			}
+<a href="#l1320" class="line" id="l1320">   1320</a> 		}
+<a href="#l1321" class="line" id="l1321">   1321</a> 	}
+<a href="#l1322" class="line" id="l1322">   1322</a> 	return GDK_FILTER_CONTINUE;
+<a href="#l1323" class="line" id="l1323">   1323</a> }
+<a href="#l1324" class="line" id="l1324">   1324</a> 
+<a href="#l1325" class="line" id="l1325">   1325</a> gboolean
+<a href="#l1326" class="line" id="l1326">   1326</a> winevent(GtkWidget *w, GdkEvent *e, Client *c)
+<a href="#l1327" class="line" id="l1327">   1327</a> {
+<a href="#l1328" class="line" id="l1328">   1328</a> 	int i;
+<a href="#l1329" class="line" id="l1329">   1329</a> 
+<a href="#l1330" class="line" id="l1330">   1330</a> 	switch (e-&gt;type) {
+<a href="#l1331" class="line" id="l1331">   1331</a> 	case GDK_ENTER_NOTIFY:
+<a href="#l1332" class="line" id="l1332">   1332</a> 		c-&gt;overtitle = c-&gt;targeturi;
+<a href="#l1333" class="line" id="l1333">   1333</a> 		updatetitle(c);
+<a href="#l1334" class="line" id="l1334">   1334</a> 		break;
+<a href="#l1335" class="line" id="l1335">   1335</a> 	case GDK_KEY_PRESS:
+<a href="#l1336" class="line" id="l1336">   1336</a> 		if (!curconfig[KioskMode].val.i) {
+<a href="#l1337" class="line" id="l1337">   1337</a> 			for (i = 0; i &lt; LENGTH(keys); ++i) {
+<a href="#l1338" class="line" id="l1338">   1338</a> 				if (gdk_keyval_to_lower(e-&gt;key.keyval) ==
+<a href="#l1339" class="line" id="l1339">   1339</a> 				    keys[i].keyval &amp;&amp;
+<a href="#l1340" class="line" id="l1340">   1340</a> 				    CLEANMASK(e-&gt;key.state) == keys[i].mod &amp;&amp;
+<a href="#l1341" class="line" id="l1341">   1341</a> 				    keys[i].func) {
+<a href="#l1342" class="line" id="l1342">   1342</a> 					updatewinid(c);
+<a href="#l1343" class="line" id="l1343">   1343</a> 					keys[i].func(c, &amp;(keys[i].arg));
+<a href="#l1344" class="line" id="l1344">   1344</a> 					return TRUE;
+<a href="#l1345" class="line" id="l1345">   1345</a> 				}
+<a href="#l1346" class="line" id="l1346">   1346</a> 			}
+<a href="#l1347" class="line" id="l1347">   1347</a> 		}
+<a href="#l1348" class="line" id="l1348">   1348</a> 	case GDK_LEAVE_NOTIFY:
+<a href="#l1349" class="line" id="l1349">   1349</a> 		c-&gt;overtitle = NULL;
+<a href="#l1350" class="line" id="l1350">   1350</a> 		updatetitle(c);
+<a href="#l1351" class="line" id="l1351">   1351</a> 		break;
+<a href="#l1352" class="line" id="l1352">   1352</a> 	case GDK_WINDOW_STATE:
+<a href="#l1353" class="line" id="l1353">   1353</a> 		if (e-&gt;window_state.changed_mask ==
+<a href="#l1354" class="line" id="l1354">   1354</a> 		    GDK_WINDOW_STATE_FULLSCREEN)
+<a href="#l1355" class="line" id="l1355">   1355</a> 			c-&gt;fullscreen = e-&gt;window_state.new_window_state &amp;
+<a href="#l1356" class="line" id="l1356">   1356</a> 			                GDK_WINDOW_STATE_FULLSCREEN;
+<a href="#l1357" class="line" id="l1357">   1357</a> 		break;
+<a href="#l1358" class="line" id="l1358">   1358</a> 	default:
+<a href="#l1359" class="line" id="l1359">   1359</a> 		break;
+<a href="#l1360" class="line" id="l1360">   1360</a> 	}
+<a href="#l1361" class="line" id="l1361">   1361</a> 
+<a href="#l1362" class="line" id="l1362">   1362</a> 	return FALSE;
+<a href="#l1363" class="line" id="l1363">   1363</a> }
+<a href="#l1364" class="line" id="l1364">   1364</a> 
+<a href="#l1365" class="line" id="l1365">   1365</a> void
+<a href="#l1366" class="line" id="l1366">   1366</a> showview(WebKitWebView *v, Client *c)
+<a href="#l1367" class="line" id="l1367">   1367</a> {
+<a href="#l1368" class="line" id="l1368">   1368</a> 	GdkRGBA bgcolor = { 0 };
+<a href="#l1369" class="line" id="l1369">   1369</a> 	GdkWindow *gwin;
+<a href="#l1370" class="line" id="l1370">   1370</a> 
+<a href="#l1371" class="line" id="l1371">   1371</a> 	c-&gt;finder = webkit_web_view_get_find_controller(c-&gt;view);
+<a href="#l1372" class="line" id="l1372">   1372</a> 	c-&gt;inspector = webkit_web_view_get_inspector(c-&gt;view);
+<a href="#l1373" class="line" id="l1373">   1373</a> 
+<a href="#l1374" class="line" id="l1374">   1374</a> 	c-&gt;pageid = webkit_web_view_get_page_id(c-&gt;view);
+<a href="#l1375" class="line" id="l1375">   1375</a> 	c-&gt;win = createwindow(c);
+<a href="#l1376" class="line" id="l1376">   1376</a> 
+<a href="#l1377" class="line" id="l1377">   1377</a> 	gtk_container_add(GTK_CONTAINER(c-&gt;win), GTK_WIDGET(c-&gt;view));
+<a href="#l1378" class="line" id="l1378">   1378</a> 	gtk_widget_show_all(c-&gt;win);
+<a href="#l1379" class="line" id="l1379">   1379</a> 	gtk_widget_grab_focus(GTK_WIDGET(c-&gt;view));
+<a href="#l1380" class="line" id="l1380">   1380</a> 
+<a href="#l1381" class="line" id="l1381">   1381</a> 	gwin = gtk_widget_get_window(GTK_WIDGET(c-&gt;win));
+<a href="#l1382" class="line" id="l1382">   1382</a> 	c-&gt;xid = gdk_x11_window_get_xid(gwin);
+<a href="#l1383" class="line" id="l1383">   1383</a> 	updatewinid(c);
+<a href="#l1384" class="line" id="l1384">   1384</a> 	if (showxid) {
+<a href="#l1385" class="line" id="l1385">   1385</a> 		gdk_display_sync(gtk_widget_get_display(c-&gt;win));
+<a href="#l1386" class="line" id="l1386">   1386</a> 		puts(winid);
+<a href="#l1387" class="line" id="l1387">   1387</a> 		fflush(stdout);
+<a href="#l1388" class="line" id="l1388">   1388</a> 	}
+<a href="#l1389" class="line" id="l1389">   1389</a> 
+<a href="#l1390" class="line" id="l1390">   1390</a> 	if (curconfig[HideBackground].val.i)
+<a href="#l1391" class="line" id="l1391">   1391</a> 		webkit_web_view_set_background_color(c-&gt;view, &amp;bgcolor);
+<a href="#l1392" class="line" id="l1392">   1392</a> 
+<a href="#l1393" class="line" id="l1393">   1393</a> 	if (!curconfig[KioskMode].val.i) {
+<a href="#l1394" class="line" id="l1394">   1394</a> 		gdk_window_set_events(gwin, GDK_ALL_EVENTS_MASK);
+<a href="#l1395" class="line" id="l1395">   1395</a> 		gdk_window_add_filter(gwin, processx, c);
+<a href="#l1396" class="line" id="l1396">   1396</a> 	}
+<a href="#l1397" class="line" id="l1397">   1397</a> 
+<a href="#l1398" class="line" id="l1398">   1398</a> 	if (curconfig[RunInFullscreen].val.i)
+<a href="#l1399" class="line" id="l1399">   1399</a> 		togglefullscreen(c, NULL);
+<a href="#l1400" class="line" id="l1400">   1400</a> 
+<a href="#l1401" class="line" id="l1401">   1401</a> 	if (curconfig[ZoomLevel].val.f != 1.0)
+<a href="#l1402" class="line" id="l1402">   1402</a> 		webkit_web_view_set_zoom_level(c-&gt;view,
+<a href="#l1403" class="line" id="l1403">   1403</a> 		                               curconfig[ZoomLevel].val.f);
+<a href="#l1404" class="line" id="l1404">   1404</a> 
+<a href="#l1405" class="line" id="l1405">   1405</a> 	setatom(c, AtomFind, &quot;&quot;);
+<a href="#l1406" class="line" id="l1406">   1406</a> 	setatom(c, AtomUri, &quot;about:blank&quot;);
+<a href="#l1407" class="line" id="l1407">   1407</a> }
+<a href="#l1408" class="line" id="l1408">   1408</a> 
+<a href="#l1409" class="line" id="l1409">   1409</a> GtkWidget *
+<a href="#l1410" class="line" id="l1410">   1410</a> createwindow(Client *c)
+<a href="#l1411" class="line" id="l1411">   1411</a> {
+<a href="#l1412" class="line" id="l1412">   1412</a> 	char *wmstr;
+<a href="#l1413" class="line" id="l1413">   1413</a> 	GtkWidget *w;
+<a href="#l1414" class="line" id="l1414">   1414</a> 
+<a href="#l1415" class="line" id="l1415">   1415</a> 	if (embed) {
+<a href="#l1416" class="line" id="l1416">   1416</a> 		w = gtk_plug_new(embed);
+<a href="#l1417" class="line" id="l1417">   1417</a> 	} else {
+<a href="#l1418" class="line" id="l1418">   1418</a> 		w = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+<a href="#l1419" class="line" id="l1419">   1419</a> 
+<a href="#l1420" class="line" id="l1420">   1420</a> 		wmstr = g_path_get_basename(argv0);
+<a href="#l1421" class="line" id="l1421">   1421</a> 		gtk_window_set_wmclass(GTK_WINDOW(w), wmstr, &quot;Surf&quot;);
+<a href="#l1422" class="line" id="l1422">   1422</a> 		g_free(wmstr);
+<a href="#l1423" class="line" id="l1423">   1423</a> 
+<a href="#l1424" class="line" id="l1424">   1424</a> 		wmstr = g_strdup_printf(&quot;%s[%lu]&quot;, &quot;Surf&quot;, c-&gt;pageid);
+<a href="#l1425" class="line" id="l1425">   1425</a> 		gtk_window_set_role(GTK_WINDOW(w), wmstr);
+<a href="#l1426" class="line" id="l1426">   1426</a> 		g_free(wmstr);
+<a href="#l1427" class="line" id="l1427">   1427</a> 
+<a href="#l1428" class="line" id="l1428">   1428</a> 		gtk_window_set_default_size(GTK_WINDOW(w), winsize[0], winsize[1]);
+<a href="#l1429" class="line" id="l1429">   1429</a> 	}
+<a href="#l1430" class="line" id="l1430">   1430</a> 
+<a href="#l1431" class="line" id="l1431">   1431</a> 	g_signal_connect(G_OBJECT(w), &quot;destroy&quot;,
+<a href="#l1432" class="line" id="l1432">   1432</a> 	                 G_CALLBACK(destroywin), c);
+<a href="#l1433" class="line" id="l1433">   1433</a> 	g_signal_connect(G_OBJECT(w), &quot;enter-notify-event&quot;,
+<a href="#l1434" class="line" id="l1434">   1434</a> 	                 G_CALLBACK(winevent), c);
+<a href="#l1435" class="line" id="l1435">   1435</a> 	g_signal_connect(G_OBJECT(w), &quot;key-press-event&quot;,
+<a href="#l1436" class="line" id="l1436">   1436</a> 	                 G_CALLBACK(winevent), c);
+<a href="#l1437" class="line" id="l1437">   1437</a> 	g_signal_connect(G_OBJECT(w), &quot;leave-notify-event&quot;,
+<a href="#l1438" class="line" id="l1438">   1438</a> 	                 G_CALLBACK(winevent), c);
+<a href="#l1439" class="line" id="l1439">   1439</a> 	g_signal_connect(G_OBJECT(w), &quot;window-state-event&quot;,
+<a href="#l1440" class="line" id="l1440">   1440</a> 	                 G_CALLBACK(winevent), c);
+<a href="#l1441" class="line" id="l1441">   1441</a> 
+<a href="#l1442" class="line" id="l1442">   1442</a> 	return w;
+<a href="#l1443" class="line" id="l1443">   1443</a> }
+<a href="#l1444" class="line" id="l1444">   1444</a> 
+<a href="#l1445" class="line" id="l1445">   1445</a> gboolean
+<a href="#l1446" class="line" id="l1446">   1446</a> loadfailedtls(WebKitWebView *v, gchar *uri, GTlsCertificate *cert,
+<a href="#l1447" class="line" id="l1447">   1447</a>               GTlsCertificateFlags err, Client *c)
+<a href="#l1448" class="line" id="l1448">   1448</a> {
+<a href="#l1449" class="line" id="l1449">   1449</a> 	GString *errmsg = g_string_new(NULL);
+<a href="#l1450" class="line" id="l1450">   1450</a> 	gchar *html, *pem;
+<a href="#l1451" class="line" id="l1451">   1451</a> 
+<a href="#l1452" class="line" id="l1452">   1452</a> 	c-&gt;failedcert = g_object_ref(cert);
+<a href="#l1453" class="line" id="l1453">   1453</a> 	c-&gt;tlserr = err;
+<a href="#l1454" class="line" id="l1454">   1454</a> 	c-&gt;errorpage = 1;
+<a href="#l1455" class="line" id="l1455">   1455</a> 
+<a href="#l1456" class="line" id="l1456">   1456</a> 	if (err &amp; G_TLS_CERTIFICATE_UNKNOWN_CA)
+<a href="#l1457" class="line" id="l1457">   1457</a> 		g_string_append(errmsg,
+<a href="#l1458" class="line" id="l1458">   1458</a> 		    &quot;The signing certificate authority is not known.&lt;br&gt;&quot;);
+<a href="#l1459" class="line" id="l1459">   1459</a> 	if (err &amp; G_TLS_CERTIFICATE_BAD_IDENTITY)
+<a href="#l1460" class="line" id="l1460">   1460</a> 		g_string_append(errmsg,
+<a href="#l1461" class="line" id="l1461">   1461</a> 		    &quot;The certificate does not match the expected identity &quot;
+<a href="#l1462" class="line" id="l1462">   1462</a> 		    &quot;of the site that it was retrieved from.&lt;br&gt;&quot;);
+<a href="#l1463" class="line" id="l1463">   1463</a> 	if (err &amp; G_TLS_CERTIFICATE_NOT_ACTIVATED)
+<a href="#l1464" class="line" id="l1464">   1464</a> 		g_string_append(errmsg,
+<a href="#l1465" class="line" id="l1465">   1465</a> 		    &quot;The certificate&#39;s activation time &quot;
+<a href="#l1466" class="line" id="l1466">   1466</a> 		    &quot;is still in the future.&lt;br&gt;&quot;);
+<a href="#l1467" class="line" id="l1467">   1467</a> 	if (err &amp; G_TLS_CERTIFICATE_EXPIRED)
+<a href="#l1468" class="line" id="l1468">   1468</a> 		g_string_append(errmsg, &quot;The certificate has expired.&lt;br&gt;&quot;);
+<a href="#l1469" class="line" id="l1469">   1469</a> 	if (err &amp; G_TLS_CERTIFICATE_REVOKED)
+<a href="#l1470" class="line" id="l1470">   1470</a> 		g_string_append(errmsg,
+<a href="#l1471" class="line" id="l1471">   1471</a> 		    &quot;The certificate has been revoked according to &quot;
+<a href="#l1472" class="line" id="l1472">   1472</a> 		    &quot;the GTlsConnection&#39;s certificate revocation list.&lt;br&gt;&quot;);
+<a href="#l1473" class="line" id="l1473">   1473</a> 	if (err &amp; G_TLS_CERTIFICATE_INSECURE)
+<a href="#l1474" class="line" id="l1474">   1474</a> 		g_string_append(errmsg,
+<a href="#l1475" class="line" id="l1475">   1475</a> 		    &quot;The certificate&#39;s algorithm is considered insecure.&lt;br&gt;&quot;);
+<a href="#l1476" class="line" id="l1476">   1476</a> 	if (err &amp; G_TLS_CERTIFICATE_GENERIC_ERROR)
+<a href="#l1477" class="line" id="l1477">   1477</a> 		g_string_append(errmsg,
+<a href="#l1478" class="line" id="l1478">   1478</a> 		    &quot;Some error occurred validating the certificate.&lt;br&gt;&quot;);
+<a href="#l1479" class="line" id="l1479">   1479</a> 
+<a href="#l1480" class="line" id="l1480">   1480</a> 	g_object_get(cert, &quot;certificate-pem&quot;, &amp;pem, NULL);
+<a href="#l1481" class="line" id="l1481">   1481</a> 	html = g_strdup_printf(&quot;&lt;p&gt;Could not validate TLS for “%s”&lt;br&gt;%s&lt;/p&gt;&quot;
+<a href="#l1482" class="line" id="l1482">   1482</a> 	                       &quot;&lt;p&gt;You can inspect the following certificate &quot;
+<a href="#l1483" class="line" id="l1483">   1483</a> 	                       &quot;with Ctrl-t (default keybinding).&lt;/p&gt;&quot;
+<a href="#l1484" class="line" id="l1484">   1484</a> 	                       &quot;&lt;p&gt;&lt;pre&gt;%s&lt;/pre&gt;&lt;/p&gt;&quot;, uri, errmsg-&gt;str, pem);
+<a href="#l1485" class="line" id="l1485">   1485</a> 	g_free(pem);
+<a href="#l1486" class="line" id="l1486">   1486</a> 	g_string_free(errmsg, TRUE);
+<a href="#l1487" class="line" id="l1487">   1487</a> 
+<a href="#l1488" class="line" id="l1488">   1488</a> 	webkit_web_view_load_alternate_html(c-&gt;view, html, uri, NULL);
+<a href="#l1489" class="line" id="l1489">   1489</a> 	g_free(html);
+<a href="#l1490" class="line" id="l1490">   1490</a> 
+<a href="#l1491" class="line" id="l1491">   1491</a> 	return TRUE;
+<a href="#l1492" class="line" id="l1492">   1492</a> }
+<a href="#l1493" class="line" id="l1493">   1493</a> 
+<a href="#l1494" class="line" id="l1494">   1494</a> void
+<a href="#l1495" class="line" id="l1495">   1495</a> loadchanged(WebKitWebView *v, WebKitLoadEvent e, Client *c)
+<a href="#l1496" class="line" id="l1496">   1496</a> {
+<a href="#l1497" class="line" id="l1497">   1497</a> 	const char *uri = geturi(c);
+<a href="#l1498" class="line" id="l1498">   1498</a> 
+<a href="#l1499" class="line" id="l1499">   1499</a> 	switch (e) {
+<a href="#l1500" class="line" id="l1500">   1500</a> 	case WEBKIT_LOAD_STARTED:
+<a href="#l1501" class="line" id="l1501">   1501</a> 		setatom(c, AtomUri, uri);
+<a href="#l1502" class="line" id="l1502">   1502</a> 		c-&gt;title = uri;
+<a href="#l1503" class="line" id="l1503">   1503</a> 		c-&gt;https = c-&gt;insecure = 0;
+<a href="#l1504" class="line" id="l1504">   1504</a> 		seturiparameters(c, uri, loadtransient);
+<a href="#l1505" class="line" id="l1505">   1505</a> 		if (c-&gt;errorpage)
+<a href="#l1506" class="line" id="l1506">   1506</a> 			c-&gt;errorpage = 0;
+<a href="#l1507" class="line" id="l1507">   1507</a> 		else
+<a href="#l1508" class="line" id="l1508">   1508</a> 			g_clear_object(&amp;c-&gt;failedcert);
+<a href="#l1509" class="line" id="l1509">   1509</a> 		break;
+<a href="#l1510" class="line" id="l1510">   1510</a> 	case WEBKIT_LOAD_REDIRECTED:
+<a href="#l1511" class="line" id="l1511">   1511</a> 		setatom(c, AtomUri, uri);
+<a href="#l1512" class="line" id="l1512">   1512</a> 		c-&gt;title = uri;
+<a href="#l1513" class="line" id="l1513">   1513</a> 		seturiparameters(c, uri, loadtransient);
+<a href="#l1514" class="line" id="l1514">   1514</a> 		break;
+<a href="#l1515" class="line" id="l1515">   1515</a> 	case WEBKIT_LOAD_COMMITTED:
+<a href="#l1516" class="line" id="l1516">   1516</a> 		seturiparameters(c, uri, loadcommitted);
+<a href="#l1517" class="line" id="l1517">   1517</a> 		c-&gt;https = webkit_web_view_get_tls_info(c-&gt;view, &amp;c-&gt;cert,
+<a href="#l1518" class="line" id="l1518">   1518</a> 		                                        &amp;c-&gt;tlserr);
+<a href="#l1519" class="line" id="l1519">   1519</a> 		break;
+<a href="#l1520" class="line" id="l1520">   1520</a> 	case WEBKIT_LOAD_FINISHED:
+<a href="#l1521" class="line" id="l1521">   1521</a> 		seturiparameters(c, uri, loadfinished);
+<a href="#l1522" class="line" id="l1522">   1522</a> 		/* Disabled until we write some WebKitWebExtension for
+<a href="#l1523" class="line" id="l1523">   1523</a> 		 * manipulating the DOM directly.
+<a href="#l1524" class="line" id="l1524">   1524</a> 		evalscript(c, &quot;document.documentElement.style.overflow = &#39;%s&#39;&quot;,
+<a href="#l1525" class="line" id="l1525">   1525</a> 		    enablescrollbars ? &quot;auto&quot; : &quot;hidden&quot;);
+<a href="#l1526" class="line" id="l1526">   1526</a> 		*/
+<a href="#l1527" class="line" id="l1527">   1527</a> 		runscript(c);
+<a href="#l1528" class="line" id="l1528">   1528</a> 		break;
+<a href="#l1529" class="line" id="l1529">   1529</a> 	}
+<a href="#l1530" class="line" id="l1530">   1530</a> 	updatetitle(c);
+<a href="#l1531" class="line" id="l1531">   1531</a> }
+<a href="#l1532" class="line" id="l1532">   1532</a> 
+<a href="#l1533" class="line" id="l1533">   1533</a> void
+<a href="#l1534" class="line" id="l1534">   1534</a> progresschanged(WebKitWebView *v, GParamSpec *ps, Client *c)
+<a href="#l1535" class="line" id="l1535">   1535</a> {
+<a href="#l1536" class="line" id="l1536">   1536</a> 	c-&gt;progress = webkit_web_view_get_estimated_load_progress(c-&gt;view) *
+<a href="#l1537" class="line" id="l1537">   1537</a> 	              100;
+<a href="#l1538" class="line" id="l1538">   1538</a> 	updatetitle(c);
+<a href="#l1539" class="line" id="l1539">   1539</a> }
+<a href="#l1540" class="line" id="l1540">   1540</a> 
+<a href="#l1541" class="line" id="l1541">   1541</a> void
+<a href="#l1542" class="line" id="l1542">   1542</a> titlechanged(WebKitWebView *view, GParamSpec *ps, Client *c)
+<a href="#l1543" class="line" id="l1543">   1543</a> {
+<a href="#l1544" class="line" id="l1544">   1544</a> 	c-&gt;title = webkit_web_view_get_title(c-&gt;view);
+<a href="#l1545" class="line" id="l1545">   1545</a> 	updatetitle(c);
+<a href="#l1546" class="line" id="l1546">   1546</a> }
+<a href="#l1547" class="line" id="l1547">   1547</a> 
+<a href="#l1548" class="line" id="l1548">   1548</a> void
+<a href="#l1549" class="line" id="l1549">   1549</a> mousetargetchanged(WebKitWebView *v, WebKitHitTestResult *h, guint modifiers,
+<a href="#l1550" class="line" id="l1550">   1550</a>     Client *c)
+<a href="#l1551" class="line" id="l1551">   1551</a> {
+<a href="#l1552" class="line" id="l1552">   1552</a> 	WebKitHitTestResultContext hc = webkit_hit_test_result_get_context(h);
+<a href="#l1553" class="line" id="l1553">   1553</a> 
+<a href="#l1554" class="line" id="l1554">   1554</a> 	/* Keep the hit test to know where is the pointer on the next click */
+<a href="#l1555" class="line" id="l1555">   1555</a> 	c-&gt;mousepos = h;
+<a href="#l1556" class="line" id="l1556">   1556</a> 
+<a href="#l1557" class="line" id="l1557">   1557</a> 	if (hc &amp; OnLink)
+<a href="#l1558" class="line" id="l1558">   1558</a> 		c-&gt;targeturi = webkit_hit_test_result_get_link_uri(h);
+<a href="#l1559" class="line" id="l1559">   1559</a> 	else if (hc &amp; OnImg)
+<a href="#l1560" class="line" id="l1560">   1560</a> 		c-&gt;targeturi = webkit_hit_test_result_get_image_uri(h);
+<a href="#l1561" class="line" id="l1561">   1561</a> 	else if (hc &amp; OnMedia)
+<a href="#l1562" class="line" id="l1562">   1562</a> 		c-&gt;targeturi = webkit_hit_test_result_get_media_uri(h);
+<a href="#l1563" class="line" id="l1563">   1563</a> 	else
+<a href="#l1564" class="line" id="l1564">   1564</a> 		c-&gt;targeturi = NULL;
+<a href="#l1565" class="line" id="l1565">   1565</a> 
+<a href="#l1566" class="line" id="l1566">   1566</a> 	c-&gt;overtitle = c-&gt;targeturi;
+<a href="#l1567" class="line" id="l1567">   1567</a> 	updatetitle(c);
+<a href="#l1568" class="line" id="l1568">   1568</a> }
+<a href="#l1569" class="line" id="l1569">   1569</a> 
+<a href="#l1570" class="line" id="l1570">   1570</a> gboolean
+<a href="#l1571" class="line" id="l1571">   1571</a> permissionrequested(WebKitWebView *v, WebKitPermissionRequest *r, Client *c)
+<a href="#l1572" class="line" id="l1572">   1572</a> {
+<a href="#l1573" class="line" id="l1573">   1573</a> 	ParamName param = ParameterLast;
+<a href="#l1574" class="line" id="l1574">   1574</a> 
+<a href="#l1575" class="line" id="l1575">   1575</a> 	if (WEBKIT_IS_GEOLOCATION_PERMISSION_REQUEST(r)) {
+<a href="#l1576" class="line" id="l1576">   1576</a> 		param = Geolocation;
+<a href="#l1577" class="line" id="l1577">   1577</a> 	} else if (WEBKIT_IS_USER_MEDIA_PERMISSION_REQUEST(r)) {
+<a href="#l1578" class="line" id="l1578">   1578</a> 		if (webkit_user_media_permission_is_for_audio_device(
+<a href="#l1579" class="line" id="l1579">   1579</a> 		    WEBKIT_USER_MEDIA_PERMISSION_REQUEST(r)))
+<a href="#l1580" class="line" id="l1580">   1580</a> 			param = AccessMicrophone;
+<a href="#l1581" class="line" id="l1581">   1581</a> 		else if (webkit_user_media_permission_is_for_video_device(
+<a href="#l1582" class="line" id="l1582">   1582</a> 		         WEBKIT_USER_MEDIA_PERMISSION_REQUEST(r)))
+<a href="#l1583" class="line" id="l1583">   1583</a> 			param = AccessWebcam;
+<a href="#l1584" class="line" id="l1584">   1584</a> 	} else {
+<a href="#l1585" class="line" id="l1585">   1585</a> 		return FALSE;
+<a href="#l1586" class="line" id="l1586">   1586</a> 	}
+<a href="#l1587" class="line" id="l1587">   1587</a> 
+<a href="#l1588" class="line" id="l1588">   1588</a> 	if (curconfig[param].val.i)
+<a href="#l1589" class="line" id="l1589">   1589</a> 		webkit_permission_request_allow(r);
+<a href="#l1590" class="line" id="l1590">   1590</a> 	else
+<a href="#l1591" class="line" id="l1591">   1591</a> 		webkit_permission_request_deny(r);
+<a href="#l1592" class="line" id="l1592">   1592</a> 
+<a href="#l1593" class="line" id="l1593">   1593</a> 	return TRUE;
+<a href="#l1594" class="line" id="l1594">   1594</a> }
+<a href="#l1595" class="line" id="l1595">   1595</a> 
+<a href="#l1596" class="line" id="l1596">   1596</a> gboolean
+<a href="#l1597" class="line" id="l1597">   1597</a> decidepolicy(WebKitWebView *v, WebKitPolicyDecision *d,
+<a href="#l1598" class="line" id="l1598">   1598</a>     WebKitPolicyDecisionType dt, Client *c)
+<a href="#l1599" class="line" id="l1599">   1599</a> {
+<a href="#l1600" class="line" id="l1600">   1600</a> 	switch (dt) {
+<a href="#l1601" class="line" id="l1601">   1601</a> 	case WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
+<a href="#l1602" class="line" id="l1602">   1602</a> 		decidenavigation(d, c);
+<a href="#l1603" class="line" id="l1603">   1603</a> 		break;
+<a href="#l1604" class="line" id="l1604">   1604</a> 	case WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION:
+<a href="#l1605" class="line" id="l1605">   1605</a> 		decidenewwindow(d, c);
+<a href="#l1606" class="line" id="l1606">   1606</a> 		break;
+<a href="#l1607" class="line" id="l1607">   1607</a> 	case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
+<a href="#l1608" class="line" id="l1608">   1608</a> 		decideresource(d, c);
+<a href="#l1609" class="line" id="l1609">   1609</a> 		break;
+<a href="#l1610" class="line" id="l1610">   1610</a> 	default:
+<a href="#l1611" class="line" id="l1611">   1611</a> 		webkit_policy_decision_ignore(d);
+<a href="#l1612" class="line" id="l1612">   1612</a> 		break;
+<a href="#l1613" class="line" id="l1613">   1613</a> 	}
+<a href="#l1614" class="line" id="l1614">   1614</a> 	return TRUE;
+<a href="#l1615" class="line" id="l1615">   1615</a> }
+<a href="#l1616" class="line" id="l1616">   1616</a> 
+<a href="#l1617" class="line" id="l1617">   1617</a> void
+<a href="#l1618" class="line" id="l1618">   1618</a> decidenavigation(WebKitPolicyDecision *d, Client *c)
+<a href="#l1619" class="line" id="l1619">   1619</a> {
+<a href="#l1620" class="line" id="l1620">   1620</a> 	WebKitNavigationAction *a =
+<a href="#l1621" class="line" id="l1621">   1621</a> 	    webkit_navigation_policy_decision_get_navigation_action(
+<a href="#l1622" class="line" id="l1622">   1622</a> 	    WEBKIT_NAVIGATION_POLICY_DECISION(d));
+<a href="#l1623" class="line" id="l1623">   1623</a> 
+<a href="#l1624" class="line" id="l1624">   1624</a> 	switch (webkit_navigation_action_get_navigation_type(a)) {
+<a href="#l1625" class="line" id="l1625">   1625</a> 	case WEBKIT_NAVIGATION_TYPE_LINK_CLICKED: /* fallthrough */
+<a href="#l1626" class="line" id="l1626">   1626</a> 	case WEBKIT_NAVIGATION_TYPE_FORM_SUBMITTED: /* fallthrough */
+<a href="#l1627" class="line" id="l1627">   1627</a> 	case WEBKIT_NAVIGATION_TYPE_BACK_FORWARD: /* fallthrough */
+<a href="#l1628" class="line" id="l1628">   1628</a> 	case WEBKIT_NAVIGATION_TYPE_RELOAD: /* fallthrough */
+<a href="#l1629" class="line" id="l1629">   1629</a> 	case WEBKIT_NAVIGATION_TYPE_FORM_RESUBMITTED: /* fallthrough */
+<a href="#l1630" class="line" id="l1630">   1630</a> 	case WEBKIT_NAVIGATION_TYPE_OTHER: /* fallthrough */
+<a href="#l1631" class="line" id="l1631">   1631</a> 	default:
+<a href="#l1632" class="line" id="l1632">   1632</a> 		/* Do not navigate to links with a &quot;_blank&quot; target (popup) */
+<a href="#l1633" class="line" id="l1633">   1633</a> 		if (webkit_navigation_policy_decision_get_frame_name(
+<a href="#l1634" class="line" id="l1634">   1634</a> 		    WEBKIT_NAVIGATION_POLICY_DECISION(d))) {
+<a href="#l1635" class="line" id="l1635">   1635</a> 			webkit_policy_decision_ignore(d);
+<a href="#l1636" class="line" id="l1636">   1636</a> 		} else {
+<a href="#l1637" class="line" id="l1637">   1637</a> 			/* Filter out navigation to different domain ? */
+<a href="#l1638" class="line" id="l1638">   1638</a> 			/* get action→urirequest, copy and load in new window+view
+<a href="#l1639" class="line" id="l1639">   1639</a> 			 * on Ctrl+Click ? */
+<a href="#l1640" class="line" id="l1640">   1640</a> 			webkit_policy_decision_use(d);
+<a href="#l1641" class="line" id="l1641">   1641</a> 		}
+<a href="#l1642" class="line" id="l1642">   1642</a> 		break;
+<a href="#l1643" class="line" id="l1643">   1643</a> 	}
+<a href="#l1644" class="line" id="l1644">   1644</a> }
+<a href="#l1645" class="line" id="l1645">   1645</a> 
+<a href="#l1646" class="line" id="l1646">   1646</a> void
+<a href="#l1647" class="line" id="l1647">   1647</a> decidenewwindow(WebKitPolicyDecision *d, Client *c)
+<a href="#l1648" class="line" id="l1648">   1648</a> {
+<a href="#l1649" class="line" id="l1649">   1649</a> 	Arg arg;
+<a href="#l1650" class="line" id="l1650">   1650</a> 	WebKitNavigationAction *a =
+<a href="#l1651" class="line" id="l1651">   1651</a> 	    webkit_navigation_policy_decision_get_navigation_action(
+<a href="#l1652" class="line" id="l1652">   1652</a> 	    WEBKIT_NAVIGATION_POLICY_DECISION(d));
+<a href="#l1653" class="line" id="l1653">   1653</a> 
+<a href="#l1654" class="line" id="l1654">   1654</a> 
+<a href="#l1655" class="line" id="l1655">   1655</a> 	switch (webkit_navigation_action_get_navigation_type(a)) {
+<a href="#l1656" class="line" id="l1656">   1656</a> 	case WEBKIT_NAVIGATION_TYPE_LINK_CLICKED: /* fallthrough */
+<a href="#l1657" class="line" id="l1657">   1657</a> 	case WEBKIT_NAVIGATION_TYPE_FORM_SUBMITTED: /* fallthrough */
+<a href="#l1658" class="line" id="l1658">   1658</a> 	case WEBKIT_NAVIGATION_TYPE_BACK_FORWARD: /* fallthrough */
+<a href="#l1659" class="line" id="l1659">   1659</a> 	case WEBKIT_NAVIGATION_TYPE_RELOAD: /* fallthrough */
+<a href="#l1660" class="line" id="l1660">   1660</a> 	case WEBKIT_NAVIGATION_TYPE_FORM_RESUBMITTED:
+<a href="#l1661" class="line" id="l1661">   1661</a> 		/* Filter domains here */
+<a href="#l1662" class="line" id="l1662">   1662</a> /* If the value of “mouse-button” is not 0, then the navigation was triggered by a mouse event.
+<a href="#l1663" class="line" id="l1663">   1663</a>  * test for link clicked but no button ? */
+<a href="#l1664" class="line" id="l1664">   1664</a> 		arg.v = webkit_uri_request_get_uri(
+<a href="#l1665" class="line" id="l1665">   1665</a> 		        webkit_navigation_action_get_request(a));
+<a href="#l1666" class="line" id="l1666">   1666</a> 		newwindow(c, &amp;arg, 0);
+<a href="#l1667" class="line" id="l1667">   1667</a> 		break;
+<a href="#l1668" class="line" id="l1668">   1668</a> 	case WEBKIT_NAVIGATION_TYPE_OTHER: /* fallthrough */
+<a href="#l1669" class="line" id="l1669">   1669</a> 	default:
+<a href="#l1670" class="line" id="l1670">   1670</a> 		break;
+<a href="#l1671" class="line" id="l1671">   1671</a> 	}
+<a href="#l1672" class="line" id="l1672">   1672</a> 
+<a href="#l1673" class="line" id="l1673">   1673</a> 	webkit_policy_decision_ignore(d);
+<a href="#l1674" class="line" id="l1674">   1674</a> }
+<a href="#l1675" class="line" id="l1675">   1675</a> 
+<a href="#l1676" class="line" id="l1676">   1676</a> void
+<a href="#l1677" class="line" id="l1677">   1677</a> decideresource(WebKitPolicyDecision *d, Client *c)
+<a href="#l1678" class="line" id="l1678">   1678</a> {
+<a href="#l1679" class="line" id="l1679">   1679</a> 	int i, isascii = 1;
+<a href="#l1680" class="line" id="l1680">   1680</a> 	WebKitResponsePolicyDecision *r = WEBKIT_RESPONSE_POLICY_DECISION(d);
+<a href="#l1681" class="line" id="l1681">   1681</a> 	WebKitURIResponse *res =
+<a href="#l1682" class="line" id="l1682">   1682</a> 	    webkit_response_policy_decision_get_response(r);
+<a href="#l1683" class="line" id="l1683">   1683</a> 	const gchar *uri = webkit_uri_response_get_uri(res);
+<a href="#l1684" class="line" id="l1684">   1684</a> 
+<a href="#l1685" class="line" id="l1685">   1685</a> 	if (g_str_has_suffix(uri, &quot;/favicon.ico&quot;)) {
+<a href="#l1686" class="line" id="l1686">   1686</a> 		webkit_policy_decision_ignore(d);
+<a href="#l1687" class="line" id="l1687">   1687</a> 		return;
+<a href="#l1688" class="line" id="l1688">   1688</a> 	}
+<a href="#l1689" class="line" id="l1689">   1689</a> 
+<a href="#l1690" class="line" id="l1690">   1690</a> 	if (!g_str_has_prefix(uri, &quot;http://&quot;)
+<a href="#l1691" class="line" id="l1691">   1691</a> 	    &amp;&amp; !g_str_has_prefix(uri, &quot;https://&quot;)
+<a href="#l1692" class="line" id="l1692">   1692</a> 	    &amp;&amp; !g_str_has_prefix(uri, &quot;about:&quot;)
+<a href="#l1693" class="line" id="l1693">   1693</a> 	    &amp;&amp; !g_str_has_prefix(uri, &quot;file://&quot;)
+<a href="#l1694" class="line" id="l1694">   1694</a> 	    &amp;&amp; !g_str_has_prefix(uri, &quot;data:&quot;)
+<a href="#l1695" class="line" id="l1695">   1695</a> 	    &amp;&amp; !g_str_has_prefix(uri, &quot;blob:&quot;)
+<a href="#l1696" class="line" id="l1696">   1696</a> 	    &amp;&amp; strlen(uri) &gt; 0) {
+<a href="#l1697" class="line" id="l1697">   1697</a> 		for (i = 0; i &lt; strlen(uri); i++) {
+<a href="#l1698" class="line" id="l1698">   1698</a> 			if (!g_ascii_isprint(uri[i])) {
+<a href="#l1699" class="line" id="l1699">   1699</a> 				isascii = 0;
+<a href="#l1700" class="line" id="l1700">   1700</a> 				break;
+<a href="#l1701" class="line" id="l1701">   1701</a> 			}
+<a href="#l1702" class="line" id="l1702">   1702</a> 		}
+<a href="#l1703" class="line" id="l1703">   1703</a> 		if (isascii) {
+<a href="#l1704" class="line" id="l1704">   1704</a> 			handleplumb(c, uri);
+<a href="#l1705" class="line" id="l1705">   1705</a> 			webkit_policy_decision_ignore(d);
+<a href="#l1706" class="line" id="l1706">   1706</a> 			return;
+<a href="#l1707" class="line" id="l1707">   1707</a> 		}
+<a href="#l1708" class="line" id="l1708">   1708</a> 	}
+<a href="#l1709" class="line" id="l1709">   1709</a> 
+<a href="#l1710" class="line" id="l1710">   1710</a> 	if (webkit_response_policy_decision_is_mime_type_supported(r)) {
+<a href="#l1711" class="line" id="l1711">   1711</a> 		webkit_policy_decision_use(d);
+<a href="#l1712" class="line" id="l1712">   1712</a> 	} else {
+<a href="#l1713" class="line" id="l1713">   1713</a> 		webkit_policy_decision_ignore(d);
+<a href="#l1714" class="line" id="l1714">   1714</a> 		download(c, res);
+<a href="#l1715" class="line" id="l1715">   1715</a> 	}
+<a href="#l1716" class="line" id="l1716">   1716</a> }
+<a href="#l1717" class="line" id="l1717">   1717</a> 
+<a href="#l1718" class="line" id="l1718">   1718</a> void
+<a href="#l1719" class="line" id="l1719">   1719</a> insecurecontent(WebKitWebView *v, WebKitInsecureContentEvent e, Client *c)
+<a href="#l1720" class="line" id="l1720">   1720</a> {
+<a href="#l1721" class="line" id="l1721">   1721</a> 	c-&gt;insecure = 1;
+<a href="#l1722" class="line" id="l1722">   1722</a> }
+<a href="#l1723" class="line" id="l1723">   1723</a> 
+<a href="#l1724" class="line" id="l1724">   1724</a> void
+<a href="#l1725" class="line" id="l1725">   1725</a> downloadstarted(WebKitWebContext *wc, WebKitDownload *d, Client *c)
+<a href="#l1726" class="line" id="l1726">   1726</a> {
+<a href="#l1727" class="line" id="l1727">   1727</a> 	g_signal_connect(G_OBJECT(d), &quot;notify::response&quot;,
+<a href="#l1728" class="line" id="l1728">   1728</a> 	                 G_CALLBACK(responsereceived), c);
+<a href="#l1729" class="line" id="l1729">   1729</a> }
+<a href="#l1730" class="line" id="l1730">   1730</a> 
+<a href="#l1731" class="line" id="l1731">   1731</a> void
+<a href="#l1732" class="line" id="l1732">   1732</a> responsereceived(WebKitDownload *d, GParamSpec *ps, Client *c)
+<a href="#l1733" class="line" id="l1733">   1733</a> {
+<a href="#l1734" class="line" id="l1734">   1734</a> 	download(c, webkit_download_get_response(d));
+<a href="#l1735" class="line" id="l1735">   1735</a> 	webkit_download_cancel(d);
+<a href="#l1736" class="line" id="l1736">   1736</a> }
+<a href="#l1737" class="line" id="l1737">   1737</a> 
+<a href="#l1738" class="line" id="l1738">   1738</a> void
+<a href="#l1739" class="line" id="l1739">   1739</a> download(Client *c, WebKitURIResponse *r)
+<a href="#l1740" class="line" id="l1740">   1740</a> {
+<a href="#l1741" class="line" id="l1741">   1741</a> 	Arg a = (Arg)DOWNLOAD(webkit_uri_response_get_uri(r), geturi(c));
+<a href="#l1742" class="line" id="l1742">   1742</a> 	spawn(c, &amp;a);
+<a href="#l1743" class="line" id="l1743">   1743</a> }
+<a href="#l1744" class="line" id="l1744">   1744</a> 
+<a href="#l1745" class="line" id="l1745">   1745</a> void
+<a href="#l1746" class="line" id="l1746">   1746</a> webprocessterminated(WebKitWebView *v, WebKitWebProcessTerminationReason r,
+<a href="#l1747" class="line" id="l1747">   1747</a>                      Client *c)
+<a href="#l1748" class="line" id="l1748">   1748</a> {
+<a href="#l1749" class="line" id="l1749">   1749</a> 	fprintf(stderr, &quot;web process terminated: %s\n&quot;,
+<a href="#l1750" class="line" id="l1750">   1750</a> 	        r == WEBKIT_WEB_PROCESS_CRASHED ? &quot;crashed&quot; : &quot;no memory&quot;);
+<a href="#l1751" class="line" id="l1751">   1751</a> 	closeview(v, c);
+<a href="#l1752" class="line" id="l1752">   1752</a> }
+<a href="#l1753" class="line" id="l1753">   1753</a> 
+<a href="#l1754" class="line" id="l1754">   1754</a> void
+<a href="#l1755" class="line" id="l1755">   1755</a> closeview(WebKitWebView *v, Client *c)
+<a href="#l1756" class="line" id="l1756">   1756</a> {
+<a href="#l1757" class="line" id="l1757">   1757</a> 	gtk_widget_destroy(c-&gt;win);
+<a href="#l1758" class="line" id="l1758">   1758</a> }
+<a href="#l1759" class="line" id="l1759">   1759</a> 
+<a href="#l1760" class="line" id="l1760">   1760</a> void
+<a href="#l1761" class="line" id="l1761">   1761</a> destroywin(GtkWidget* w, Client *c)
+<a href="#l1762" class="line" id="l1762">   1762</a> {
+<a href="#l1763" class="line" id="l1763">   1763</a> 	destroyclient(c);
+<a href="#l1764" class="line" id="l1764">   1764</a> 	if (!clients)
+<a href="#l1765" class="line" id="l1765">   1765</a> 		gtk_main_quit();
+<a href="#l1766" class="line" id="l1766">   1766</a> }
+<a href="#l1767" class="line" id="l1767">   1767</a> 
+<a href="#l1768" class="line" id="l1768">   1768</a> void
+<a href="#l1769" class="line" id="l1769">   1769</a> pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
+<a href="#l1770" class="line" id="l1770">   1770</a> {
+<a href="#l1771" class="line" id="l1771">   1771</a> 	Arg a = {.v = text };
+<a href="#l1772" class="line" id="l1772">   1772</a> 	if (text)
+<a href="#l1773" class="line" id="l1773">   1773</a> 		loaduri((Client *) d, &amp;a);
+<a href="#l1774" class="line" id="l1774">   1774</a> }
+<a href="#l1775" class="line" id="l1775">   1775</a> 
+<a href="#l1776" class="line" id="l1776">   1776</a> void
+<a href="#l1777" class="line" id="l1777">   1777</a> reload(Client *c, const Arg *a)
+<a href="#l1778" class="line" id="l1778">   1778</a> {
+<a href="#l1779" class="line" id="l1779">   1779</a> 	if (a-&gt;i)
+<a href="#l1780" class="line" id="l1780">   1780</a> 		webkit_web_view_reload_bypass_cache(c-&gt;view);
+<a href="#l1781" class="line" id="l1781">   1781</a> 	else
+<a href="#l1782" class="line" id="l1782">   1782</a> 		webkit_web_view_reload(c-&gt;view);
+<a href="#l1783" class="line" id="l1783">   1783</a> }
+<a href="#l1784" class="line" id="l1784">   1784</a> 
+<a href="#l1785" class="line" id="l1785">   1785</a> void
+<a href="#l1786" class="line" id="l1786">   1786</a> print(Client *c, const Arg *a)
+<a href="#l1787" class="line" id="l1787">   1787</a> {
+<a href="#l1788" class="line" id="l1788">   1788</a> 	webkit_print_operation_run_dialog(webkit_print_operation_new(c-&gt;view),
+<a href="#l1789" class="line" id="l1789">   1789</a> 	                                  GTK_WINDOW(c-&gt;win));
+<a href="#l1790" class="line" id="l1790">   1790</a> }
+<a href="#l1791" class="line" id="l1791">   1791</a> 
+<a href="#l1792" class="line" id="l1792">   1792</a> void
+<a href="#l1793" class="line" id="l1793">   1793</a> showcert(Client *c, const Arg *a)
+<a href="#l1794" class="line" id="l1794">   1794</a> {
+<a href="#l1795" class="line" id="l1795">   1795</a> 	GTlsCertificate *cert = c-&gt;failedcert ? c-&gt;failedcert : c-&gt;cert;
+<a href="#l1796" class="line" id="l1796">   1796</a> 	GcrCertificate *gcrt;
+<a href="#l1797" class="line" id="l1797">   1797</a> 	GByteArray *crt;
+<a href="#l1798" class="line" id="l1798">   1798</a> 	GtkWidget *win;
+<a href="#l1799" class="line" id="l1799">   1799</a> 	GcrCertificateWidget *wcert;
+<a href="#l1800" class="line" id="l1800">   1800</a> 
+<a href="#l1801" class="line" id="l1801">   1801</a> 	if (!cert)
+<a href="#l1802" class="line" id="l1802">   1802</a> 		return;
+<a href="#l1803" class="line" id="l1803">   1803</a> 
+<a href="#l1804" class="line" id="l1804">   1804</a> 	g_object_get(cert, &quot;certificate&quot;, &amp;crt, NULL);
+<a href="#l1805" class="line" id="l1805">   1805</a> 	gcrt = gcr_simple_certificate_new(crt-&gt;data, crt-&gt;len);
+<a href="#l1806" class="line" id="l1806">   1806</a> 	g_byte_array_unref(crt);
+<a href="#l1807" class="line" id="l1807">   1807</a> 
+<a href="#l1808" class="line" id="l1808">   1808</a> 	win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+<a href="#l1809" class="line" id="l1809">   1809</a> 	wcert = gcr_certificate_widget_new(gcrt);
+<a href="#l1810" class="line" id="l1810">   1810</a> 	g_object_unref(gcrt);
+<a href="#l1811" class="line" id="l1811">   1811</a> 
+<a href="#l1812" class="line" id="l1812">   1812</a> 	gtk_container_add(GTK_CONTAINER(win), GTK_WIDGET(wcert));
+<a href="#l1813" class="line" id="l1813">   1813</a> 	gtk_widget_show_all(win);
+<a href="#l1814" class="line" id="l1814">   1814</a> }
+<a href="#l1815" class="line" id="l1815">   1815</a> 
+<a href="#l1816" class="line" id="l1816">   1816</a> void
+<a href="#l1817" class="line" id="l1817">   1817</a> clipboard(Client *c, const Arg *a)
+<a href="#l1818" class="line" id="l1818">   1818</a> {
+<a href="#l1819" class="line" id="l1819">   1819</a> 	if (a-&gt;i) { /* load clipboard uri */
+<a href="#l1820" class="line" id="l1820">   1820</a> 		gtk_clipboard_request_text(gtk_clipboard_get(
+<a href="#l1821" class="line" id="l1821">   1821</a> 		                           GDK_SELECTION_PRIMARY),
+<a href="#l1822" class="line" id="l1822">   1822</a> 		                           pasteuri, c);
+<a href="#l1823" class="line" id="l1823">   1823</a> 	} else { /* copy uri */
+<a href="#l1824" class="line" id="l1824">   1824</a> 		gtk_clipboard_set_text(gtk_clipboard_get(
+<a href="#l1825" class="line" id="l1825">   1825</a> 		                       GDK_SELECTION_PRIMARY), c-&gt;targeturi
+<a href="#l1826" class="line" id="l1826">   1826</a> 		                       ? c-&gt;targeturi : geturi(c), -1);
+<a href="#l1827" class="line" id="l1827">   1827</a> 	}
+<a href="#l1828" class="line" id="l1828">   1828</a> }
+<a href="#l1829" class="line" id="l1829">   1829</a> 
+<a href="#l1830" class="line" id="l1830">   1830</a> void
+<a href="#l1831" class="line" id="l1831">   1831</a> zoom(Client *c, const Arg *a)
+<a href="#l1832" class="line" id="l1832">   1832</a> {
+<a href="#l1833" class="line" id="l1833">   1833</a> 	if (a-&gt;i &gt; 0)
+<a href="#l1834" class="line" id="l1834">   1834</a> 		webkit_web_view_set_zoom_level(c-&gt;view,
+<a href="#l1835" class="line" id="l1835">   1835</a> 		                               curconfig[ZoomLevel].val.f + 0.1);
+<a href="#l1836" class="line" id="l1836">   1836</a> 	else if (a-&gt;i &lt; 0)
+<a href="#l1837" class="line" id="l1837">   1837</a> 		webkit_web_view_set_zoom_level(c-&gt;view,
+<a href="#l1838" class="line" id="l1838">   1838</a> 		                               curconfig[ZoomLevel].val.f - 0.1);
+<a href="#l1839" class="line" id="l1839">   1839</a> 	else
+<a href="#l1840" class="line" id="l1840">   1840</a> 		webkit_web_view_set_zoom_level(c-&gt;view, 1.0);
+<a href="#l1841" class="line" id="l1841">   1841</a> 
+<a href="#l1842" class="line" id="l1842">   1842</a> 	curconfig[ZoomLevel].val.f = webkit_web_view_get_zoom_level(c-&gt;view);
+<a href="#l1843" class="line" id="l1843">   1843</a> }
+<a href="#l1844" class="line" id="l1844">   1844</a> 
+<a href="#l1845" class="line" id="l1845">   1845</a> static void
+<a href="#l1846" class="line" id="l1846">   1846</a> msgext(Client *c, char type, const Arg *a)
+<a href="#l1847" class="line" id="l1847">   1847</a> {
+<a href="#l1848" class="line" id="l1848">   1848</a> 	static char msg[MSGBUFSZ];
+<a href="#l1849" class="line" id="l1849">   1849</a> 	int ret;
+<a href="#l1850" class="line" id="l1850">   1850</a> 
+<a href="#l1851" class="line" id="l1851">   1851</a> 	if ((ret = snprintf(msg, sizeof(msg), &quot;%c%c%c%c&quot;,
+<a href="#l1852" class="line" id="l1852">   1852</a> 	                    4, c-&gt;pageid, type, a-&gt;i))
+<a href="#l1853" class="line" id="l1853">   1853</a> 	    &gt;= sizeof(msg)) {
+<a href="#l1854" class="line" id="l1854">   1854</a> 		fprintf(stderr, &quot;surf: message too long: %d\n&quot;, ret);
+<a href="#l1855" class="line" id="l1855">   1855</a> 		return;
+<a href="#l1856" class="line" id="l1856">   1856</a> 	}
+<a href="#l1857" class="line" id="l1857">   1857</a> 
+<a href="#l1858" class="line" id="l1858">   1858</a> 	if (pipeout[1] &amp;&amp; write(pipeout[1], msg, sizeof(msg)) &lt; 0)
+<a href="#l1859" class="line" id="l1859">   1859</a> 		fprintf(stderr, &quot;surf: error sending: %.*s\n&quot;, ret-2, msg+2);
+<a href="#l1860" class="line" id="l1860">   1860</a> }
+<a href="#l1861" class="line" id="l1861">   1861</a> 
+<a href="#l1862" class="line" id="l1862">   1862</a> void
+<a href="#l1863" class="line" id="l1863">   1863</a> scrollv(Client *c, const Arg *a)
+<a href="#l1864" class="line" id="l1864">   1864</a> {
+<a href="#l1865" class="line" id="l1865">   1865</a> 	msgext(c, &#39;v&#39;, a);
+<a href="#l1866" class="line" id="l1866">   1866</a> }
+<a href="#l1867" class="line" id="l1867">   1867</a> 
+<a href="#l1868" class="line" id="l1868">   1868</a> void
+<a href="#l1869" class="line" id="l1869">   1869</a> scrollh(Client *c, const Arg *a)
+<a href="#l1870" class="line" id="l1870">   1870</a> {
+<a href="#l1871" class="line" id="l1871">   1871</a> 	msgext(c, &#39;h&#39;, a);
+<a href="#l1872" class="line" id="l1872">   1872</a> }
+<a href="#l1873" class="line" id="l1873">   1873</a> 
+<a href="#l1874" class="line" id="l1874">   1874</a> void
+<a href="#l1875" class="line" id="l1875">   1875</a> navigate(Client *c, const Arg *a)
+<a href="#l1876" class="line" id="l1876">   1876</a> {
+<a href="#l1877" class="line" id="l1877">   1877</a> 	if (a-&gt;i &lt; 0)
+<a href="#l1878" class="line" id="l1878">   1878</a> 		webkit_web_view_go_back(c-&gt;view);
+<a href="#l1879" class="line" id="l1879">   1879</a> 	else if (a-&gt;i &gt; 0)
+<a href="#l1880" class="line" id="l1880">   1880</a> 		webkit_web_view_go_forward(c-&gt;view);
+<a href="#l1881" class="line" id="l1881">   1881</a> }
+<a href="#l1882" class="line" id="l1882">   1882</a> 
+<a href="#l1883" class="line" id="l1883">   1883</a> void
+<a href="#l1884" class="line" id="l1884">   1884</a> stop(Client *c, const Arg *a)
+<a href="#l1885" class="line" id="l1885">   1885</a> {
+<a href="#l1886" class="line" id="l1886">   1886</a> 	webkit_web_view_stop_loading(c-&gt;view);
+<a href="#l1887" class="line" id="l1887">   1887</a> }
+<a href="#l1888" class="line" id="l1888">   1888</a> 
+<a href="#l1889" class="line" id="l1889">   1889</a> void
+<a href="#l1890" class="line" id="l1890">   1890</a> toggle(Client *c, const Arg *a)
+<a href="#l1891" class="line" id="l1891">   1891</a> {
+<a href="#l1892" class="line" id="l1892">   1892</a> 	curconfig[a-&gt;i].val.i ^= 1;
+<a href="#l1893" class="line" id="l1893">   1893</a> 	setparameter(c, 1, (ParamName)a-&gt;i, &amp;curconfig[a-&gt;i].val);
+<a href="#l1894" class="line" id="l1894">   1894</a> }
+<a href="#l1895" class="line" id="l1895">   1895</a> 
+<a href="#l1896" class="line" id="l1896">   1896</a> void
+<a href="#l1897" class="line" id="l1897">   1897</a> togglefullscreen(Client *c, const Arg *a)
+<a href="#l1898" class="line" id="l1898">   1898</a> {
+<a href="#l1899" class="line" id="l1899">   1899</a> 	/* toggling value is handled in winevent() */
+<a href="#l1900" class="line" id="l1900">   1900</a> 	if (c-&gt;fullscreen)
+<a href="#l1901" class="line" id="l1901">   1901</a> 		gtk_window_unfullscreen(GTK_WINDOW(c-&gt;win));
+<a href="#l1902" class="line" id="l1902">   1902</a> 	else
+<a href="#l1903" class="line" id="l1903">   1903</a> 		gtk_window_fullscreen(GTK_WINDOW(c-&gt;win));
+<a href="#l1904" class="line" id="l1904">   1904</a> }
+<a href="#l1905" class="line" id="l1905">   1905</a> 
+<a href="#l1906" class="line" id="l1906">   1906</a> void
+<a href="#l1907" class="line" id="l1907">   1907</a> togglecookiepolicy(Client *c, const Arg *a)
+<a href="#l1908" class="line" id="l1908">   1908</a> {
+<a href="#l1909" class="line" id="l1909">   1909</a> 	++cookiepolicy;
+<a href="#l1910" class="line" id="l1910">   1910</a> 	cookiepolicy %= strlen(curconfig[CookiePolicies].val.v);
+<a href="#l1911" class="line" id="l1911">   1911</a> 
+<a href="#l1912" class="line" id="l1912">   1912</a> 	setparameter(c, 0, CookiePolicies, NULL);
+<a href="#l1913" class="line" id="l1913">   1913</a> }
+<a href="#l1914" class="line" id="l1914">   1914</a> 
+<a href="#l1915" class="line" id="l1915">   1915</a> void
+<a href="#l1916" class="line" id="l1916">   1916</a> toggleinspector(Client *c, const Arg *a)
+<a href="#l1917" class="line" id="l1917">   1917</a> {
+<a href="#l1918" class="line" id="l1918">   1918</a> 	if (webkit_web_inspector_is_attached(c-&gt;inspector))
+<a href="#l1919" class="line" id="l1919">   1919</a> 		webkit_web_inspector_close(c-&gt;inspector);
+<a href="#l1920" class="line" id="l1920">   1920</a> 	else if (curconfig[Inspector].val.i)
+<a href="#l1921" class="line" id="l1921">   1921</a> 		webkit_web_inspector_show(c-&gt;inspector);
+<a href="#l1922" class="line" id="l1922">   1922</a> }
+<a href="#l1923" class="line" id="l1923">   1923</a> 
+<a href="#l1924" class="line" id="l1924">   1924</a> void
+<a href="#l1925" class="line" id="l1925">   1925</a> find(Client *c, const Arg *a)
+<a href="#l1926" class="line" id="l1926">   1926</a> {
+<a href="#l1927" class="line" id="l1927">   1927</a> 	const char *s, *f;
+<a href="#l1928" class="line" id="l1928">   1928</a> 
+<a href="#l1929" class="line" id="l1929">   1929</a> 	if (a &amp;&amp; a-&gt;i) {
+<a href="#l1930" class="line" id="l1930">   1930</a> 		if (a-&gt;i &gt; 0)
+<a href="#l1931" class="line" id="l1931">   1931</a> 			webkit_find_controller_search_next(c-&gt;finder);
+<a href="#l1932" class="line" id="l1932">   1932</a> 		else
+<a href="#l1933" class="line" id="l1933">   1933</a> 			webkit_find_controller_search_previous(c-&gt;finder);
+<a href="#l1934" class="line" id="l1934">   1934</a> 	} else {
+<a href="#l1935" class="line" id="l1935">   1935</a> 		s = getatom(c, AtomFind);
+<a href="#l1936" class="line" id="l1936">   1936</a> 		f = webkit_find_controller_get_search_text(c-&gt;finder);
+<a href="#l1937" class="line" id="l1937">   1937</a> 
+<a href="#l1938" class="line" id="l1938">   1938</a> 		if (g_strcmp0(f, s) == 0) /* reset search */
+<a href="#l1939" class="line" id="l1939">   1939</a> 			webkit_find_controller_search(c-&gt;finder, &quot;&quot;, findopts,
+<a href="#l1940" class="line" id="l1940">   1940</a> 			                              G_MAXUINT);
+<a href="#l1941" class="line" id="l1941">   1941</a> 
+<a href="#l1942" class="line" id="l1942">   1942</a> 		webkit_find_controller_search(c-&gt;finder, s, findopts,
+<a href="#l1943" class="line" id="l1943">   1943</a> 		                              G_MAXUINT);
+<a href="#l1944" class="line" id="l1944">   1944</a> 
+<a href="#l1945" class="line" id="l1945">   1945</a> 		if (strcmp(s, &quot;&quot;) == 0)
+<a href="#l1946" class="line" id="l1946">   1946</a> 			webkit_find_controller_search_finish(c-&gt;finder);
+<a href="#l1947" class="line" id="l1947">   1947</a> 	}
+<a href="#l1948" class="line" id="l1948">   1948</a> }
+<a href="#l1949" class="line" id="l1949">   1949</a> 
+<a href="#l1950" class="line" id="l1950">   1950</a> void
+<a href="#l1951" class="line" id="l1951">   1951</a> clicknavigate(Client *c, const Arg *a, WebKitHitTestResult *h)
+<a href="#l1952" class="line" id="l1952">   1952</a> {
+<a href="#l1953" class="line" id="l1953">   1953</a> 	navigate(c, a);
+<a href="#l1954" class="line" id="l1954">   1954</a> }
+<a href="#l1955" class="line" id="l1955">   1955</a> 
+<a href="#l1956" class="line" id="l1956">   1956</a> void
+<a href="#l1957" class="line" id="l1957">   1957</a> clicknewwindow(Client *c, const Arg *a, WebKitHitTestResult *h)
+<a href="#l1958" class="line" id="l1958">   1958</a> {
+<a href="#l1959" class="line" id="l1959">   1959</a> 	Arg arg;
+<a href="#l1960" class="line" id="l1960">   1960</a> 
+<a href="#l1961" class="line" id="l1961">   1961</a> 	arg.v = webkit_hit_test_result_get_link_uri(h);
+<a href="#l1962" class="line" id="l1962">   1962</a> 	newwindow(c, &amp;arg, a-&gt;i);
+<a href="#l1963" class="line" id="l1963">   1963</a> }
+<a href="#l1964" class="line" id="l1964">   1964</a> 
+<a href="#l1965" class="line" id="l1965">   1965</a> void
+<a href="#l1966" class="line" id="l1966">   1966</a> clickexternplayer(Client *c, const Arg *a, WebKitHitTestResult *h)
+<a href="#l1967" class="line" id="l1967">   1967</a> {
+<a href="#l1968" class="line" id="l1968">   1968</a> 	Arg arg;
+<a href="#l1969" class="line" id="l1969">   1969</a> 
+<a href="#l1970" class="line" id="l1970">   1970</a> 	arg = (Arg)VIDEOPLAY(webkit_hit_test_result_get_media_uri(h));
+<a href="#l1971" class="line" id="l1971">   1971</a> 	spawn(c, &amp;arg);
+<a href="#l1972" class="line" id="l1972">   1972</a> }
+<a href="#l1973" class="line" id="l1973">   1973</a> 
+<a href="#l1974" class="line" id="l1974">   1974</a> int
+<a href="#l1975" class="line" id="l1975">   1975</a> main(int argc, char *argv[])
+<a href="#l1976" class="line" id="l1976">   1976</a> {
+<a href="#l1977" class="line" id="l1977">   1977</a> 	Arg arg;
+<a href="#l1978" class="line" id="l1978">   1978</a> 	Client *c;
+<a href="#l1979" class="line" id="l1979">   1979</a> 
+<a href="#l1980" class="line" id="l1980">   1980</a> 	memset(&amp;arg, 0, sizeof(arg));
+<a href="#l1981" class="line" id="l1981">   1981</a> 
+<a href="#l1982" class="line" id="l1982">   1982</a> 	/* command line args */
+<a href="#l1983" class="line" id="l1983">   1983</a> 	ARGBEGIN {
+<a href="#l1984" class="line" id="l1984">   1984</a> 	case &#39;a&#39;:
+<a href="#l1985" class="line" id="l1985">   1985</a> 		defconfig[CookiePolicies].val.v = EARGF(usage());
+<a href="#l1986" class="line" id="l1986">   1986</a> 		defconfig[CookiePolicies].prio = 2;
+<a href="#l1987" class="line" id="l1987">   1987</a> 		break;
+<a href="#l1988" class="line" id="l1988">   1988</a> 	case &#39;b&#39;:
+<a href="#l1989" class="line" id="l1989">   1989</a> 		defconfig[ScrollBars].val.i = 0;
+<a href="#l1990" class="line" id="l1990">   1990</a> 		defconfig[ScrollBars].prio = 2;
+<a href="#l1991" class="line" id="l1991">   1991</a> 		break;
+<a href="#l1992" class="line" id="l1992">   1992</a> 	case &#39;B&#39;:
+<a href="#l1993" class="line" id="l1993">   1993</a> 		defconfig[ScrollBars].val.i = 1;
+<a href="#l1994" class="line" id="l1994">   1994</a> 		defconfig[ScrollBars].prio = 2;
+<a href="#l1995" class="line" id="l1995">   1995</a> 		break;
+<a href="#l1996" class="line" id="l1996">   1996</a> 	case &#39;c&#39;:
+<a href="#l1997" class="line" id="l1997">   1997</a> 		cookiefile = EARGF(usage());
+<a href="#l1998" class="line" id="l1998">   1998</a> 		break;
+<a href="#l1999" class="line" id="l1999">   1999</a> 	case &#39;C&#39;:
+<a href="#l2000" class="line" id="l2000">   2000</a> 		stylefile = EARGF(usage());
+<a href="#l2001" class="line" id="l2001">   2001</a> 		break;
+<a href="#l2002" class="line" id="l2002">   2002</a> 	case &#39;d&#39;:
+<a href="#l2003" class="line" id="l2003">   2003</a> 		defconfig[DiskCache].val.i = 0;
+<a href="#l2004" class="line" id="l2004">   2004</a> 		defconfig[DiskCache].prio = 2;
+<a href="#l2005" class="line" id="l2005">   2005</a> 		break;
+<a href="#l2006" class="line" id="l2006">   2006</a> 	case &#39;D&#39;:
+<a href="#l2007" class="line" id="l2007">   2007</a> 		defconfig[DiskCache].val.i = 1;
+<a href="#l2008" class="line" id="l2008">   2008</a> 		defconfig[DiskCache].prio = 2;
+<a href="#l2009" class="line" id="l2009">   2009</a> 		break;
+<a href="#l2010" class="line" id="l2010">   2010</a> 	case &#39;e&#39;:
+<a href="#l2011" class="line" id="l2011">   2011</a> 		embed = strtol(EARGF(usage()), NULL, 0);
+<a href="#l2012" class="line" id="l2012">   2012</a> 		break;
+<a href="#l2013" class="line" id="l2013">   2013</a> 	case &#39;f&#39;:
+<a href="#l2014" class="line" id="l2014">   2014</a> 		defconfig[RunInFullscreen].val.i = 0;
+<a href="#l2015" class="line" id="l2015">   2015</a> 		defconfig[RunInFullscreen].prio = 2;
+<a href="#l2016" class="line" id="l2016">   2016</a> 		break;
+<a href="#l2017" class="line" id="l2017">   2017</a> 	case &#39;F&#39;:
+<a href="#l2018" class="line" id="l2018">   2018</a> 		defconfig[RunInFullscreen].val.i = 1;
+<a href="#l2019" class="line" id="l2019">   2019</a> 		defconfig[RunInFullscreen].prio = 2;
+<a href="#l2020" class="line" id="l2020">   2020</a> 		break;
+<a href="#l2021" class="line" id="l2021">   2021</a> 	case &#39;g&#39;:
+<a href="#l2022" class="line" id="l2022">   2022</a> 		defconfig[Geolocation].val.i = 0;
+<a href="#l2023" class="line" id="l2023">   2023</a> 		defconfig[Geolocation].prio = 2;
+<a href="#l2024" class="line" id="l2024">   2024</a> 		break;
+<a href="#l2025" class="line" id="l2025">   2025</a> 	case &#39;G&#39;:
+<a href="#l2026" class="line" id="l2026">   2026</a> 		defconfig[Geolocation].val.i = 1;
+<a href="#l2027" class="line" id="l2027">   2027</a> 		defconfig[Geolocation].prio = 2;
+<a href="#l2028" class="line" id="l2028">   2028</a> 		break;
+<a href="#l2029" class="line" id="l2029">   2029</a> 	case &#39;i&#39;:
+<a href="#l2030" class="line" id="l2030">   2030</a> 		defconfig[LoadImages].val.i = 0;
+<a href="#l2031" class="line" id="l2031">   2031</a> 		defconfig[LoadImages].prio = 2;
+<a href="#l2032" class="line" id="l2032">   2032</a> 		break;
+<a href="#l2033" class="line" id="l2033">   2033</a> 	case &#39;I&#39;:
+<a href="#l2034" class="line" id="l2034">   2034</a> 		defconfig[LoadImages].val.i = 1;
+<a href="#l2035" class="line" id="l2035">   2035</a> 		defconfig[LoadImages].prio = 2;
+<a href="#l2036" class="line" id="l2036">   2036</a> 		break;
+<a href="#l2037" class="line" id="l2037">   2037</a> 	case &#39;k&#39;:
+<a href="#l2038" class="line" id="l2038">   2038</a> 		defconfig[KioskMode].val.i = 0;
+<a href="#l2039" class="line" id="l2039">   2039</a> 		defconfig[KioskMode].prio = 2;
+<a href="#l2040" class="line" id="l2040">   2040</a> 		break;
+<a href="#l2041" class="line" id="l2041">   2041</a> 	case &#39;K&#39;:
+<a href="#l2042" class="line" id="l2042">   2042</a> 		defconfig[KioskMode].val.i = 1;
+<a href="#l2043" class="line" id="l2043">   2043</a> 		defconfig[KioskMode].prio = 2;
+<a href="#l2044" class="line" id="l2044">   2044</a> 		break;
+<a href="#l2045" class="line" id="l2045">   2045</a> 	case &#39;m&#39;:
+<a href="#l2046" class="line" id="l2046">   2046</a> 		defconfig[Style].val.i = 0;
+<a href="#l2047" class="line" id="l2047">   2047</a> 		defconfig[Style].prio = 2;
+<a href="#l2048" class="line" id="l2048">   2048</a> 		break;
+<a href="#l2049" class="line" id="l2049">   2049</a> 	case &#39;M&#39;:
+<a href="#l2050" class="line" id="l2050">   2050</a> 		defconfig[Style].val.i = 1;
+<a href="#l2051" class="line" id="l2051">   2051</a> 		defconfig[Style].prio = 2;
+<a href="#l2052" class="line" id="l2052">   2052</a> 		break;
+<a href="#l2053" class="line" id="l2053">   2053</a> 	case &#39;n&#39;:
+<a href="#l2054" class="line" id="l2054">   2054</a> 		defconfig[Inspector].val.i = 0;
+<a href="#l2055" class="line" id="l2055">   2055</a> 		defconfig[Inspector].prio = 2;
+<a href="#l2056" class="line" id="l2056">   2056</a> 		break;
+<a href="#l2057" class="line" id="l2057">   2057</a> 	case &#39;N&#39;:
+<a href="#l2058" class="line" id="l2058">   2058</a> 		defconfig[Inspector].val.i = 1;
+<a href="#l2059" class="line" id="l2059">   2059</a> 		defconfig[Inspector].prio = 2;
+<a href="#l2060" class="line" id="l2060">   2060</a> 		break;
+<a href="#l2061" class="line" id="l2061">   2061</a> 	case &#39;p&#39;:
+<a href="#l2062" class="line" id="l2062">   2062</a> 		defconfig[Plugins].val.i = 0;
+<a href="#l2063" class="line" id="l2063">   2063</a> 		defconfig[Plugins].prio = 2;
+<a href="#l2064" class="line" id="l2064">   2064</a> 		break;
+<a href="#l2065" class="line" id="l2065">   2065</a> 	case &#39;P&#39;:
+<a href="#l2066" class="line" id="l2066">   2066</a> 		defconfig[Plugins].val.i = 1;
+<a href="#l2067" class="line" id="l2067">   2067</a> 		defconfig[Plugins].prio = 2;
+<a href="#l2068" class="line" id="l2068">   2068</a> 		break;
+<a href="#l2069" class="line" id="l2069">   2069</a> 	case &#39;r&#39;:
+<a href="#l2070" class="line" id="l2070">   2070</a> 		scriptfile = EARGF(usage());
+<a href="#l2071" class="line" id="l2071">   2071</a> 		break;
+<a href="#l2072" class="line" id="l2072">   2072</a> 	case &#39;s&#39;:
+<a href="#l2073" class="line" id="l2073">   2073</a> 		defconfig[JavaScript].val.i = 0;
+<a href="#l2074" class="line" id="l2074">   2074</a> 		defconfig[JavaScript].prio = 2;
+<a href="#l2075" class="line" id="l2075">   2075</a> 		break;
+<a href="#l2076" class="line" id="l2076">   2076</a> 	case &#39;S&#39;:
+<a href="#l2077" class="line" id="l2077">   2077</a> 		defconfig[JavaScript].val.i = 1;
+<a href="#l2078" class="line" id="l2078">   2078</a> 		defconfig[JavaScript].prio = 2;
+<a href="#l2079" class="line" id="l2079">   2079</a> 		break;
+<a href="#l2080" class="line" id="l2080">   2080</a> 	case &#39;t&#39;:
+<a href="#l2081" class="line" id="l2081">   2081</a> 		defconfig[StrictTLS].val.i = 0;
+<a href="#l2082" class="line" id="l2082">   2082</a> 		defconfig[StrictTLS].prio = 2;
+<a href="#l2083" class="line" id="l2083">   2083</a> 		break;
+<a href="#l2084" class="line" id="l2084">   2084</a> 	case &#39;T&#39;:
+<a href="#l2085" class="line" id="l2085">   2085</a> 		defconfig[StrictTLS].val.i = 1;
+<a href="#l2086" class="line" id="l2086">   2086</a> 		defconfig[StrictTLS].prio = 2;
+<a href="#l2087" class="line" id="l2087">   2087</a> 		break;
+<a href="#l2088" class="line" id="l2088">   2088</a> 	case &#39;u&#39;:
+<a href="#l2089" class="line" id="l2089">   2089</a> 		fulluseragent = EARGF(usage());
+<a href="#l2090" class="line" id="l2090">   2090</a> 		break;
+<a href="#l2091" class="line" id="l2091">   2091</a> 	case &#39;v&#39;:
+<a href="#l2092" class="line" id="l2092">   2092</a> 		die(&quot;surf-&quot;VERSION&quot;, see LICENSE for © details\n&quot;);
+<a href="#l2093" class="line" id="l2093">   2093</a> 	case &#39;w&#39;:
+<a href="#l2094" class="line" id="l2094">   2094</a> 		showxid = 1;
+<a href="#l2095" class="line" id="l2095">   2095</a> 		break;
+<a href="#l2096" class="line" id="l2096">   2096</a> 	case &#39;x&#39;:
+<a href="#l2097" class="line" id="l2097">   2097</a> 		defconfig[Certificate].val.i = 0;
+<a href="#l2098" class="line" id="l2098">   2098</a> 		defconfig[Certificate].prio = 2;
+<a href="#l2099" class="line" id="l2099">   2099</a> 		break;
+<a href="#l2100" class="line" id="l2100">   2100</a> 	case &#39;X&#39;:
+<a href="#l2101" class="line" id="l2101">   2101</a> 		defconfig[Certificate].val.i = 1;
+<a href="#l2102" class="line" id="l2102">   2102</a> 		defconfig[Certificate].prio = 2;
+<a href="#l2103" class="line" id="l2103">   2103</a> 		break;
+<a href="#l2104" class="line" id="l2104">   2104</a> 	case &#39;z&#39;:
+<a href="#l2105" class="line" id="l2105">   2105</a> 		defconfig[ZoomLevel].val.f = strtof(EARGF(usage()), NULL);
+<a href="#l2106" class="line" id="l2106">   2106</a> 		defconfig[ZoomLevel].prio = 2;
+<a href="#l2107" class="line" id="l2107">   2107</a> 		break;
+<a href="#l2108" class="line" id="l2108">   2108</a> 	default:
+<a href="#l2109" class="line" id="l2109">   2109</a> 		usage();
+<a href="#l2110" class="line" id="l2110">   2110</a> 	} ARGEND;
+<a href="#l2111" class="line" id="l2111">   2111</a> 	if (argc &gt; 0)
+<a href="#l2112" class="line" id="l2112">   2112</a> 		arg.v = argv[0];
+<a href="#l2113" class="line" id="l2113">   2113</a> 	else
+<a href="#l2114" class="line" id="l2114">   2114</a> #ifdef HOMEPAGE
+<a href="#l2115" class="line" id="l2115">   2115</a> 		arg.v = HOMEPAGE;
+<a href="#l2116" class="line" id="l2116">   2116</a> #else
+<a href="#l2117" class="line" id="l2117">   2117</a> 		arg.v = &quot;about:blank&quot;;
+<a href="#l2118" class="line" id="l2118">   2118</a> #endif
+<a href="#l2119" class="line" id="l2119">   2119</a> 
+<a href="#l2120" class="line" id="l2120">   2120</a> 	setup();
+<a href="#l2121" class="line" id="l2121">   2121</a> 	c = newclient(NULL);
+<a href="#l2122" class="line" id="l2122">   2122</a> 	showview(NULL, c);
+<a href="#l2123" class="line" id="l2123">   2123</a> 
+<a href="#l2124" class="line" id="l2124">   2124</a> 	loaduri(c, &amp;arg);
+<a href="#l2125" class="line" id="l2125">   2125</a> 	updatetitle(c);
+<a href="#l2126" class="line" id="l2126">   2126</a> 
+<a href="#l2127" class="line" id="l2127">   2127</a> 	gtk_main();
+<a href="#l2128" class="line" id="l2128">   2128</a> 	cleanup();
+<a href="#l2129" class="line" id="l2129">   2129</a> 
+<a href="#l2130" class="line" id="l2130">   2130</a> 	return 0;
+<a href="#l2131" class="line" id="l2131">   2131</a> }
+</pre>
+</div>
+</body>
+</html>

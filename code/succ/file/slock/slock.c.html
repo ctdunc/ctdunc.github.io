@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>slock.c - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> slock.c (9710B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> /* See LICENSE file for license details. */
+<a href="#l2" class="line" id="l2">      2</a> #define _XOPEN_SOURCE 500
+<a href="#l3" class="line" id="l3">      3</a> #if HAVE_SHADOW_H
+<a href="#l4" class="line" id="l4">      4</a> #include &lt;shadow.h&gt;
+<a href="#l5" class="line" id="l5">      5</a> #endif
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> #include &lt;ctype.h&gt;
+<a href="#l8" class="line" id="l8">      8</a> #include &lt;errno.h&gt;
+<a href="#l9" class="line" id="l9">      9</a> #include &lt;grp.h&gt;
+<a href="#l10" class="line" id="l10">     10</a> #include &lt;pwd.h&gt;
+<a href="#l11" class="line" id="l11">     11</a> #include &lt;stdarg.h&gt;
+<a href="#l12" class="line" id="l12">     12</a> #include &lt;stdlib.h&gt;
+<a href="#l13" class="line" id="l13">     13</a> #include &lt;stdio.h&gt;
+<a href="#l14" class="line" id="l14">     14</a> #include &lt;string.h&gt;
+<a href="#l15" class="line" id="l15">     15</a> #include &lt;unistd.h&gt;
+<a href="#l16" class="line" id="l16">     16</a> #include &lt;sys/types.h&gt;
+<a href="#l17" class="line" id="l17">     17</a> #include &lt;X11/extensions/Xrandr.h&gt;
+<a href="#l18" class="line" id="l18">     18</a> #include &lt;X11/keysym.h&gt;
+<a href="#l19" class="line" id="l19">     19</a> #include &lt;X11/Xlib.h&gt;
+<a href="#l20" class="line" id="l20">     20</a> #include &lt;X11/Xutil.h&gt;
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a> #include &quot;arg.h&quot;
+<a href="#l23" class="line" id="l23">     23</a> #include &quot;util.h&quot;
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> char *argv0;
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> enum {
+<a href="#l28" class="line" id="l28">     28</a> 	INIT,
+<a href="#l29" class="line" id="l29">     29</a> 	INPUT,
+<a href="#l30" class="line" id="l30">     30</a> 	FAILED,
+<a href="#l31" class="line" id="l31">     31</a> 	NUMCOLS
+<a href="#l32" class="line" id="l32">     32</a> };
+<a href="#l33" class="line" id="l33">     33</a> 
+<a href="#l34" class="line" id="l34">     34</a> struct lock {
+<a href="#l35" class="line" id="l35">     35</a> 	int screen;
+<a href="#l36" class="line" id="l36">     36</a> 	Window root, win;
+<a href="#l37" class="line" id="l37">     37</a> 	Pixmap pmap;
+<a href="#l38" class="line" id="l38">     38</a> 	unsigned long colors[NUMCOLS];
+<a href="#l39" class="line" id="l39">     39</a> };
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> struct xrandr {
+<a href="#l42" class="line" id="l42">     42</a> 	int active;
+<a href="#l43" class="line" id="l43">     43</a> 	int evbase;
+<a href="#l44" class="line" id="l44">     44</a> 	int errbase;
+<a href="#l45" class="line" id="l45">     45</a> };
+<a href="#l46" class="line" id="l46">     46</a> 
+<a href="#l47" class="line" id="l47">     47</a> #include &quot;config.h&quot;
+<a href="#l48" class="line" id="l48">     48</a> 
+<a href="#l49" class="line" id="l49">     49</a> static void
+<a href="#l50" class="line" id="l50">     50</a> die(const char *errstr, ...)
+<a href="#l51" class="line" id="l51">     51</a> {
+<a href="#l52" class="line" id="l52">     52</a> 	va_list ap;
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a> 	va_start(ap, errstr);
+<a href="#l55" class="line" id="l55">     55</a> 	vfprintf(stderr, errstr, ap);
+<a href="#l56" class="line" id="l56">     56</a> 	va_end(ap);
+<a href="#l57" class="line" id="l57">     57</a> 	exit(1);
+<a href="#l58" class="line" id="l58">     58</a> }
+<a href="#l59" class="line" id="l59">     59</a> 
+<a href="#l60" class="line" id="l60">     60</a> #ifdef __linux__
+<a href="#l61" class="line" id="l61">     61</a> #include &lt;fcntl.h&gt;
+<a href="#l62" class="line" id="l62">     62</a> #include &lt;linux/oom.h&gt;
+<a href="#l63" class="line" id="l63">     63</a> 
+<a href="#l64" class="line" id="l64">     64</a> static void
+<a href="#l65" class="line" id="l65">     65</a> dontkillme(void)
+<a href="#l66" class="line" id="l66">     66</a> {
+<a href="#l67" class="line" id="l67">     67</a> 	FILE *f;
+<a href="#l68" class="line" id="l68">     68</a> 	const char oomfile[] = &quot;/proc/self/oom_score_adj&quot;;
+<a href="#l69" class="line" id="l69">     69</a> 
+<a href="#l70" class="line" id="l70">     70</a> 	if (!(f = fopen(oomfile, &quot;w&quot;))) {
+<a href="#l71" class="line" id="l71">     71</a> 		if (errno == ENOENT)
+<a href="#l72" class="line" id="l72">     72</a> 			return;
+<a href="#l73" class="line" id="l73">     73</a> 		die(&quot;slock: fopen %s: %s\n&quot;, oomfile, strerror(errno));
+<a href="#l74" class="line" id="l74">     74</a> 	}
+<a href="#l75" class="line" id="l75">     75</a> 	fprintf(f, &quot;%d&quot;, OOM_SCORE_ADJ_MIN);
+<a href="#l76" class="line" id="l76">     76</a> 	if (fclose(f)) {
+<a href="#l77" class="line" id="l77">     77</a> 		if (errno == EACCES)
+<a href="#l78" class="line" id="l78">     78</a> 			die(&quot;slock: unable to disable OOM killer. &quot;
+<a href="#l79" class="line" id="l79">     79</a> 			    &quot;Make sure to suid or sgid slock.\n&quot;);
+<a href="#l80" class="line" id="l80">     80</a> 		else
+<a href="#l81" class="line" id="l81">     81</a> 			die(&quot;slock: fclose %s: %s\n&quot;, oomfile, strerror(errno));
+<a href="#l82" class="line" id="l82">     82</a> 	}
+<a href="#l83" class="line" id="l83">     83</a> }
+<a href="#l84" class="line" id="l84">     84</a> #endif
+<a href="#l85" class="line" id="l85">     85</a> 
+<a href="#l86" class="line" id="l86">     86</a> static const char *
+<a href="#l87" class="line" id="l87">     87</a> gethash(void)
+<a href="#l88" class="line" id="l88">     88</a> {
+<a href="#l89" class="line" id="l89">     89</a> 	const char *hash;
+<a href="#l90" class="line" id="l90">     90</a> 	struct passwd *pw;
+<a href="#l91" class="line" id="l91">     91</a> 
+<a href="#l92" class="line" id="l92">     92</a> 	/* Check if the current user has a password entry */
+<a href="#l93" class="line" id="l93">     93</a> 	errno = 0;
+<a href="#l94" class="line" id="l94">     94</a> 	if (!(pw = getpwuid(getuid()))) {
+<a href="#l95" class="line" id="l95">     95</a> 		if (errno)
+<a href="#l96" class="line" id="l96">     96</a> 			die(&quot;slock: getpwuid: %s\n&quot;, strerror(errno));
+<a href="#l97" class="line" id="l97">     97</a> 		else
+<a href="#l98" class="line" id="l98">     98</a> 			die(&quot;slock: cannot retrieve password entry\n&quot;);
+<a href="#l99" class="line" id="l99">     99</a> 	}
+<a href="#l100" class="line" id="l100">    100</a> 	hash = pw-&gt;pw_passwd;
+<a href="#l101" class="line" id="l101">    101</a> 
+<a href="#l102" class="line" id="l102">    102</a> #if HAVE_SHADOW_H
+<a href="#l103" class="line" id="l103">    103</a> 	if (!strcmp(hash, &quot;x&quot;)) {
+<a href="#l104" class="line" id="l104">    104</a> 		struct spwd *sp;
+<a href="#l105" class="line" id="l105">    105</a> 		if (!(sp = getspnam(pw-&gt;pw_name)))
+<a href="#l106" class="line" id="l106">    106</a> 			die(&quot;slock: getspnam: cannot retrieve shadow entry. &quot;
+<a href="#l107" class="line" id="l107">    107</a> 			    &quot;Make sure to suid or sgid slock.\n&quot;);
+<a href="#l108" class="line" id="l108">    108</a> 		hash = sp-&gt;sp_pwdp;
+<a href="#l109" class="line" id="l109">    109</a> 	}
+<a href="#l110" class="line" id="l110">    110</a> #else
+<a href="#l111" class="line" id="l111">    111</a> 	if (!strcmp(hash, &quot;*&quot;)) {
+<a href="#l112" class="line" id="l112">    112</a> #ifdef __OpenBSD__
+<a href="#l113" class="line" id="l113">    113</a> 		if (!(pw = getpwuid_shadow(getuid())))
+<a href="#l114" class="line" id="l114">    114</a> 			die(&quot;slock: getpwnam_shadow: cannot retrieve shadow entry. &quot;
+<a href="#l115" class="line" id="l115">    115</a> 			    &quot;Make sure to suid or sgid slock.\n&quot;);
+<a href="#l116" class="line" id="l116">    116</a> 		hash = pw-&gt;pw_passwd;
+<a href="#l117" class="line" id="l117">    117</a> #else
+<a href="#l118" class="line" id="l118">    118</a> 		die(&quot;slock: getpwuid: cannot retrieve shadow entry. &quot;
+<a href="#l119" class="line" id="l119">    119</a> 		    &quot;Make sure to suid or sgid slock.\n&quot;);
+<a href="#l120" class="line" id="l120">    120</a> #endif /* __OpenBSD__ */
+<a href="#l121" class="line" id="l121">    121</a> 	}
+<a href="#l122" class="line" id="l122">    122</a> #endif /* HAVE_SHADOW_H */
+<a href="#l123" class="line" id="l123">    123</a> 
+<a href="#l124" class="line" id="l124">    124</a> 	return hash;
+<a href="#l125" class="line" id="l125">    125</a> }
+<a href="#l126" class="line" id="l126">    126</a> 
+<a href="#l127" class="line" id="l127">    127</a> static void
+<a href="#l128" class="line" id="l128">    128</a> readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
+<a href="#l129" class="line" id="l129">    129</a>        const char *hash)
+<a href="#l130" class="line" id="l130">    130</a> {
+<a href="#l131" class="line" id="l131">    131</a> 	XRRScreenChangeNotifyEvent *rre;
+<a href="#l132" class="line" id="l132">    132</a> 	char buf[32], passwd[256], *inputhash;
+<a href="#l133" class="line" id="l133">    133</a> 	int num, screen, running, failure, oldc;
+<a href="#l134" class="line" id="l134">    134</a> 	unsigned int len, color;
+<a href="#l135" class="line" id="l135">    135</a> 	KeySym ksym;
+<a href="#l136" class="line" id="l136">    136</a> 	XEvent ev;
+<a href="#l137" class="line" id="l137">    137</a> 
+<a href="#l138" class="line" id="l138">    138</a> 	len = 0;
+<a href="#l139" class="line" id="l139">    139</a> 	running = 1;
+<a href="#l140" class="line" id="l140">    140</a> 	failure = 0;
+<a href="#l141" class="line" id="l141">    141</a> 	oldc = INIT;
+<a href="#l142" class="line" id="l142">    142</a> 
+<a href="#l143" class="line" id="l143">    143</a> 	while (running &amp;&amp; !XNextEvent(dpy, &amp;ev)) {
+<a href="#l144" class="line" id="l144">    144</a> 		if (ev.type == KeyPress) {
+<a href="#l145" class="line" id="l145">    145</a> 			explicit_bzero(&amp;buf, sizeof(buf));
+<a href="#l146" class="line" id="l146">    146</a> 			num = XLookupString(&amp;ev.xkey, buf, sizeof(buf), &amp;ksym, 0);
+<a href="#l147" class="line" id="l147">    147</a> 			if (IsKeypadKey(ksym)) {
+<a href="#l148" class="line" id="l148">    148</a> 				if (ksym == XK_KP_Enter)
+<a href="#l149" class="line" id="l149">    149</a> 					ksym = XK_Return;
+<a href="#l150" class="line" id="l150">    150</a> 				else if (ksym &gt;= XK_KP_0 &amp;&amp; ksym &lt;= XK_KP_9)
+<a href="#l151" class="line" id="l151">    151</a> 					ksym = (ksym - XK_KP_0) + XK_0;
+<a href="#l152" class="line" id="l152">    152</a> 			}
+<a href="#l153" class="line" id="l153">    153</a> 			if (IsFunctionKey(ksym) ||
+<a href="#l154" class="line" id="l154">    154</a> 			    IsKeypadKey(ksym) ||
+<a href="#l155" class="line" id="l155">    155</a> 			    IsMiscFunctionKey(ksym) ||
+<a href="#l156" class="line" id="l156">    156</a> 			    IsPFKey(ksym) ||
+<a href="#l157" class="line" id="l157">    157</a> 			    IsPrivateKeypadKey(ksym))
+<a href="#l158" class="line" id="l158">    158</a> 				continue;
+<a href="#l159" class="line" id="l159">    159</a> 			switch (ksym) {
+<a href="#l160" class="line" id="l160">    160</a> 			case XK_Return:
+<a href="#l161" class="line" id="l161">    161</a> 				passwd[len] = &#39;\0&#39;;
+<a href="#l162" class="line" id="l162">    162</a> 				errno = 0;
+<a href="#l163" class="line" id="l163">    163</a> 				if (!(inputhash = crypt(passwd, hash)))
+<a href="#l164" class="line" id="l164">    164</a> 					fprintf(stderr, &quot;slock: crypt: %s\n&quot;, strerror(errno));
+<a href="#l165" class="line" id="l165">    165</a> 				else
+<a href="#l166" class="line" id="l166">    166</a> 					running = !!strcmp(inputhash, hash);
+<a href="#l167" class="line" id="l167">    167</a> 				if (running) {
+<a href="#l168" class="line" id="l168">    168</a> 					XBell(dpy, 100);
+<a href="#l169" class="line" id="l169">    169</a> 					failure = 1;
+<a href="#l170" class="line" id="l170">    170</a> 				}
+<a href="#l171" class="line" id="l171">    171</a> 				explicit_bzero(&amp;passwd, sizeof(passwd));
+<a href="#l172" class="line" id="l172">    172</a> 				len = 0;
+<a href="#l173" class="line" id="l173">    173</a> 				break;
+<a href="#l174" class="line" id="l174">    174</a> 			case XK_Escape:
+<a href="#l175" class="line" id="l175">    175</a> 				explicit_bzero(&amp;passwd, sizeof(passwd));
+<a href="#l176" class="line" id="l176">    176</a> 				len = 0;
+<a href="#l177" class="line" id="l177">    177</a> 				break;
+<a href="#l178" class="line" id="l178">    178</a> 			case XK_BackSpace:
+<a href="#l179" class="line" id="l179">    179</a> 				if (len)
+<a href="#l180" class="line" id="l180">    180</a> 					passwd[--len] = &#39;\0&#39;;
+<a href="#l181" class="line" id="l181">    181</a> 				break;
+<a href="#l182" class="line" id="l182">    182</a> 			default:
+<a href="#l183" class="line" id="l183">    183</a> 				if (num &amp;&amp; !iscntrl((int)buf[0]) &amp;&amp;
+<a href="#l184" class="line" id="l184">    184</a> 				    (len + num &lt; sizeof(passwd))) {
+<a href="#l185" class="line" id="l185">    185</a> 					memcpy(passwd + len, buf, num);
+<a href="#l186" class="line" id="l186">    186</a> 					len += num;
+<a href="#l187" class="line" id="l187">    187</a> 				}
+<a href="#l188" class="line" id="l188">    188</a> 				break;
+<a href="#l189" class="line" id="l189">    189</a> 			}
+<a href="#l190" class="line" id="l190">    190</a> 			color = len ? INPUT : ((failure || failonclear) ? FAILED : INIT);
+<a href="#l191" class="line" id="l191">    191</a> 			if (running &amp;&amp; oldc != color) {
+<a href="#l192" class="line" id="l192">    192</a> 				for (screen = 0; screen &lt; nscreens; screen++) {
+<a href="#l193" class="line" id="l193">    193</a> 					XSetWindowBackground(dpy,
+<a href="#l194" class="line" id="l194">    194</a> 					                     locks[screen]-&gt;win,
+<a href="#l195" class="line" id="l195">    195</a> 					                     locks[screen]-&gt;colors[color]);
+<a href="#l196" class="line" id="l196">    196</a> 					XClearWindow(dpy, locks[screen]-&gt;win);
+<a href="#l197" class="line" id="l197">    197</a> 				}
+<a href="#l198" class="line" id="l198">    198</a> 				oldc = color;
+<a href="#l199" class="line" id="l199">    199</a> 			}
+<a href="#l200" class="line" id="l200">    200</a> 		} else if (rr-&gt;active &amp;&amp; ev.type == rr-&gt;evbase + RRScreenChangeNotify) {
+<a href="#l201" class="line" id="l201">    201</a> 			rre = (XRRScreenChangeNotifyEvent*)&amp;ev;
+<a href="#l202" class="line" id="l202">    202</a> 			for (screen = 0; screen &lt; nscreens; screen++) {
+<a href="#l203" class="line" id="l203">    203</a> 				if (locks[screen]-&gt;win == rre-&gt;window) {
+<a href="#l204" class="line" id="l204">    204</a> 					if (rre-&gt;rotation == RR_Rotate_90 ||
+<a href="#l205" class="line" id="l205">    205</a> 					    rre-&gt;rotation == RR_Rotate_270)
+<a href="#l206" class="line" id="l206">    206</a> 						XResizeWindow(dpy, locks[screen]-&gt;win,
+<a href="#l207" class="line" id="l207">    207</a> 						              rre-&gt;height, rre-&gt;width);
+<a href="#l208" class="line" id="l208">    208</a> 					else
+<a href="#l209" class="line" id="l209">    209</a> 						XResizeWindow(dpy, locks[screen]-&gt;win,
+<a href="#l210" class="line" id="l210">    210</a> 						              rre-&gt;width, rre-&gt;height);
+<a href="#l211" class="line" id="l211">    211</a> 					XClearWindow(dpy, locks[screen]-&gt;win);
+<a href="#l212" class="line" id="l212">    212</a> 					break;
+<a href="#l213" class="line" id="l213">    213</a> 				}
+<a href="#l214" class="line" id="l214">    214</a> 			}
+<a href="#l215" class="line" id="l215">    215</a> 		} else {
+<a href="#l216" class="line" id="l216">    216</a> 			for (screen = 0; screen &lt; nscreens; screen++)
+<a href="#l217" class="line" id="l217">    217</a> 				XRaiseWindow(dpy, locks[screen]-&gt;win);
+<a href="#l218" class="line" id="l218">    218</a> 		}
+<a href="#l219" class="line" id="l219">    219</a> 	}
+<a href="#l220" class="line" id="l220">    220</a> }
+<a href="#l221" class="line" id="l221">    221</a> 
+<a href="#l222" class="line" id="l222">    222</a> static struct lock *
+<a href="#l223" class="line" id="l223">    223</a> lockscreen(Display *dpy, struct xrandr *rr, int screen)
+<a href="#l224" class="line" id="l224">    224</a> {
+<a href="#l225" class="line" id="l225">    225</a> 	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
+<a href="#l226" class="line" id="l226">    226</a> 	int i, ptgrab, kbgrab;
+<a href="#l227" class="line" id="l227">    227</a> 	struct lock *lock;
+<a href="#l228" class="line" id="l228">    228</a> 	XColor color, dummy;
+<a href="#l229" class="line" id="l229">    229</a> 	XSetWindowAttributes wa;
+<a href="#l230" class="line" id="l230">    230</a> 	Cursor invisible;
+<a href="#l231" class="line" id="l231">    231</a> 
+<a href="#l232" class="line" id="l232">    232</a> 	if (dpy == NULL || screen &lt; 0 || !(lock = malloc(sizeof(struct lock))))
+<a href="#l233" class="line" id="l233">    233</a> 		return NULL;
+<a href="#l234" class="line" id="l234">    234</a> 
+<a href="#l235" class="line" id="l235">    235</a> 	lock-&gt;screen = screen;
+<a href="#l236" class="line" id="l236">    236</a> 	lock-&gt;root = RootWindow(dpy, lock-&gt;screen);
+<a href="#l237" class="line" id="l237">    237</a> 
+<a href="#l238" class="line" id="l238">    238</a> 	for (i = 0; i &lt; NUMCOLS; i++) {
+<a href="#l239" class="line" id="l239">    239</a> 		XAllocNamedColor(dpy, DefaultColormap(dpy, lock-&gt;screen),
+<a href="#l240" class="line" id="l240">    240</a> 		                 colorname[i], &amp;color, &amp;dummy);
+<a href="#l241" class="line" id="l241">    241</a> 		lock-&gt;colors[i] = color.pixel;
+<a href="#l242" class="line" id="l242">    242</a> 	}
+<a href="#l243" class="line" id="l243">    243</a> 
+<a href="#l244" class="line" id="l244">    244</a> 	/* init */
+<a href="#l245" class="line" id="l245">    245</a> 	wa.override_redirect = 1;
+<a href="#l246" class="line" id="l246">    246</a> 	wa.background_pixel = lock-&gt;colors[INIT];
+<a href="#l247" class="line" id="l247">    247</a> 	lock-&gt;win = XCreateWindow(dpy, lock-&gt;root, 0, 0,
+<a href="#l248" class="line" id="l248">    248</a> 	                          DisplayWidth(dpy, lock-&gt;screen),
+<a href="#l249" class="line" id="l249">    249</a> 	                          DisplayHeight(dpy, lock-&gt;screen),
+<a href="#l250" class="line" id="l250">    250</a> 	                          0, DefaultDepth(dpy, lock-&gt;screen),
+<a href="#l251" class="line" id="l251">    251</a> 	                          CopyFromParent,
+<a href="#l252" class="line" id="l252">    252</a> 	                          DefaultVisual(dpy, lock-&gt;screen),
+<a href="#l253" class="line" id="l253">    253</a> 	                          CWOverrideRedirect | CWBackPixel, &amp;wa);
+<a href="#l254" class="line" id="l254">    254</a> 	lock-&gt;pmap = XCreateBitmapFromData(dpy, lock-&gt;win, curs, 8, 8);
+<a href="#l255" class="line" id="l255">    255</a> 	invisible = XCreatePixmapCursor(dpy, lock-&gt;pmap, lock-&gt;pmap,
+<a href="#l256" class="line" id="l256">    256</a> 	                                &amp;color, &amp;color, 0, 0);
+<a href="#l257" class="line" id="l257">    257</a> 	XDefineCursor(dpy, lock-&gt;win, invisible);
+<a href="#l258" class="line" id="l258">    258</a> 
+<a href="#l259" class="line" id="l259">    259</a> 	/* Try to grab mouse pointer *and* keyboard for 600ms, else fail the lock */
+<a href="#l260" class="line" id="l260">    260</a> 	for (i = 0, ptgrab = kbgrab = -1; i &lt; 6; i++) {
+<a href="#l261" class="line" id="l261">    261</a> 		if (ptgrab != GrabSuccess) {
+<a href="#l262" class="line" id="l262">    262</a> 			ptgrab = XGrabPointer(dpy, lock-&gt;root, False,
+<a href="#l263" class="line" id="l263">    263</a> 			                      ButtonPressMask | ButtonReleaseMask |
+<a href="#l264" class="line" id="l264">    264</a> 			                      PointerMotionMask, GrabModeAsync,
+<a href="#l265" class="line" id="l265">    265</a> 			                      GrabModeAsync, None, invisible, CurrentTime);
+<a href="#l266" class="line" id="l266">    266</a> 		}
+<a href="#l267" class="line" id="l267">    267</a> 		if (kbgrab != GrabSuccess) {
+<a href="#l268" class="line" id="l268">    268</a> 			kbgrab = XGrabKeyboard(dpy, lock-&gt;root, True,
+<a href="#l269" class="line" id="l269">    269</a> 			                       GrabModeAsync, GrabModeAsync, CurrentTime);
+<a href="#l270" class="line" id="l270">    270</a> 		}
+<a href="#l271" class="line" id="l271">    271</a> 
+<a href="#l272" class="line" id="l272">    272</a> 		/* input is grabbed: we can lock the screen */
+<a href="#l273" class="line" id="l273">    273</a> 		if (ptgrab == GrabSuccess &amp;&amp; kbgrab == GrabSuccess) {
+<a href="#l274" class="line" id="l274">    274</a> 			XMapRaised(dpy, lock-&gt;win);
+<a href="#l275" class="line" id="l275">    275</a> 			if (rr-&gt;active)
+<a href="#l276" class="line" id="l276">    276</a> 				XRRSelectInput(dpy, lock-&gt;win, RRScreenChangeNotifyMask);
+<a href="#l277" class="line" id="l277">    277</a> 
+<a href="#l278" class="line" id="l278">    278</a> 			XSelectInput(dpy, lock-&gt;root, SubstructureNotifyMask);
+<a href="#l279" class="line" id="l279">    279</a> 			return lock;
+<a href="#l280" class="line" id="l280">    280</a> 		}
+<a href="#l281" class="line" id="l281">    281</a> 
+<a href="#l282" class="line" id="l282">    282</a> 		/* retry on AlreadyGrabbed but fail on other errors */
+<a href="#l283" class="line" id="l283">    283</a> 		if ((ptgrab != AlreadyGrabbed &amp;&amp; ptgrab != GrabSuccess) ||
+<a href="#l284" class="line" id="l284">    284</a> 		    (kbgrab != AlreadyGrabbed &amp;&amp; kbgrab != GrabSuccess))
+<a href="#l285" class="line" id="l285">    285</a> 			break;
+<a href="#l286" class="line" id="l286">    286</a> 
+<a href="#l287" class="line" id="l287">    287</a> 		usleep(100000);
+<a href="#l288" class="line" id="l288">    288</a> 	}
+<a href="#l289" class="line" id="l289">    289</a> 
+<a href="#l290" class="line" id="l290">    290</a> 	/* we couldn&#39;t grab all input: fail out */
+<a href="#l291" class="line" id="l291">    291</a> 	if (ptgrab != GrabSuccess)
+<a href="#l292" class="line" id="l292">    292</a> 		fprintf(stderr, &quot;slock: unable to grab mouse pointer for screen %d\n&quot;,
+<a href="#l293" class="line" id="l293">    293</a> 		        screen);
+<a href="#l294" class="line" id="l294">    294</a> 	if (kbgrab != GrabSuccess)
+<a href="#l295" class="line" id="l295">    295</a> 		fprintf(stderr, &quot;slock: unable to grab keyboard for screen %d\n&quot;,
+<a href="#l296" class="line" id="l296">    296</a> 		        screen);
+<a href="#l297" class="line" id="l297">    297</a> 	return NULL;
+<a href="#l298" class="line" id="l298">    298</a> }
+<a href="#l299" class="line" id="l299">    299</a> 
+<a href="#l300" class="line" id="l300">    300</a> static void
+<a href="#l301" class="line" id="l301">    301</a> usage(void)
+<a href="#l302" class="line" id="l302">    302</a> {
+<a href="#l303" class="line" id="l303">    303</a> 	die(&quot;usage: slock [-v] [cmd [arg ...]]\n&quot;);
+<a href="#l304" class="line" id="l304">    304</a> }
+<a href="#l305" class="line" id="l305">    305</a> 
+<a href="#l306" class="line" id="l306">    306</a> int
+<a href="#l307" class="line" id="l307">    307</a> main(int argc, char **argv) {
+<a href="#l308" class="line" id="l308">    308</a> 	struct xrandr rr;
+<a href="#l309" class="line" id="l309">    309</a> 	struct lock **locks;
+<a href="#l310" class="line" id="l310">    310</a> 	struct passwd *pwd;
+<a href="#l311" class="line" id="l311">    311</a> 	struct group *grp;
+<a href="#l312" class="line" id="l312">    312</a> 	uid_t duid;
+<a href="#l313" class="line" id="l313">    313</a> 	gid_t dgid;
+<a href="#l314" class="line" id="l314">    314</a> 	const char *hash;
+<a href="#l315" class="line" id="l315">    315</a> 	Display *dpy;
+<a href="#l316" class="line" id="l316">    316</a> 	int s, nlocks, nscreens;
+<a href="#l317" class="line" id="l317">    317</a> 
+<a href="#l318" class="line" id="l318">    318</a> 	ARGBEGIN {
+<a href="#l319" class="line" id="l319">    319</a> 	case &#39;v&#39;:
+<a href="#l320" class="line" id="l320">    320</a> 		fprintf(stderr, &quot;slock-&quot;VERSION&quot;\n&quot;);
+<a href="#l321" class="line" id="l321">    321</a> 		return 0;
+<a href="#l322" class="line" id="l322">    322</a> 	default:
+<a href="#l323" class="line" id="l323">    323</a> 		usage();
+<a href="#l324" class="line" id="l324">    324</a> 	} ARGEND
+<a href="#l325" class="line" id="l325">    325</a> 
+<a href="#l326" class="line" id="l326">    326</a> 	/* validate drop-user and -group */
+<a href="#l327" class="line" id="l327">    327</a> 	errno = 0;
+<a href="#l328" class="line" id="l328">    328</a> 	if (!(pwd = getpwnam(user)))
+<a href="#l329" class="line" id="l329">    329</a> 		die(&quot;slock: getpwnam %s: %s\n&quot;, user,
+<a href="#l330" class="line" id="l330">    330</a> 		    errno ? strerror(errno) : &quot;user entry not found&quot;);
+<a href="#l331" class="line" id="l331">    331</a> 	duid = pwd-&gt;pw_uid;
+<a href="#l332" class="line" id="l332">    332</a> 	errno = 0;
+<a href="#l333" class="line" id="l333">    333</a> 	if (!(grp = getgrnam(group)))
+<a href="#l334" class="line" id="l334">    334</a> 		die(&quot;slock: getgrnam %s: %s\n&quot;, group,
+<a href="#l335" class="line" id="l335">    335</a> 		    errno ? strerror(errno) : &quot;group entry not found&quot;);
+<a href="#l336" class="line" id="l336">    336</a> 	dgid = grp-&gt;gr_gid;
+<a href="#l337" class="line" id="l337">    337</a> 
+<a href="#l338" class="line" id="l338">    338</a> #ifdef __linux__
+<a href="#l339" class="line" id="l339">    339</a> 	dontkillme();
+<a href="#l340" class="line" id="l340">    340</a> #endif
+<a href="#l341" class="line" id="l341">    341</a> 
+<a href="#l342" class="line" id="l342">    342</a> 	hash = gethash();
+<a href="#l343" class="line" id="l343">    343</a> 	errno = 0;
+<a href="#l344" class="line" id="l344">    344</a> 	if (!crypt(&quot;&quot;, hash))
+<a href="#l345" class="line" id="l345">    345</a> 		die(&quot;slock: crypt: %s\n&quot;, strerror(errno));
+<a href="#l346" class="line" id="l346">    346</a> 
+<a href="#l347" class="line" id="l347">    347</a> 	if (!(dpy = XOpenDisplay(NULL)))
+<a href="#l348" class="line" id="l348">    348</a> 		die(&quot;slock: cannot open display\n&quot;);
+<a href="#l349" class="line" id="l349">    349</a> 
+<a href="#l350" class="line" id="l350">    350</a> 	/* drop privileges */
+<a href="#l351" class="line" id="l351">    351</a> 	if (setgroups(0, NULL) &lt; 0)
+<a href="#l352" class="line" id="l352">    352</a> 		die(&quot;slock: setgroups: %s\n&quot;, strerror(errno));
+<a href="#l353" class="line" id="l353">    353</a> 	if (setgid(dgid) &lt; 0)
+<a href="#l354" class="line" id="l354">    354</a> 		die(&quot;slock: setgid: %s\n&quot;, strerror(errno));
+<a href="#l355" class="line" id="l355">    355</a> 	if (setuid(duid) &lt; 0)
+<a href="#l356" class="line" id="l356">    356</a> 		die(&quot;slock: setuid: %s\n&quot;, strerror(errno));
+<a href="#l357" class="line" id="l357">    357</a> 
+<a href="#l358" class="line" id="l358">    358</a> 	/* check for Xrandr support */
+<a href="#l359" class="line" id="l359">    359</a> 	rr.active = XRRQueryExtension(dpy, &amp;rr.evbase, &amp;rr.errbase);
+<a href="#l360" class="line" id="l360">    360</a> 
+<a href="#l361" class="line" id="l361">    361</a> 	/* get number of screens in display &quot;dpy&quot; and blank them */
+<a href="#l362" class="line" id="l362">    362</a> 	nscreens = ScreenCount(dpy);
+<a href="#l363" class="line" id="l363">    363</a> 	if (!(locks = calloc(nscreens, sizeof(struct lock *))))
+<a href="#l364" class="line" id="l364">    364</a> 		die(&quot;slock: out of memory\n&quot;);
+<a href="#l365" class="line" id="l365">    365</a> 	for (nlocks = 0, s = 0; s &lt; nscreens; s++) {
+<a href="#l366" class="line" id="l366">    366</a> 		if ((locks[s] = lockscreen(dpy, &amp;rr, s)) != NULL)
+<a href="#l367" class="line" id="l367">    367</a> 			nlocks++;
+<a href="#l368" class="line" id="l368">    368</a> 		else
+<a href="#l369" class="line" id="l369">    369</a> 			break;
+<a href="#l370" class="line" id="l370">    370</a> 	}
+<a href="#l371" class="line" id="l371">    371</a> 	XSync(dpy, 0);
+<a href="#l372" class="line" id="l372">    372</a> 
+<a href="#l373" class="line" id="l373">    373</a> 	/* did we manage to lock everything? */
+<a href="#l374" class="line" id="l374">    374</a> 	if (nlocks != nscreens)
+<a href="#l375" class="line" id="l375">    375</a> 		return 1;
+<a href="#l376" class="line" id="l376">    376</a> 
+<a href="#l377" class="line" id="l377">    377</a> 	/* run post-lock command */
+<a href="#l378" class="line" id="l378">    378</a> 	if (argc &gt; 0) {
+<a href="#l379" class="line" id="l379">    379</a> 		switch (fork()) {
+<a href="#l380" class="line" id="l380">    380</a> 		case -1:
+<a href="#l381" class="line" id="l381">    381</a> 			die(&quot;slock: fork failed: %s\n&quot;, strerror(errno));
+<a href="#l382" class="line" id="l382">    382</a> 		case 0:
+<a href="#l383" class="line" id="l383">    383</a> 			if (close(ConnectionNumber(dpy)) &lt; 0)
+<a href="#l384" class="line" id="l384">    384</a> 				die(&quot;slock: close: %s\n&quot;, strerror(errno));
+<a href="#l385" class="line" id="l385">    385</a> 			execvp(argv[0], argv);
+<a href="#l386" class="line" id="l386">    386</a> 			fprintf(stderr, &quot;slock: execvp %s: %s\n&quot;, argv[0], strerror(errno));
+<a href="#l387" class="line" id="l387">    387</a> 			_exit(1);
+<a href="#l388" class="line" id="l388">    388</a> 		}
+<a href="#l389" class="line" id="l389">    389</a> 	}
+<a href="#l390" class="line" id="l390">    390</a> 
+<a href="#l391" class="line" id="l391">    391</a> 	/* everything is now blank. Wait for the correct password */
+<a href="#l392" class="line" id="l392">    392</a> 	readpw(dpy, &amp;rr, locks, nscreens, hash);
+<a href="#l393" class="line" id="l393">    393</a> 
+<a href="#l394" class="line" id="l394">    394</a> 	return 0;
+<a href="#l395" class="line" id="l395">    395</a> }
+</pre>
+</div>
+</body>
+</html>

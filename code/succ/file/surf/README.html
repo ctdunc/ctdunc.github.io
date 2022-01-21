@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>README - succ - My builds of the suckless utilities I use.
+</title>
+<link rel="icon" type="image/png" href="../../favicon.png" />
+<link rel="alternate" type="application/atom+xml" title="succ Atom Feed" href="../../atom.xml" />
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+</head>
+<body>
+<table><tr><td><a href="../../../"><img src="../../logo.png" alt="" width="32" height="32" /></a></td><td><h1>succ</h1><span class="desc">My builds of the suckless utilities I use.
+</span></td></tr><tr><td></td><td>
+<a href="../../log.html">Log</a> | <a href="../../files.html">Files</a> | <a href="../../refs.html">Refs</a> | <a href="../../file/README.html">README</a></td></tr></table>
+<hr/>
+<div id="content">
+<p> README (959B)</p><hr/><pre id="blob">
+<a href="#l1" class="line" id="l1">      1</a> surf - simple webkit-based browser
+<a href="#l2" class="line" id="l2">      2</a> ==================================
+<a href="#l3" class="line" id="l3">      3</a> surf is a simple Web browser based on WebKit/GTK+.
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> Requirements
+<a href="#l6" class="line" id="l6">      6</a> ------------
+<a href="#l7" class="line" id="l7">      7</a> In order to build surf you need GTK+ and Webkit/GTK+ header files.
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> In order to use the functionality of the url-bar, also install dmenu[0].
+<a href="#l10" class="line" id="l10">     10</a> 
+<a href="#l11" class="line" id="l11">     11</a> Installation
+<a href="#l12" class="line" id="l12">     12</a> ------------
+<a href="#l13" class="line" id="l13">     13</a> Edit config.mk to match your local setup (surf is installed into
+<a href="#l14" class="line" id="l14">     14</a> the /usr/local namespace by default).
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> Afterwards enter the following command to build and install surf (if
+<a href="#l17" class="line" id="l17">     17</a> necessary as root):
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a>     make clean install
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> Running surf
+<a href="#l22" class="line" id="l22">     22</a> ------------
+<a href="#l23" class="line" id="l23">     23</a> run
+<a href="#l24" class="line" id="l24">     24</a> 	surf [URI]
+<a href="#l25" class="line" id="l25">     25</a> 
+<a href="#l26" class="line" id="l26">     26</a> See the manpage for further options.
+<a href="#l27" class="line" id="l27">     27</a> 
+<a href="#l28" class="line" id="l28">     28</a> Running surf in tabbed
+<a href="#l29" class="line" id="l29">     29</a> ----------------------
+<a href="#l30" class="line" id="l30">     30</a> For running surf in tabbed[1] there is a script included in the distribution,
+<a href="#l31" class="line" id="l31">     31</a> which is run like this:
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> 	surf-open.sh [URI]
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> Further invocations of the script will run surf with the specified URI in this
+<a href="#l36" class="line" id="l36">     36</a> instance of tabbed.
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> [0] http://tools.suckless.org/dmenu
+<a href="#l39" class="line" id="l39">     39</a> [1] http://tools.suckless.org/tabbed
+<a href="#l40" class="line" id="l40">     40</a> 
+</pre>
+</div>
+</body>
+</html>
