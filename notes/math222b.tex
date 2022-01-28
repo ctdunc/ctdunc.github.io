@@ -10,7 +10,7 @@
 \usepackage{graphicx}
 \usepackage{wrapfig}
 \usepackage{subcaption}
-
+\usepackage{cancel}
 %%%%% TIKZ packages
 \usetikzlibrary{external}\tikzexternalize
 \author{Connor Duncan}
@@ -445,7 +445,7 @@ In general, $\hat X\subseteq X^{**}$.
 \end{eg}
 This hints at the Poincar\'e inequality, which we will explore shortly.
 
-\subsection{Approximation (Density) Theorems}
+\subsection{Approximation Theorems}
 
 \subsubsection{Convolution and Mollifiers}
 \begin{dfn}\label{dfn:mollifier}
@@ -900,6 +900,134 @@ There exists a bounded linear map
 $\ext_{\partial U}:H^{1/2}(\mathbb R^{d-1})\rightarrow H^1(\mathbb R^d_+)$
 such that $\tr_{\partial U}\circ\ext_{\partial U}=\id$.
 \end{thm}
+\begin{proof}
+    Here, we use the Poisson Semigroup. %TODO ???
+    In particular, define $g\in\mathcal S(\mathbb R^{d-1})$, and 
+    $u=\ext_{\partial U}(g)$, with 
+    $[\mathcal F_{x'}u](\xi',x^d)=\eta(x^d)e^{-x^d|\xi'|}\hat g(\xi')$.
+    Here, $\eta$ is a smooth cutoff function with $\eta(|s|<1)=1$, and $\eta(|s|>2)=0$.
+    Our objective is that show that $u\in H^1(\mathbb R^d_+)$ if and only if
+    the following statements hold:
+    \begin{enumerate}[label=\roman*.,nosep]
+    \item $u,\partial_{x^1}u,\ldots,\partial_{x^{d-1}}\in L^2$.
+    \item $\partial_{x^d}u\in L^2$.
+    \end{enumerate}
+
+    For (i), assume that $u\in H^1(\mathbb R^d_+)$.
+    Then
+    \begin{flalign*}
+        ||u||_{L^2}^2+||\partial_{x^1}u||_{L^2}^2+\ldots+||\partial_{x^{d-1}}u||^2_{L^2}
+        & \simeq
+        ||(1+|\xi'|)^2)^{1/2}[\mathcal F_{x'}u](\xi',x^d)||_{L^2_{\xi'}L_{x^d}^2}^2
+        \\
+        &=
+      ||(1+|\xi'|^2)^{1/2}\eta(x^d)e^{-x^d|\xi'|}\hat g(\xi')||^2_{L^2_{\xi'},L^2_{x^d}}
+        \\
+        &=\left\|
+        (1+|\xi'|^2)^{1/4}||\eta(x^d)e^{-x^d|\xi'|}||_{L^2_{x^d}}
+        (1+|\xi'|^2)^{1/4}\hat g(\xi')
+        \right\|_{L^2_{\xi'}}^2
+    \end{flalign*}
+    We want to put a uniform bound on
+    $(1+|\xi'|^2)^{1/4}||\eta(x^d)e^{-x^d|\xi'|}||_{L^2_{x^d}}$
+    for every $\xi'$.
+    By the compact support of $\eta$, we have the trival inequality:
+    $$
+        ||\eta(x^d)e^{-x^d}||_{L^2_{x^d}}^2\lsim 1
+    $$
+    Furthermore, writing out the $L^2$-norm, and making a substitution of variables
+    inside the integral, we arrive at the substitution inequality:
+    $$
+    \int_{}^{}(\eta(x^d))^2e^{-2x^d|\xi'|}dx^d\lsim\frac{1}{|\xi'|}
+    $$
+    From these two inequalities, we deduce that 
+    $$
+    ||\eta(x^d)e^{-x^d|\xi'|}||_{L^2_{x^d}}
+    \lsim\min\{1,|\xi'|^{-1/2}\}\lsim(1+|\xi'|)^{-1/2}
+    $$
+    So, terms in our initial equality cancel as follows:
+    $$
+        \left\|
+        \cancel{(1+|\xi'|^2)^{1/4}}\cancel{||\eta(x^d)e^{-x^d|\xi'|}||_{L^2_{x^d}}}
+        \cancel{(1+|\xi'|^2)^{1/4}}\hat g(\xi')
+        \right\|_{L^2_{\xi'}}^2
+        \simeq||\hat g(\xi')||_{L^2_{\xi'}}
+    $$
+    This proves (i), since we may unravel the chain of definitions in the reverse
+    direction exactly the same way. %TODO correct?
+
+    To see (ii), write $\partial_{x^d}u=\partial_{x^d}(\eta(x^d)v)=\eta'(x^d)v+\eta v'$, 
+    $\mathcal F_{x'}v=e^{-x^d|\xi'|}\hat g(\xi)$.
+    Each term of $u'$ may be bounded, with $\eta'(x^d)v\leq ||v||_{L^2(x^d\in\spt\eta)}$,
+    and
+    $$
+    ||\eta\partial_{x^d}v||_{L^2_{x'}L^2_{x^d}}=||\eta\partial_{x^d}(e^{-x^d|\xi'|}\hat g(\xi'))||_{L^2_{x^d}L^2_{\xi'}}
+    =||\eta(x^d)|\xi'|e^{-x^d|\xi'|}\hat g(\xi')||
+    \lsim c||g||_{H^{1/2}}
+    $$
+    The final inequality here follows from (i). 
+\end{proof}
+
+To generalize the above theorems to $L^2$-based Sobolev spaces, we need
+fractional Sobolev spaces on a $C^1$ boundary, under $C^1$ straightening
+diffeomorphism to the half-space. The indepedence of the norm under this 
+diffeomorphism follows from some concepts in interpolation theory, which is
+in a book of Stein from 1970.
+
+For $p\neq 2$, $\img(\tr_{\partial U}W^{1,p}(U))=B^{1-1/p,p}_p(\partial U)$,
+the $L^p$-Besov space with regularity index of order $1-1/p$, and summability
+index $p$. This is also in Stein.
+
+\subsection{Sobolev Inequalities}
+In a nutshell, Sobolev inequalities are quantitative generalizations of the 
+Fundamental theorem of Calculus, allowing us to control the 
+size of a function by the growth of it's derivative.
+
+\begin{thm}[Gagliardo-Nirenberg-Sobolev Inequality]\label{thm:gagnirsobineq}
+    For $d\geq 2$, $u\in C^\infty_0(\mathbb R^d)$, we have that for a constant
+    $c_d$ which depends only on the dimension $d$:
+    $$
+        ||u||_{L^{\frac{d}{d-1}}(\mathbb R^d)}\leq c_d ||Du||_{L^1(\mathbb R^d)}
+    $$
+\end{thm}
+\begin{rmk}
+    The factor of $\frac{d}{d-1}$ can be derived using \emph{dimensional analysis}. %DUDE, RIGHT?
+    It's basically a statement about the fact derivatives have dimensions $[D]\sim\frac{1}{\lambda}$,
+    where $\lambda$ is the scalaing factor, and that the $L^p$ norm
+    has dimension $[||\cdot||_{L^p}]\sim[\lambda]^{d/p}$.
+    So $[||D\cdot||_{L^p}]\sim[\lambda]^{d-1}$, and the rest follows from
+    equating the dimensions.\footnote{I absolutely did not expect to see dimensional
+    analysis show up anywhere \emph{near} graduate mathematics, and am equal parts
+    happy and confused.}
+\end{rmk}
+The key ingredient in the proof of Theorem \ref{thm:gagnirsobineq} is 
+actually another inequality.
+\begin{lem}[Loomis-Whitney Inequality]\label{lem:loomiswhitney}
+   For $d\geq 2$, $j=1,\ldots,d$, and 
+   $f_j=f_j(x^1,\ldots,\widehat{x^j},\ldots,x^d)$,
+   we have:
+   $$
+    \|\prod_{j=1}^df_j\|_{L^1(\mathbb R^d)}
+    \leq
+    \prod_{j=1}^d||f_j||_{L^{d-1}(\mathbb R^{d-1})}
+   $$
+\end{lem}
+\begin{proof}
+The proof of Lemma \ref{lem:loomiswhitney} is pretty direct, we just 
+integrate in each direction, applying H\"older's inequality as we go.
+$$
+\int_{}^{}|\prod_{j=1}^df_j|dx^1=|f_1|\int_{}^{}\prod_{j\neq 1}^d|f_jdx^1
+\leq|f_1|\prod_{j\neq 1}^d||f_j||_{L_{x^1}^{d-1}}
+$$
+Doing this $d$ times gives
+$$
+    \int_{}^{}\cdots\int_{}^{}|\prod_{j=1}^df_j|dx^1\cdots dx^d
+    \leq\prod_{j=1}^d||f_j||_{L^{d-1}_{x^1,\ldots,\widehat{x_j},\ldots,x^d}}
+$$
+\end{proof}
+\begin{rmk}
+
+\end{rmk}
 \newpage
 \appendix
 \section{Frequently Cited Theorems and Definitions}
