@@ -1,59 +1,85 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Home - Connor Duncan</title>
-		<link rel="stylesheet" type="text/css" href="main.css">
-        <style>
-            #intro img{
-                float:right;
-                width: 30vw;
-                height:auto;
-                padding: 20px;
-            }
-        </style>
-	</head>
-	<body>	
-		<div class="navbar">
-			<a href="/">home</a>
-			<a href="notes/">notes</a>
-			<a href="code/">code</a>
-			<a href="etc">/etc</a>
-		</div>
-		<div class="content">
-            <div id="intro">
-                <img id="headshot" src="res/hs.jpg" title="pc: Grace Naylor">
-                <h1> Connor Duncan </h1>
-                <p> I am a recent graduate of the University of California, Berkeley,
-                    with a B.A. in Applied Math and Physics. 
-                    I am currently applying
-                    to graduate programs in Mathematics, with a focus on research
-                    related to Partial Differential Equations.
-                </p> 
-                <p>
-                    If you or someone you know needs tutoring in any math-related 
-                    subject, from Algebra I to Differential Topology, feel free
-                    to contact me. I love math, and hopefully, after working
-                    together, you will too! If not, you certainly will pass whatever
-                    subject you are working in with flying colors.
-                </p>
-
-                <h2> Relevant Info </h2>
-                <div id=info> 
-                    <table>
-                        <tr>
-                            <th> resume </th> 
-                            <td><a href="res/connor-duncan-resume.pdf">connor-duncan-resume.pdf</a></td>
-                        </tr>
-                        <tr>
-                            <th> github </th>
-                            <td> <a href="https://github.com/ctdunc">ctdunc</a> (links to external site) </td>
-                        </tr>
-                        <tr>
-                            <th> contact </th>
-                            <td> connor [at] connorduncan [dot] xyz </td>
-                        </tr>
-                </div>
-            </div>
-		</div>
-	</body>
+  <head>
+    <title>Home - Connor Duncan</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <style>
+      .hs {
+        width: 50%;
+        padding: 5% 5%;
+      }
+      .info{
+        width: 50%;
+        margin: auto;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>	
+    <div id="content">
+      <table id="intro">
+        <tr>
+          <td class="hs">
+            <img id="headshot" src="res/hssm.jpg" title="Headshot">
+          </td>
+          <td class="info">
+            <h2> Connor Duncan </h2> 
+            <h3> Applied Mathematics Student </h3> 
+            <p>
+            <a href="res/connor-duncan-resume.pdf">resume</a>
+            </br>
+            <a href="https://github.com/ctdunc">github</a>
+            </br>
+            <a href="https://linkedin.com/in/connortduncan">linkedin</a>
+            </p>
+            <a style="font-size:90%;font-family:mono;" href="mailto:connor@connorduncan.xyz" id="mail">
+            connor@connorduncan.xyz
+            </a>
+          </td>
+      </table>
+      <details open="false">
+        <summary>About Me</summary>
+        <p> 
+        I am a recent graduate of the University of California, Berkeley,
+        with a B.A. in Applied Math and Physics. In August, I will start
+        my Master's in Applied Mathematics at <b>to be determined shortly</b>.
+        </p> 
+        <p>
+        I am interested primarily in studying Partial Differential Equations,
+        with a focus on applications to problems in physics and differential
+        geometry.
+        </p>
+      </details>
+      <details>
+        <summary>Tutoring</summary>
+        <p>
+        Need a little extra help in a math or physics class? I'd be thrilled
+        to work with you on a wide variety of subjects, from introductory algebra
+        to differential geometry. 
+        I charge between $25-$50/hr depending on subject complexity and travel
+        considerations. Email me for details!
+        </p>
+      </details>
+      <details>
+        <summary>Lecture Notes</summary>
+        <p>
+        Here are some lecture notes I took as an undergraduate at Cal. These 
+        are provided as-is with zero-editing (except PDEs II), and are probably not a great primary
+        source if you're in any of these classes. 
+        These are mostly here for my own reference, and because they include 
+        some nice TiKz pictures.
+        </p>
+        <ul>
+          <li>
+          <a href="notes/math222b.pdf">Partial Differential Equations II (Sung-Jin Oh, Spring 2022)</a>
+          </li>
+          <li><a href="notes/math104.pdf">Metric Differential Geometry (Rui Wang, Spring 2020)</a></li>
+          <li><a href="notes/math185.pdf">Complex Analysis (Peter Koroteev, Spring 2020)</a></li>
+          <li><a href="notes/math104.pdf">Real Analysis (Rui Wang, Fall 2019)</a></li>
+          <li><a href="notes/physics137b.pdf">Quantum Mechanics II (Ehud Altman, Fall 2019)</a></li>
+          <li><a href="notes/physics105.pdf">Analytic Mechanics (Stuart Bale, Fall 2019)</a></li>
+        </ul>
+      </details>
+    </div>
+  </body>
 </html> 
