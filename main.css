@@ -30,9 +30,11 @@
     font-display: swap;
 }
 html {
-    height: 100%;
+    font-size: 2.4vw;
 }
 
+@media all and (min-width:1000px) { html { font-size:24px;} };
+@media all and (max-width:520px) { html {font-size:18px;} };
 * {
    box-sizing: border-box;
 }
@@ -46,7 +48,6 @@ body {
     min-height: 100%;
     position: relative;
     z-index: -10000; -webkit-font-smoothing: subpixel-antialiased;
-    font-size: 120%;
 }
 
 img {
@@ -55,7 +56,7 @@ img {
 
 /* CONTENT */
 div#content {
-    padding: 3rem 0 18rem 0;
+    padding: 3rem 0 1.8rem 0;
     margin-left: 2.5rem;
     margin-right: 2.5rem;
 }
