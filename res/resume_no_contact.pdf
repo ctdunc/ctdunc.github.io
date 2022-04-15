@@ -1,0 +1,241 @@
+\documentclass[letterpaper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\usepackage{tgadventor}
+\usepackage{XCharter}
+\usepackage{titling}
+\usepackage{FiraMono}
+\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{mdframed}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% FOOTER
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand\headrulewidth{0pt}
+\fancyhead{}
+\cfoot{\scshape Duncan R\'esum\'e --- Page \thepage \hspace{1pt} of \pageref{LastPage}}
+
+\setlist{nosep}
+\author{Connor Duncan}
+\title{Curriculum Vitae}
+\date{\today}
+\setlength\parindent{0pt}
+
+% new title command
+\renewcommand{\maketitle}{\begin{minipage}[t]{\textwidth}
+    \par{\centering{\LARGE{\theauthor}}\par}
+    \centering\small\color{gray}
+    %1715 Dean York Lane, Saint Helena CA, 94574
+
+    \href{connorduncan.xyz}{connorduncan.xyz}
+     | \href{mailto:ctdunc@connorduncan.xyz}{connor@connorduncan.xyz}
+     %| 707-260-5372
+    \end{minipage}
+    \\
+}
+
+
+% changing title formatting
+\titleformat{\section}{\sffamily\scshape\raggedright}{}{0em}{}[{\titlerule[1pt]}]
+\titlespacing{\section}{0pt}{3pt}{7pt}
+\titleformat{\subsection}{\bfseries}{}{2em}{}
+\titlespacing{\subsection}{0pt}{7pt}{7pt}
+
+% itemize
+\renewcommand\leftmargini{1.5em}
+\renewcommand\labelitemi{$\diamond$}
+\newcommand{\Cal}{
+    University of California, Berkeley}
+
+\newcommand{\entry}[4]{ % DATE, POSITION, BUSINESS, DUTIES.
+    \begin{minipage}[t]{0.15\textwidth}
+        \scshape#1
+    \end{minipage}
+    \vline\hspace{1em}
+    \begin{minipage}[t]{0.83\textwidth}
+        \raggedright
+        {\large\scshape#3}\\
+        \vspace{0.3em}
+        \vbox{\normalsize\textit{#2}#4}
+    \end{minipage}
+}
+
+\newcommand{\skill}[2]{ % TYPE, LIST
+    \begin{minipage}[t]{0.15\textwidth}
+        \scshape#1
+    \end{minipage}
+    \vline\hspace{1em}
+    \begin{minipage}[t]{0.83\textwidth}
+        \raggedright
+        #2
+    \end{minipage}
+}
+\begin{document}
+\maketitle
+
+
+\section{Education}
+\entry{2022--2023}{M.S. in Applied Mathematics}{University of Illinois at Chicago}{ || (August 2022 start)}
+
+\entry{2017--2021}{B.A. in Physics; B.A. in Applied Mathematics}{\Cal}{ || 3.366 Overall GPA.}
+
+\section{Research Experience}
+\entry{2021--2022}{Mathematics Researcher}
+{\Cal}{
+\begin{itemize}
+    \item Worked on constructing integral solution operators for de Rham complexes
+        using fundamental solution methods.
+\end{itemize}
+}
+
+\entry{Summer 2020}{SULI Intern}
+{National Renewable Energy Laboratory}
+{
+    \begin{itemize}
+        \item Developed JavaScript application visualizing 
+the projected social and economic impact of environmental policy changes in the Los Angeles 
+Area.
+    \end{itemize}
+}
+
+\entry{2018--2020}{Research Assistant, Pyle Group}{\Cal; Stanford Linear Accelerator Center}{
+    \begin{itemize}
+        \item Developed full-stack web app to check superconducting dark matter 
+            search circuitry for short circuits.
+        \item Developed real-time, full-stack web app for detector readout 
+            and debugging with National Instruments' \texttt{NI-DAQmx} Python library.
+        \item Assisted with installation of Helium Dilution Refrigerator.
+        \item Assisted with small-scale Linux server administration and maintenance.
+    \end{itemize}
+}
+
+
+
+\section{Technical Skills}
+\skill{Python}{
+    \begin{itemize}
+            \item Standard data science libraries and methods,
+                including \texttt{Pandas}, \texttt{Numpy} and \texttt{Matplotlib}.
+            \item WebServer Gateway Interface implementation using
+                \texttt{Flask}, including WebSocket-based streaming through both Apache and nginx.
+            \item Data storage standards, such as HDF5 and SQL.
+    \end{itemize}
+}
+
+\skill{JavaScript}{
+    \begin{itemize}
+        \item React-based web app development, especially for 
+            data visualization (using D3 and visx.
+        \item Node.js, babel, webpack.
+    \end{itemize}
+}
+
+\skill{Linux}{
+    \begin{itemize}
+        \item Enterprise distributions such as Red Hat and Debian,
+            including essentials of package management and systemd.
+        \item Regular use of headless and remote environments.
+        \item Daily Arch Linux user since 2018.
+    \end{itemize}
+}
+
+\skill{Additional Software}{
+    \begin{itemize}
+        \item {\scshape Languages}: MATLAB/GNU Octave, LabView, C (patching frequently-used 
+            programs), Java, Lua (remote Kiethley multimeter control), SQL, HTML/CSS, \LaTeX, Bash, Zsh
+        \item {\scshape Dev Tools}: Git, Redis, Vim, rsync, jq, tmux.
+    \end{itemize}
+}
+
+\section{Other Experience}
+
+\entry{2022--Present}{AVID Tutor}{Calistoga Junior/Senior High School}{
+    \begin{itemize}
+    \item Worked with primarily low-income students to develop and reinforce their
+        competency in college-preperatory mathematics.
+    \item Assisted in developing additional sources of enrichment materials 
+        for use in tutorial.
+    % TODO: need to emphasize if I get them all to pass stats.
+    \end{itemize}
+}
+
+\entry{2017-2019}{Policy Debate Team Member}{\Cal}{
+    \begin{itemize}
+        \item Division 1 champion for the 2018-2019 season.
+        \item Debated at the varsity collegiate level for two years. Debated all four
+            years in high school.
+    \end{itemize}
+}
+
+\entry{Summer 2019 \& 2018}{Lab Leader and Counsellor}{Cal National Debate Institute}{
+    \begin{itemize}
+        \item Co-taught 30 high school students in an intensive, seven week
+        program introducing the advanced intracacies of competitive policy debate.
+    \end{itemize}
+}
+
+
+\entry{2017--2019}{Assistant Debate Coach}{Sonoma Academy}{
+    \begin{itemize}
+        \item Traveled with high school students on average three times each semester,
+        provided coaching before debates, and assistance with topic research.
+    \end{itemize}
+}
+
+\entry{Summer 2017}{Executive Intern}{Colorado Governor's Office}{
+    \begin{itemize}
+        \item Helped organize the 2017 \emph{Pedal The Plains} event by systematizing
+        the organization of sponsors and trivia facts along the bike route.
+        \item Prototyped a news clip server in Java which scraped RSS feeds for office-related
+            news and sent out a daily email.
+    \end{itemize}
+}
+\section{Other Skills}
+% TODO: spanish, debate.
+\skill{Spanish}{
+    \begin{itemize}
+        \item Conversational in Spanish. 
+        \item Studied four years in high school and participated
+            in two homestay programs in Costa Rica and Cuba.
+    \end{itemize}
+}
+
+%   \section{/etc}
+%   \entry{2017-2019}{Policy Debate Team Member}{\Cal}{
+%       \begin{itemize}
+%           \item Debated at the varsity level for two years. Four year debater in high school.
+%           \item Typically travelled between 5 and 7 times each semester.
+%           \item Overall division 1 champion for the 2018-2019 season.
+%       \end{itemize}
+%   }
+
+%   \entry{$\cdots$}{}{Tools I Love}{
+%   \begin{itemize}
+%       \item Linux (Arch for personal use, RHEL for lab use, Debian for both, and Alpine on a cell phone.
+%           Almost always with systemd, once with openrc).
+%       \item vim (for as much as a I can without sacrificing productivity).
+%       \item git (for both school and hobby projects).
+%       \item jq (a JSON parser meant for use in shell scripts).
+%       \item ssh (personal and lab use).
+%       \item tmux (useful for remote multitasking).
+%       \item redis (as a message queue for various streaming applications).
+%   \end{itemize}
+%   }
+
+%\entry{$\cdots$}{}{Other Interests}{
+%\begin{itemize}
+%    \item Pianist for nearly 20 years (both jazz and classical).
+%    \item Advanced Open Water SCUBA Diver.
+%    \item Skier
+%    \item Enthusiastic consumer of science fiction.
+%\end{itemize}
+%}
+\end{document}
