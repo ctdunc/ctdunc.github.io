@@ -20,7 +20,7 @@
       <table id="intro">
         <tr>
           <td class="hs">
-            <img id="headshot" src="res/hssm.jpg" title="Headshot">
+            <img id="headshot" src="res/hssm.jpg" title="I don't wear these glasses anymore">
           </td>
           <td class="info">
             <h2> Connor Duncan </h2> 
@@ -40,15 +40,16 @@
       <details open="true">
         <summary>About Me</summary>
         <p> 
-        I am a Quantitative Analyst on the Fixed Income ETF Team at Invesco.
-        I recently graduated the 
-        University of Illinois in Chicago with a Master's in Applied Math. Before that,
-        I attended the
-        University of California, Berkeley, where I studied Applied Math
-        and Physics. 
+          I am a Quantitative Analyst on the Fixed Income ETF Portfolio Management desk at Invesco.
+          I recently graduated from the 
+          University of Illinois in Chicago with a Master's in Applied Math. Before that,
+          I attended the
+          University of California, Berkeley, where I studied Applied Math
+          and Physics.
         </p> 
         <p>
-        I enjoy working on software to solve problems in PDEs, Mixed Integer Programming, and Data Science.
+          I enjoy working on software to solve problems in PDEs, Mixed Integer Programming, and Data Science.
+          I also like hacking on Vim, and teaching my editor to catch my mistakes before I do.
         </p>
       </details>
       <details>
@@ -61,16 +62,25 @@
           <ul>
             <li>
               <a href="https://github.com/ctdunc/dotfiles"> my dotfiles </a>: neovim/tmux config, with nice zsh defaults.
-              Configured primarly for python (ruff to lint, pyright for code jumping) and rust development (rust-analyzer).
+              Configured primarly for Python (ruff/pyright) and Rust development (rust-analyzer).
             </li>
             <li>
-              <a href="https://github.com/abstractqqq/polars_istr"> polars_istr </a>: string validations in Polars, implemented in rust.
-              If you have some expensive ufunc you apply a lot (e.g. Luhn double-add-double checksum computation), 
-              please don't hesitate to open an issue, and I will work on including it.
+              <a href="https://github.com/abstractqqq/polars_istr"> polars_istr </a>: string validations in Polars, implemented in Rust.
+              I wrote the part that deals with security ID validation. I've found it useful for dealing
+              with poorly formatted data where security identifiers are mixed in one column (e.g. splitting out a CUSIP/SEDOL) column
+              for use in a join with a properly structured data source).
             </li>
             <li>
               <a href="https://github.com/scipopt/PySCIPOpt"> pyscipopt </a>: python wrapper for SCIP (Solving Constraint Integer Programs) a mixed-integer programming
-              library. I've made a few contributions here & think it is generally a cool project worth checking out.
+              library. I've made a few contributions here attempting to improve performance
+              for combinatorially constrained problems. 
+              I think it is generally a cool project worth checking out.
+            </li>
+            <li>
+              <a href="https://github.com/ctdunc/vim-dadbod-snowflake"> vim-dadbod-snowflake </a>: a 
+              fork of the excellent tpope plugin that adds support for Snowflake. Hopefully this gets merged
+              and I can delete this repo. Until then, here it remains!
+            </li>
           </ul>
         </p>
       </details>
