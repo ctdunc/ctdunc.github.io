@@ -104,5 +104,13 @@ big performance improvements to our Dash tool at work.</p>
 <code>treesitter</code> <a href="https://marketplace.visualstudio.com/search?term=tree%20sitter&amp;target=VSCode&amp;category=All%20categories&amp;sortBy=Relevance">plugins</a>
 at least <a href="https://marketplace.visualstudio.com/items?itemName=AlecGhost.tree-sitter-vscode">one</a> 
 of which appears to support injections. This seems like a productive direction to explore. Feel free to
-reach out if you do get it working, I'll update this post.</p>
+reach out if you do get it working, I'll update this post. </p>
+
+<p>Looking through the Dash forums, I am not the first person to encounter or solve this issue.
+For example, user StevenAllenKing wrote a VS Code extension that uses inline comments to handle
+the syntax injection. Check it out <a href="https://community.plotly.com/t/show-and-tell-clientside-callback-javascript-syntax-highlighting-in-python-multi-line-strings/56663">here</a>.
+I still think my approach has a few advantages: it is editor agnostic (as long as <code>treesitter</code> 
+support exists), and works for functions declared on a single line as well (nice for 
+nullish coalescing and the like). Plus, you don't have to have all those extra comments
+lying around!</p>
 
