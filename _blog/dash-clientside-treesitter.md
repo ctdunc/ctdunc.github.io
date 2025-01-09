@@ -1,4 +1,4 @@
-# Making Clientside Dash Dev Less Bad
+# Making Clientside Callbacks Nicer in Dash
 ##### Connor Duncan, 01/09/2025
 
 ## Why Clientside Callbacks?
