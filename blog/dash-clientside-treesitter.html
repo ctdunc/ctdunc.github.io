@@ -9,38 +9,30 @@
 
       <a href="./index.html" style="padding-right:10px;">Blog</a>
   </div>
-<h1>Making Clientside Callbacks Nicer in Dash</h1>
-
-<h5>Connor Duncan, 01/09/2025</h5>
-
-<h2>Why Clientside Callbacks?</h2>
-
+<h1 id="making-clientside-callbacks-nicer-in-dash">Making Clientside Callbacks Nicer in Dash</h1>
+<h5 id="connor-duncan-01092025">Connor Duncan, 01&#47;09&#47;2025</h5>
+<h2 id="why-clientside-callbacks">Why Clientside Callbacks?</h2>
 <p>I work on a fairly large <a href="https://dash.plotly.com/">Plotly <code>Dash</code></a> app in my day job, which contains
 many inputs that require validation.
-One of the downsides of Dash is that under their "expected" pattern of use, this sort of input validation
+One of the downsides of Dash is that under their &#8220;expected&#8221; pattern of use, this sort of input validation
 should happen on the server. 
-If you want to build an app that doesn't require network calls and annoying 
+If you want to build an app that doesn&#8217;t require network calls and annoying 
 delays to determine whether a text field input matches a regex, you need a way to do this
 sort of thing in the browser, which is why Dash introduced <a href="https://dash.plotly.com/clientside-callbacks"><code>clientside_callback</code></a>.</p>
-
-<h2>What's the problem?</h2>
-
-<p>These work pretty well once you're done writing them, but writing them is an absolute <em>drag</em>, since 
+<h2 id="whats-the-problem">What&#8217;s the problem?</h2>
+<p>These work pretty well once you&#8217;re done writing them, but writing them is an absolute <em>drag</em>, since 
 they are kept as Strings in your Python code. 
 Below is an example of a clientside callback which takes the <code>value</code> output of a <a href="https://www.dash-mantine-components.com/components/tagsinput"><code>TagsInput</code></a>
 and ensures that all inputs can be parsed according to some custom business logic
 <code>parseFloatMConvention</code>.
-If they can't be parsed, they are output to the components <code>error</code> property, which prompts
+If they can&#8217;t be parsed, they are output to the components <code>error</code> property, which prompts
 the user to correct their mistake.</p>
-
 <p><img src="/res/img/dash-clientside-nts.png" alt="Dash Clientside Callback No Highlight"/></p>
-
-<p>Writing JS like this is not too bad for smaller/simpler, functions
+<p>Writing JS like this is not too bad for smaller&#47;simpler, functions
 but once things get much longer, this begins to suck big time.
 Dash does <a href="https://dash.plotly.com/external-resources">provide a way</a> to keep complex JavaScript in separate files,
 but when a function is only used once, this quickly becomes a nuisance as well, since oftentimes you will end up with
 functions of the form</p>
-
 <pre><code>clientside_callback(
   """
   function do_business_thing(a, b, c, d, e, f) {
@@ -56,24 +48,19 @@ functions of the form</p>
   Output("out", "prop")
 )
 </code></pre>
-
 <p>This is also not great, since now you need to keep at least two files open to develop logic that only
 ever takes place at this location. Plus, you have to keep the signatures of 
-<code>do_business_thing</code> and <code>do_business_thing_declared_elsewhere</code> in sync, which isn't too bad on its own,
+<code>do_business_thing</code> and <code>do_business_thing_declared_elsewhere</code> in sync, which isn&#8217;t too bad on its own,
 but is annoying when you have hundreds of these declarations floating around.</p>
-
-<h2>Enter <code>treesitter</code></h2>
-
+<h2 id="enter-">Enter <code>treesitter</code></h2>
 <p>Over the last year, I have made the switch from <code>vim</code> to <code>neovim</code> (<a href="https://github.com/ctdunc/dotfiles">dotfile</a> plug),
 which has been very good to me so far.
 One of the really cool things about <code>neovim</code> is <a href="https://github.com/nvim-treesitter/nvim-treesitter">nvim-treesitter</a>,
 which lets you do all kinds of fancy things with the syntax tree seen by your editor.
-I won't pretend to be a <code>treesitter</code> expert, but when I discovered <a href="https://tree-sitter.github.io/tree-sitter/3-syntax-highlighting.html">language injections</a>
+I won&#8217;t pretend to be a <code>treesitter</code> expert, but when I discovered <a href="https://tree-sitter.github.io/tree-sitter/3-syntax-highlighting.html">language injections</a>
 I immediately had my first application: fixing Dash Clientside Callbacks!</p>
-
 <p>Armed with <a href="https://www.youtube.com/watch?v=09-9LltqWLY">this video</a> from TJ DeVries (a <code>neovim</code> GOAT), and the commands 
 <code>:InspectTree</code> and <code>:EditQuery</code>, I was able to hack together the following injection:</p>
-
 <pre><code>;extends
 ; look for calls to functions named clientside_callback
 (call 
@@ -88,29 +75,25 @@ I immediately had my first application: fixing Dash Clientside Callbacks!</p>
     )
 )
 </code></pre>
-
-<p>Placing this injection at <code>$NVIM_CONFIG_LOCATION/queries/python/injections.scm</code> resulted in 
+<p>Placing this injection at <code>$NVIM_CONFIG_LOCATION&#47;queries&#47;python&#47;injections.scm</code> resulted in 
 good-enough JavaScript syntax highlighting in python files! Behold:</p>
-
 <p><img src="/res/img/dash-clientside-ts.png" alt="Dash Clientside Callback Highlighted"/></p>
-
-<p>This wasn't overly complicated. Between watching TJ's video and figuring out the Scheme syntax,
+<p>This wasn&#8217;t overly complicated. Between watching TJ&#8217;s video and figuring out the Scheme syntax,
 it took about an hour, and has been a giant quality of life boost for me, and resulted in
 big performance improvements to our Dash tool at work.</p>
-
-<h2>And to my VS Code Enjoyers...</h2>
-
+<h2 id="and-to-my-vs-code-enjoyers">And to my VS Code Enjoyers&#8230;</h2>
 <p>Something like this might be possible for VS Code users as well. There are quite a few 
 <code>treesitter</code> <a href="https://marketplace.visualstudio.com/search?term=tree%20sitter&amp;target=VSCode&amp;category=All%20categories&amp;sortBy=Relevance">plugins</a>
 at least <a href="https://marketplace.visualstudio.com/items?itemName=AlecGhost.tree-sitter-vscode">one</a> 
 of which appears to support injections. This seems like a productive direction to explore. Feel free to
-reach out if you do get it working, I'll update this post. </p>
-
+reach out if you do get it working, I&#8217;ll update this post. </p>
 <p>Looking through the Dash forums, I am not the first person to encounter or solve this issue.
 For example, user StevenAllenKing wrote a VS Code extension that uses inline comments to handle
 the syntax injection. Check it out <a href="https://community.plotly.com/t/show-and-tell-clientside-callback-javascript-syntax-highlighting-in-python-multi-line-strings/56663">here</a>.
 I still think my approach has a few advantages: it is editor agnostic (as long as <code>treesitter</code> 
 support exists), and works for functions declared on a single line as well (nice for 
-nullish coalescing and the like). Plus, you don't have to have all those extra comments
+nullish coalescing and the like). Plus, you don&#8217;t have to have all those extra comments
 lying around!</p>
+<h2 id="update-01222025">Update 01&#47;22&#47;2025</h2>
+<p>See <a href="./dash-clientside-treesitter-ez-mode.html">part 2</a> for an easier way to install this capability!</p>
 

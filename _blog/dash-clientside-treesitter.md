@@ -96,3 +96,6 @@ I still think my approach has a few advantages: it is editor agnostic (as long a
 support exists), and works for functions declared on a single line as well (nice for 
 nullish coalescing and the like). Plus, you don't have to have all those extra comments
 lying around!
+
+## Update 01/22/2025
+See [part 2](./dash-clientside-treesitter-ez-mode.html) for an easier way to install this capability!
