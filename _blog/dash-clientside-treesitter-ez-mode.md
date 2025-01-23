@@ -1,4 +1,4 @@
-# You can install my Dash syntax trick as a plugin now!
+# Making Dash Clientside Dev Nicer (Ez Mode)
 ##### Connor Duncan, 01/22/2025
 
 Really quick update to [part 1](./dash-clientside-treesitter.html). You can now 
