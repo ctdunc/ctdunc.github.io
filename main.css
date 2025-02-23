@@ -97,3 +97,9 @@ a:after {
 a#mail:after {
   content: normal;
 }
+
+pre > code {
+    overflow-x: scroll;
+    max-width: 1000px;
+    display: block;
+}
