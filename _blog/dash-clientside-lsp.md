@@ -28,7 +28,8 @@ JavaScript LSP installed and configured for your preferred editor.
 For neovim, I use [ts_ls](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls).
 For VS C*de, I would bet (some) money that Microsoft's implementation is installed the moment you open a 
 TypeScript file, or at least that there is a clippy popup along the lines of 
-"Hey there! It looks like you're trying to edit a TypeScript file! Would you like some help with that?"
+> Hey there! It looks like you're trying to edit a TypeScript file! Would you like some help with that?
+
 Anyways, [here are the docs](https://code.visualstudio.com/Docs/languages/typescript) just in case.
 For other editors, you're own your own, cowboy.
 
@@ -63,7 +64,7 @@ the Grid. This pattern introduces a few major frustrations:
 
 1. There is no type checking in `clientside_callbacks`. This is fine for simple stuff, but when working 
 with complex Grid APIs, such checks are very useful.
-2. There is no code completion. The `Ag Grid` API is large and well-documented. This also means that 
+2. There is no code completion. The Ag Grid API is large and well-documented. This also means that 
 searching the docs for your exact use case can take time. If you know what you want to do, but can't remember
 the _exact_ name of the function you're looking for, having a searchable index of the `GridApi` at your 
 fingertips dramatically increases development speed and enjoyability.
@@ -89,7 +90,7 @@ to correctly recognize and generate completions for various Dash-isms and import
 
 ## Setting Up tsc for Dash
 ### Installation
-First, you will need to install [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html). 
+First, you will need to install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html). 
 If you're on Linux, you can install both through your package manager (e.g. for [Arch Linux](https://archlinux.org/packages/extra/any/typescript/) (btw)).
 Node officially recommends using a version manager, so if you're inclined, you can do that as well.
 If you're on MacOS or Windows, follow the instructions on the npm website, and use `$ npm install -g tsc` to get TSC installed.
@@ -99,10 +100,12 @@ is most appropriate for you.
 
 Next, in the root directory of your project, install `ag-grid-enterprise@31.2.1`, `prettier` and `typescript` as dev dependencies
 with the following command:
+
 ```
 $ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
 ```
-We need the pinned version of `Ag Grid`, since that is what [Dash Ag Grid is currently pinned to](https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text).
+
+We need to pin Ag Grid to the [same version as Dash](https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text).
 If they get around to updating the Dash Ag Grid dependency, you should use that one instead.
 
 ### Configuring tsc
@@ -207,8 +210,9 @@ I will explain:
 3. How I use `ts_ls` with [`otter.nvim`](https://github.com/jmbuhr/otter.nvim) to correctly map language servers to 
 code blocks as delineated by `treesitter`. 
 
-The `otter` bit is still a bit buggy, so I have yet to include this feature in [`nvim-dash`](https://github.com/ctdunc/nvim-dash). Once 
-I (or someone else) fixes the issue linked to [this pr](https://github.com/jmbuhr/otter.nvim/pull/198), we will be *so back*!
+The `otter` bit is still a bit buggy, so I have yet to include this feature in [`nvim-dash`](https://github.com/ctdunc/nvim-dash). 
+It's also why the linked configuration is on the `otter` branch, instead of `master`.
+Once I (or someone else) fix(es) the issue linked to [this pr](https://github.com/jmbuhr/otter.nvim/pull/198), we will be *so back*!
 
 ### Using TreeSitter Injections with Dash
 I wrote [a whole post](https://www.connorduncan.xyz/blog/dash-clientside-treesitter.html) about getting this working, so give that a read.
@@ -264,7 +268,7 @@ If you've followed my explanation so far, your editor should now be capable of s
 
 ### Getting ts_ls Working with otter.nvim
 Now that we have formatting working fairly well, it's time to get autocomplete working on our embedded JavaScript.
-For this, we turn to a plugin called [`otter.nvim`]. Before discussing setup, a few things to note:
+For this, we turn to a plugin called [`otter.nvim`]. Before discussing setup, a few things to note.
 
 First, `otter` works more or less by passing the captured ranges of `injection.content` to a hidden buffer, and then
 passing the output of the LSP attached to that hidden buffer back to the current buffer.

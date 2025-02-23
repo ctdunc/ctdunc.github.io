@@ -38,9 +38,11 @@ Everything outside of the <a href="#inline-lsp-support-in-neovim">neovim injecti
 JavaScript LSP installed and configured for your preferred editor.
 For neovim, I use <a href="https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls">ts_ls</a>.
 For VS C*de, I would bet (some) money that Microsoft&#8217;s implementation is installed the moment you open a 
-TypeScript file, or at least that there is a clippy popup along the lines of 
-&#8220;Hey there! It looks like you&#8217;re trying to edit a TypeScript file! Would you like some help with that?&#8221;
-Anyways, <a href="https://code.visualstudio.com/Docs/languages/typescript">here are the docs</a> just in case.
+TypeScript file, or at least that there is a clippy popup along the lines of </p>
+<blockquote>
+<p>Hey there! It looks like you&#8217;re trying to edit a TypeScript file! Would you like some help with that?</p>
+</blockquote>
+<p>Anyways, <a href="https://code.visualstudio.com/Docs/languages/typescript">here are the docs</a> just in case.
 For other editors, you&#8217;re own your own, cowboy.</p>
 <h2 id="why-even-bother">Why Even Bother?</h2>
 <p>If you work with Plotly&#8217;s <a href="https://dash.plotly.com">Dash</a> framework, you&#8217;ve probably noticed 
@@ -71,7 +73,7 @@ the Grid. This pattern introduces a few major frustrations:</p>
 <ol>
 <li>There is no type checking in <code>clientside_callbacks</code>. This is fine for simple stuff, but when working 
 with complex Grid APIs, such checks are very useful.</li>
-<li>There is no code completion. The <code>Ag Grid</code> API is large and well-documented. This also means that 
+<li>There is no code completion. The Ag Grid API is large and well-documented. This also means that 
 searching the docs for your exact use case can take time. If you know what you want to do, but can&#8217;t remember
 the <em>exact</em> name of the function you&#8217;re looking for, having a searchable index of the <code>GridApi</code> at your 
 fingertips dramatically increases development speed and enjoyability.</li>
@@ -95,7 +97,7 @@ to correctly recognize and generate completions for various Dash-isms and import
 </ol>
 <h2 id="setting-up-tsc-for-dash">Setting Up tsc for Dash</h2>
 <h3 id="installation">Installation</h3>
-<p>First, you will need to install <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm"><code>npm</code></a> and <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">tsc</a>. 
+<p>First, you will need to install <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm">npm</a> and <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">tsc</a>. 
 If you&#8217;re on Linux, you can install both through your package manager (e.g. for <a href="https://archlinux.org/packages/extra/any/typescript/">Arch Linux</a> (btw)).
 Node officially recommends using a version manager, so if you&#8217;re inclined, you can do that as well.
 If you&#8217;re on MacOS or Windows, follow the instructions on the npm website, and use <code>$ npm install -g tsc</code> to get TSC installed.
@@ -103,11 +105,10 @@ This part is very dependent on your specific operating system and project requir
 worth your time to take a few minutes to read through the linked <code>npm</code> page and consider which method
 is most appropriate for you.</p>
 <p>Next, in the root directory of your project, install <code>ag-grid-enterprise@31.2.1</code>, <code>prettier</code> and <code>typescript</code> as dev dependencies
-with the following command:
-<code>
-$ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
-</code>
-We need the pinned version of <code>Ag Grid</code>, since that is what <a href="https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text">Dash Ag Grid is currently pinned to</a>.
+with the following command:</p>
+<pre><code>$ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
+</code></pre>
+<p>We need to pin Ag Grid to the <a href="https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text">same version as Dash</a>.
 If they get around to updating the Dash Ag Grid dependency, you should use that one instead.</p>
 <h3 id="configuring-tsc">Configuring tsc</h3>
 <p>Next, in our project root directory, we need to create a <code>tsconfig.json</code> file. 
@@ -202,8 +203,9 @@ I will explain: </p>
 <li>How I use <code>ts_ls</code> with <a href="https://github.com/jmbuhr/otter.nvim"><code>otter.nvim</code></a> to correctly map language servers to 
 code blocks as delineated by <code>treesitter</code>. </li>
 </ol>
-<p>The <code>otter</code> bit is still a bit buggy, so I have yet to include this feature in <a href="https://github.com/ctdunc/nvim-dash"><code>nvim-dash</code></a>. Once 
-I (or someone else) fixes the issue linked to <a href="https://github.com/jmbuhr/otter.nvim/pull/198">this pr</a>, we will be <em>so back</em>!</p>
+<p>The <code>otter</code> bit is still a bit buggy, so I have yet to include this feature in <a href="https://github.com/ctdunc/nvim-dash"><code>nvim-dash</code></a>. 
+It&#8217;s also why the linked configuration is on the <code>otter</code> branch, instead of <code>master</code>.
+Once I (or someone else) fix(es) the issue linked to <a href="https://github.com/jmbuhr/otter.nvim/pull/198">this pr</a>, we will be <em>so back</em>!</p>
 <h3 id="using-treesitter-injections-with-dash">Using TreeSitter Injections with Dash</h3>
 <p>I wrote <a href="https://www.connorduncan.xyz/blog/dash-clientside-treesitter.html">a whole post</a> about getting this working, so give that a read.
 I maintain an updated and expanding <code>injections.scm</code> file in a <a href="https://github.com/ctdunc/nvim-dash">neovim plugin</a>.
@@ -251,7 +253,7 @@ ruff is wicked fast.</p>
 <p><img src="/res/img/dash-inline-format.gif" alt="GIF showing inline formatting"/></p>
 <h3 id="getting-ts_ls-working-with-otter.nvim">Getting ts_ls Working with otter.nvim</h3>
 <p>Now that we have formatting working fairly well, it&#8217;s time to get autocomplete working on our embedded JavaScript.
-For this, we turn to a plugin called [<code>otter.nvim</code>]. Before discussing setup, a few things to note:</p>
+For this, we turn to a plugin called [<code>otter.nvim</code>]. Before discussing setup, a few things to note.</p>
 <p>First, <code>otter</code> works more or less by passing the captured ranges of <code>injection.content</code> to a hidden buffer, and then
 passing the output of the LSP attached to that hidden buffer back to the current buffer.
 This means that each separate capture must be syntactically valid in the injected language, so even though 
