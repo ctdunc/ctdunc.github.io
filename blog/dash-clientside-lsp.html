@@ -292,9 +292,20 @@ Anyways, the configuration that I use is in <code>lua&#47;plugins&#47;otter.lua<
 </code></pre>
 <p>You can probably get away without my <code>opts</code> here, but I have them set to aid in debugging.
 Sometimes you&#8217;ll leave <code>filename.py.otter.js</code> files if things fail ungracefully, so be sure to clean those
-up from your version control, or just disable writing to disk.
-If I&#8217;ve explained this well enough, you should now have something like the following working:</p>
+up from your version control, or just disable writing to disk.</p>
+<p>Finally, to activate <code>otter</code>, open any Python file containing a <code>clientside_callback</code> and run</p>
+<pre><code>:lua require(&#39;otter&#39;).activate()
+</code></pre>
+<p>If I&#8217;ve explained this well enough, you should now have something like the following working:</p>
 <p><img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/></p>
+<p>If you want <code>otter</code> to automatically activate in any Python file, simply add the following to <code>after&#47;ftplugin&#47;python.lua</code>:</p>
+<pre><code>
+require("otter").activate(
+  { "javascript", "typescript", "js", "ts" },
+  true,
+  true,
+)
+</code></pre>
 <h2 id="wrapping-up">Wrapping up</h2>
 <p>That&#8217;s pretty much it! This has been a large quality of life boost for me at work, as I work on
 custom row dragging logic for a table using Tree Data in a Dash app.

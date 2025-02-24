@@ -319,9 +319,27 @@ return {
 You can probably get away without my `opts` here, but I have them set to aid in debugging.
 Sometimes you'll leave `filename.py.otter.js` files if things fail ungracefully, so be sure to clean those
 up from your version control, or just disable writing to disk.
+
+Finally, to activate `otter`, open any Python file containing a `clientside_callback` and run
+
+```
+:lua require('otter').activate()
+```
+
 If I've explained this well enough, you should now have something like the following working:
 
 <img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/>
+
+If you want `otter` to automatically activate in any Python file, simply add the following to `after/ftplugin/python.lua`:
+
+```
+
+require("otter").activate(
+  { "javascript", "typescript", "js", "ts" },
+  true,
+  true,
+)
+```
 
 ## Wrapping up
 That's pretty much it! This has been a large quality of life boost for me at work, as I work on
