@@ -1,6 +1,10 @@
 # Making Clientside Callbacks Nicer in Dash
 ##### Connor Duncan, 01/09/2025
 
+Be sure to check out the sequels to this post, where I 
+explain how to install this as a plugin ([part two](./dash-clientside-treesitter-ez-mode.html)), and how to get Language Server features
+like code completion and show definition working in clientside callbacks ([part three](./dash-clientside-lsp.html)).
+
 ## Why Clientside Callbacks?
 I work on a fairly large [Plotly `Dash`](https://dash.plotly.com/) app in my day job, which contains
 many inputs that require validation.
