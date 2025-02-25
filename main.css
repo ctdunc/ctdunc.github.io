@@ -39,6 +39,12 @@ html {
    box-sizing: border-box;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #282828;
+    color: #a89984;
+  }
+}
 body {
     padding-left: 2vw;
     padding-right: 2vw;
@@ -54,7 +60,7 @@ body {
 
 img {
     max-width: 100%;
-}  
+} 
 
 /* CONTENT */
 div#content {
