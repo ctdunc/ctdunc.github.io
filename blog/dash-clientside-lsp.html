@@ -71,60 +71,52 @@ as demonstrated by this example more-or-less <a href="https://community.plotly.c
 )
 
 </code></pre>
-With this `api` object in hand, the developer is now empowered to do just about anything their heart desires to 
-the Grid. This pattern introduces a few major frustrations:
-
-1. There is no type checking in `clientside_callbacks`. This is fine for simple stuff, but when working 
-with complex Grid APIs, such checks are very useful.
-2. There is no code completion. The Ag Grid API is large and well-documented. This also means that 
-searching the docs for your exact use case can take time. If you know what you want to do, but can't remember
-the _exact_ name of the function you're looking for, having a searchable index of the `GridApi` at your 
-fingertips dramatically increases development speed and enjoyability.
-3. You can't lint or format your JS automatically.
-4. There is no go to definition, variable renaming, or anything else that LSPs do well.
-
-You _can_ fix some of these issues by including JavaScript in `assets/**.js`, and using your preferred JavaScript LSP as usual.
+<p>With this <code>api</code> object in hand, the developer is now empowered to do just about anything their heart desires to 
+the Grid. This pattern introduces a few major frustrations:</p>
+<ol>
+<li>There is no type checking in <code>clientside_callbacks</code>. This is fine for simple stuff, but when working 
+with complex Grid APIs, such checks are very useful.</li>
+<li>There is no code completion. The Ag Grid API is large and well-documented. This also means that 
+searching the docs for your exact use case can take time. If you know what you want to do, but can&#8217;t remember
+the <em>exact</em> name of the function you&#8217;re looking for, having a searchable index of the <code>GridApi</code> at your 
+fingertips dramatically increases development speed and enjoyability.</li>
+<li>You can&#8217;t lint or format your JS automatically.</li>
+<li>There is no go to definition, variable renaming, or anything else that LSPs do well.</li>
+</ol>
+<p>You <em>can</em> fix some of these issues by including JavaScript in <code>assets&#47;**.js</code>, and using your preferred JavaScript LSP as usual.
 As I have discussed before, however, I find that for functions that will only ever be called 
 from one location, the cognitive overhead of needing to keep track of two very distant locations in 
 the file tree for what should be local behavior outweighs any benefit you gain 
 in terms of tooling. Especially now that this post exists :). Plus, it should be possible (I am still working this out)
-to get jumping to definition working for members of `dagfuncs`, for example, which would
-also lighten this load.
-
-
-## What Will We Cover?
-In the rest of this post, I will assume absolutely zero prior JavaScript tooling experience (I didn't have much when I
-set out to figure this out), and explain:
-
-1. How to set up [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html)
-to correctly recognize and generate completions for various Dash-isms and imports that are assumed to be globally available.
-2. How to configure neovim to correctly recognize inline JS, and expose JavaScript language server capabilities from within Python.
-
-## Setting Up tsc for Dash
-### Installation
-First, you will need to install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html). 
-If you're on Linux, you can install both through your package manager (e.g. for [Arch Linux](https://archlinux.org/packages/extra/any/typescript/) (btw)).
-Node officially recommends using a version manager, so if you're inclined, you can do that as well.
-If you're on MacOS or Windows, follow the instructions on the npm website, and use `$ npm install -g tsc` to get TSC installed.
+to get jumping to definition working for members of <code>dagfuncs</code>, for example, which would
+also lighten this load.</p>
+<h2 id="what-will-we-cover">What Will We Cover?</h2>
+<p>In the rest of this post, I will assume absolutely zero prior JavaScript tooling experience (I didn&#8217;t have much when I
+set out to figure this out), and explain:</p>
+<ol>
+<li>How to set up <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">tsc</a>
+to correctly recognize and generate completions for various Dash-isms and imports that are assumed to be globally available.</li>
+<li>How to configure neovim to correctly recognize inline JS, and expose JavaScript language server capabilities from within Python.</li>
+</ol>
+<h2 id="setting-up-tsc-for-dash">Setting Up tsc for Dash</h2>
+<h3 id="installation">Installation</h3>
+<p>First, you will need to install <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm">npm</a> and <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">tsc</a>. 
+If you&#8217;re on Linux, you can install both through your package manager (e.g. for <a href="https://archlinux.org/packages/extra/any/typescript/">Arch Linux</a> (btw)).
+Node officially recommends using a version manager, so if you&#8217;re inclined, you can do that as well.
+If you&#8217;re on MacOS or Windows, follow the instructions on the npm website, and use <code>$ npm install -g tsc</code> to get TSC installed.
 This part is very dependent on your specific operating system and project requirements, so it is likely
-worth your time to take a few minutes to read through the linked `npm` page and consider which method
-is most appropriate for you.
-
-Next, in the root directory of your project, install `ag-grid-enterprise@31.2.1`, `prettier` and `typescript` as dev dependencies
-with the following command:
-
-```
-$ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
-```
-
-We need to pin Ag Grid to the [same version as Dash](https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text).
-If they get around to updating the Dash Ag Grid dependency, you should use that one instead.
-
-### Configuring tsc
-Next, in our project root directory, we need to create a `tsconfig.json` file. 
-For more information, check out [the full documentation](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
-For our use case, I've found that the following configuration tends to work pretty well.
-
+worth your time to take a few minutes to read through the linked <code>npm</code> page and consider which method
+is most appropriate for you.</p>
+<p>Next, in the root directory of your project, install <code>ag-grid-enterprise@31.2.1</code>, <code>prettier</code> and <code>typescript</code> as dev dependencies
+with the following command:</p>
+<pre><code>$ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
+</code></pre>
+<p>We need to pin Ag Grid to the <a href="https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text">same version as Dash</a>.
+If they get around to updating the Dash Ag Grid dependency, you should use that one instead.</p>
+<h3 id="configuring-tsc">Configuring tsc</h3>
+<p>Next, in our project root directory, we need to create a <code>tsconfig.json</code> file. 
+For more information, check out <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">the full documentation</a>.
+For our use case, I&#8217;ve found that the following configuration tends to work pretty well.</p>
 <pre><code>
 {
   <span class="code-string">"compilerOptions"</span>: {
