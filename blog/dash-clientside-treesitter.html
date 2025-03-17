@@ -2,6 +2,7 @@
   <head>
   <title> Blog - Connor Duncan </title>
     <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../code.css">
   </head>
   <body>
   <div style="display:flex;flex-direction:row;">
@@ -36,20 +37,22 @@ but once things get much longer, this begins to suck big time.
 Dash does <a href="https://dash.plotly.com/external-resources">provide a way</a> to keep complex JavaScript in separate files,
 but when a function is only used once, this quickly becomes a nuisance as well, since oftentimes you will end up with
 functions of the form</p>
-<pre><code>clientside_callback(
-  """
+<pre><code>
+<span class="code-function">clientside_callback</span>(
+  <span class="code-string">"""
   function do_business_thing(a, b, c, d, e, f) {
       return do_business_thing_declared_elsewhere(a, b, c, d, e, f);
   }
-  """,
-  Input("a", "prop"),
-  Input("b", "prop"),
-  Input("c", "prop"),
-  Input("d", "prop"),
-  Input("e", "prop"),
-  Input("f", "prop"),
-  Output("out", "prop")
+  """</span>,
+  <span class="code-function">Input</span>(<span class="code-string">"a"</span>, <span class="code-string">"prop"</span>),
+  <span class="code-function">Input</span>(<span class="code-string">"b"</span>, <span class="code-string">"prop"</span>),
+  <span class="code-function">Input</span>(<span class="code-string">"c"</span>, <span class="code-string">"prop"</span>),
+  <span class="code-function">Input</span>(<span class="code-string">"d"</span>, <span class="code-string">"prop"</span>),
+  <span class="code-function">Input</span>(<span class="code-string">"e"</span>, <span class="code-string">"prop"</span>),
+  <span class="code-function">Input</span>(<span class="code-string">"f"</span>, <span class="code-string">"prop"</span>),
+  <span class="code-function">Output</span>(<span class="code-string">"out"</span>, <span class="code-string">"prop"</span>)
 )
+
 </code></pre>
 <p>This is also not great, since now you need to keep at least two files open to develop logic that only
 ever takes place at this location. Plus, you have to keep the signatures of 
@@ -64,17 +67,17 @@ I won&#8217;t pretend to be a <code>treesitter</code> expert, but when I discove
 I immediately had my first application: fixing Dash Clientside Callbacks!</p>
 <p>Armed with <a href="https://www.youtube.com/watch?v=09-9LltqWLY">this video</a> from TJ DeVries (a <code>neovim</code> GOAT), and the commands 
 <code>:InspectTree</code> and <code>:EditQuery</code>, I was able to hack together the following injection:</p>
-<pre><code>;extends
+<pre><code class="language-%7Bscheme%7D">;extends
 ; look for calls to functions named clientside_callback
 (call 
   (identifier) @name (#eq? @name clientside_callback) 
   (argument_list 
-; if the first argument is a string, 
-; set the language of the child string_content to javascript
-((string (string_content) 
-     @injection.content 
-     (#set! injection.include-children)
-     (#set! injection.language "javascript")))
+    ; if the first argument is a string, 
+    ; set the language of the child string_content to javascript
+    ((string (string_content) 
+         @injection.content 
+         (#set! injection.include-children)
+         (#set! injection.language "javascript")))
     )
 )
 </code></pre>

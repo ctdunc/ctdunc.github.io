@@ -2,6 +2,7 @@
   <head>
   <title> Blog - Connor Duncan </title>
     <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../code.css">
   </head>
   <body>
   <div style="display:flex;flex-direction:row;">
@@ -52,92 +53,104 @@ to developer tooling. You&#8217;ve also likely used (or at least encountered)
 <code>dash-ag-grid</code> adds support for a limited subset of <a href="https://www.ag-grid.com/">Ag Grid</a>&#8217;s functionality via properties in the usual Dash 
 callback manner. If you are inclined to get fancy with your tables, you will need to make use of <code>dash_ag_grid.getApi</code>,
 as demonstrated by this example more-or-less <a href="https://community.plotly.com/t/dash-ag-grid-event-listeners-v-31-2/84848">stolen from the forums</a>:</p>
-<pre><code>gridid = "grid"
-app.clientside_callback(
-    """
-(id) =&#62; {
-  dash_ag_grid.getApiAsync(id).then((api) =&#62; {
-    api.addEventListener("cellFocused", (params) =&#62; {
+<pre><code>
+<span class="code-variable">gridid</span> <span class="code-operator">=</span> <span class="code-string">"grid"</span>
+<span class="code-variable">app</span>.<span class="code-property">clientside_callback</span>(
+    <span class="code-string">"""
+(id) => {
+  dash_ag_grid.getApiAsync(id).then((api) => {
+    api.addEventListener("cellFocused", (params) => {
       console.log(params);
     });
   });
   return dash_clientside.no_update;
 };
-    """,
-    Output(gridid, "id"),
-    Input(gridid, "id"),
+    """</span>,
+    <span class="code-function">Output</span>(<span class="code-variable">gridid</span>, <span class="code-string">"id"</span>),
+    <span class="code-function">Input</span>(<span class="code-variable">gridid</span>, <span class="code-string">"id"</span>),
 )
+
 </code></pre>
-<p>With this <code>api</code> object in hand, the developer is now empowered to do just about anything their heart desires to 
-the Grid. This pattern introduces a few major frustrations:</p>
-<ol>
-<li>There is no type checking in <code>clientside_callbacks</code>. This is fine for simple stuff, but when working 
-with complex Grid APIs, such checks are very useful.</li>
-<li>There is no code completion. The Ag Grid API is large and well-documented. This also means that 
-searching the docs for your exact use case can take time. If you know what you want to do, but can&#8217;t remember
-the <em>exact</em> name of the function you&#8217;re looking for, having a searchable index of the <code>GridApi</code> at your 
-fingertips dramatically increases development speed and enjoyability.</li>
-<li>You can&#8217;t lint or format your JS automatically.</li>
-<li>There is no go to definition, variable renaming, or anything else that LSPs do well.</li>
-</ol>
-<p>You <em>can</em> fix some of these issues by including JavaScript in <code>assets&#47;**.js</code>, and using your preferred JavaScript LSP as usual.
+With this `api` object in hand, the developer is now empowered to do just about anything their heart desires to 
+the Grid. This pattern introduces a few major frustrations:
+
+1. There is no type checking in `clientside_callbacks`. This is fine for simple stuff, but when working 
+with complex Grid APIs, such checks are very useful.
+2. There is no code completion. The Ag Grid API is large and well-documented. This also means that 
+searching the docs for your exact use case can take time. If you know what you want to do, but can't remember
+the _exact_ name of the function you're looking for, having a searchable index of the `GridApi` at your 
+fingertips dramatically increases development speed and enjoyability.
+3. You can't lint or format your JS automatically.
+4. There is no go to definition, variable renaming, or anything else that LSPs do well.
+
+You _can_ fix some of these issues by including JavaScript in `assets/**.js`, and using your preferred JavaScript LSP as usual.
 As I have discussed before, however, I find that for functions that will only ever be called 
 from one location, the cognitive overhead of needing to keep track of two very distant locations in 
 the file tree for what should be local behavior outweighs any benefit you gain 
 in terms of tooling. Especially now that this post exists :). Plus, it should be possible (I am still working this out)
-to get jumping to definition working for members of <code>dagfuncs</code>, for example, which would
-also lighten this load.</p>
-<h2 id="what-will-we-cover">What Will We Cover?</h2>
-<p>In the rest of this post, I will assume absolutely zero prior JavaScript tooling experience (I didn&#8217;t have much when I
-set out to figure this out), and explain:</p>
-<ol>
-<li>How to set up <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">tsc</a>
-to correctly recognize and generate completions for various Dash-isms and imports that are assumed to be globally available.</li>
-<li>How to configure neovim to correctly recognize inline JS, and expose JavaScript language server capabilities from within Python.</li>
-</ol>
-<h2 id="setting-up-tsc-for-dash">Setting Up tsc for Dash</h2>
-<h3 id="installation">Installation</h3>
-<p>First, you will need to install <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm">npm</a> and <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">tsc</a>. 
-If you&#8217;re on Linux, you can install both through your package manager (e.g. for <a href="https://archlinux.org/packages/extra/any/typescript/">Arch Linux</a> (btw)).
-Node officially recommends using a version manager, so if you&#8217;re inclined, you can do that as well.
-If you&#8217;re on MacOS or Windows, follow the instructions on the npm website, and use <code>$ npm install -g tsc</code> to get TSC installed.
+to get jumping to definition working for members of `dagfuncs`, for example, which would
+also lighten this load.
+
+
+## What Will We Cover?
+In the rest of this post, I will assume absolutely zero prior JavaScript tooling experience (I didn't have much when I
+set out to figure this out), and explain:
+
+1. How to set up [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html)
+to correctly recognize and generate completions for various Dash-isms and imports that are assumed to be globally available.
+2. How to configure neovim to correctly recognize inline JS, and expose JavaScript language server capabilities from within Python.
+
+## Setting Up tsc for Dash
+### Installation
+First, you will need to install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html). 
+If you're on Linux, you can install both through your package manager (e.g. for [Arch Linux](https://archlinux.org/packages/extra/any/typescript/) (btw)).
+Node officially recommends using a version manager, so if you're inclined, you can do that as well.
+If you're on MacOS or Windows, follow the instructions on the npm website, and use `$ npm install -g tsc` to get TSC installed.
 This part is very dependent on your specific operating system and project requirements, so it is likely
-worth your time to take a few minutes to read through the linked <code>npm</code> page and consider which method
-is most appropriate for you.</p>
-<p>Next, in the root directory of your project, install <code>ag-grid-enterprise@31.2.1</code>, <code>prettier</code> and <code>typescript</code> as dev dependencies
-with the following command:</p>
-<pre><code>$ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
-</code></pre>
-<p>We need to pin Ag Grid to the <a href="https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text">same version as Dash</a>.
-If they get around to updating the Dash Ag Grid dependency, you should use that one instead.</p>
-<h3 id="configuring-tsc">Configuring tsc</h3>
-<p>Next, in our project root directory, we need to create a <code>tsconfig.json</code> file. 
-For more information, check out <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">the full documentation</a>.
-For our use case, I&#8217;ve found that the following configuration tends to work pretty well.</p>
-<pre><code>{
-  "compilerOptions": {
-    "alwaysStrict": true,
-    "noImplicitReturns": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "outDir": "dist",
-    "removeComments": true,
-    "inlineSourceMap": true,
-    "importHelpers": true,
-    "target": "ESNext",
-    "module": "commonjs",
-    "allowJs": true,
-    "checkJs": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "declarationMap": true,
-    "noImplicitAny": false,
+worth your time to take a few minutes to read through the linked `npm` page and consider which method
+is most appropriate for you.
+
+Next, in the root directory of your project, install `ag-grid-enterprise@31.2.1`, `prettier` and `typescript` as dev dependencies
+with the following command:
+
+```
+$ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
+```
+
+We need to pin Ag Grid to the [same version as Dash](https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text).
+If they get around to updating the Dash Ag Grid dependency, you should use that one instead.
+
+### Configuring tsc
+Next, in our project root directory, we need to create a `tsconfig.json` file. 
+For more information, check out [the full documentation](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
+For our use case, I've found that the following configuration tends to work pretty well.
+
+<pre><code>
+{
+  <span class="code-string">"compilerOptions"</span>: {
+    <span class="code-string">"alwaysStrict"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"noImplicitReturns"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"emitDecoratorMetadata"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"experimentalDecorators"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"outDir"</span>: <span class="code-string">"dist"</span>,
+    <span class="code-string">"removeComments"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"inlineSourceMap"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"importHelpers"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"target"</span>: <span class="code-string">"ESNext"</span>,
+    <span class="code-string">"module"</span>: <span class="code-string">"commonjs"</span>,
+    <span class="code-string">"allowJs"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"checkJs"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"esModuleInterop"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"skipLibCheck"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"moduleResolution"</span>: <span class="code-string">"node"</span>,
+    <span class="code-string">"declaration"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"emitDeclarationOnly"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"declarationMap"</span>: <span class="code-constant.builtin">true</span>,
+    <span class="code-string">"noImplicitAny"</span>: <span class="code-constant.builtin">false</span>,
   },
-  "exclude": ["node_modules", "env", ".venv", "dist"]
+  <span class="code-string">"exclude"</span>: [<span class="code-string">"node_modules"</span>, <span class="code-string">"env"</span>, <span class="code-string">".venv"</span>, <span class="code-string">"dist"</span>]
 }
+
 </code></pre>
 <p>A few key options that are worth noting here:</p>
 <ul>
@@ -160,20 +173,22 @@ Feel free to <a href="https://github.com/ctdunc/ctdunc.github.io/issues">leave a
 us don&#8217;t know about Dash without being told. We can accomplish this by using a <a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html">TypeScript declaration file</a>.
 The file that I use for working with Dash Ag Grid is very simple.
 Simply place the following in <code>assets&#47;index.d.ts</code>:</p>
-<pre><code>import { GridApi, } from "ag-grid-enterprise";
+<pre><code>
+import { <span class="code-type">GridApi</span>, } from "ag-grid-enterprise";
 
-declare global {
-  namespace dash_ag_grid {
-    export function getApi(s: String | Object): GridApi;
-    export function getApiAsync(s: String | Object): Promise&#60;GridApi&#62;;
+<span class="code-keyword">declare</span> global {
+  <span class="code-keyword">namespace</span> dash_ag_grid {
+    <span class="code-keyword">export</span> function getApi(<span class="code-variable.parameter">s</span>: <span class="code-type">String</span> | <span class="code-type">Object</span>): <span class="code-type">GridApi</span>;
+    <span class="code-keyword">export</span> function getApiAsync(<span class="code-variable.parameter">s</span>: <span class="code-type">String</span> | <span class="code-type">Object</span>): <span class="code-type">Promise</span><span class="code-punctuation.bracket"><</span><span class="code-type">GridApi</span><span class="code-punctuation.bracket">></span>;
   }
-  namespace dash_clientside {
-    export const no_update: Object;
+  <span class="code-keyword">namespace</span> dash_clientside {
+    <span class="code-keyword">export</span> const no_update: <span class="code-type">Object</span>;
   }
-  namespace AgGrid {
-    export * from "ag-grid-enterprise";
+  <span class="code-keyword">namespace</span> <span class="code-type">AgGrid</span> {
+    <span class="code-keyword">export</span> * from "ag-grid-enterprise";
   }
 }
+
 </code></pre>
 <ul>
 <li>Wrapping everything in a <code>declare global</code> block makes these namespaces available globally.</li>
@@ -215,36 +230,38 @@ Alternately, just copy the <a href="https://github.com/ctdunc/nvim-dash/blob/mas
 <h3 id="formatting-clientside-callbacks-with-prettier">Formatting Clientside Callbacks with prettier</h3>
 <p>For all of my formatting needs, I use <code>conform.nvim</code>.
 In my config, I have <code>lua&#47;plugins&#47;conform.lua</code>, which should contain at a minumum:</p>
-<pre><code>return {
-  {
-    "stevearc&#47;conform.nvim",
-    opts = {
-      -- if you use f-strings, this will save you lots of hassle, 
-      -- as the javascript grammar gets very confused by them.
-      notify_on_error = false,
-      -- you don&#39;t need this, but I like to format on save. Muscle memory I guess.
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don&#39;t
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        return {
-          timeout_ms = 1000,
-          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-        }
-      end,
-      formatters_by_ft = {
-        python = { "injected" },
-        javascript = { "prettier" },
-        injected = { ignore_errors = true },
-      },
-    },
-    init = function()
-      -- If you want the formatexpr, here is the place to set it
-      -- vim.o.formatexpr = "v:lua.require&#39;conform&#39;.formatexpr()"
-    end,
-  },
-}
+<pre><code>
+<span class="code-keyword">return</span> <span class="code-constructor">{</span>
+  <span class="code-constructor">{</span>
+    <span class="code-string">"stevearc/conform.nvim"</span><span class="code-punctuation.delimiter">,</span>
+    opts <span class="code-operator">=</span> <span class="code-constructor">{</span>
+      <span class="code-comment">-- if you use f-strings, this will save you lots of hassle, </span>
+      <span class="code-comment">-- as the javascript grammar gets very confused by them.</span>
+      notify_on_error <span class="code-operator">=</span> false<span class="code-punctuation.delimiter">,</span>
+      <span class="code-comment">-- you don't need this, but I like to format on save. Muscle memory I guess.</span>
+      <span class="code-function">format_on_save</span> <span class="code-operator">=</span> <span class="code-function">function</span><span class="code-punctuation.bracket">(</span>bufnr<span class="code-punctuation.bracket">)</span>
+        <span class="code-comment">-- Disable "format_on_save lsp_fallback" for languages that don't</span>
+        <span class="code-comment">-- have a well standardized coding style. You can add additional</span>
+        <span class="code-comment">-- languages here or re-enable it for the disabled ones.</span>
+        <span class="code-keyword">local</span> <span class="code-variable">disable_filetypes</span> <span class="code-operator">=</span> <span class="code-constructor">{</span> c <span class="code-operator">=</span> true<span class="code-punctuation.delimiter">,</span> cpp <span class="code-operator">=</span> true <span class="code-constructor">}</span>
+        <span class="code-keyword">return</span> <span class="code-constructor">{</span>
+          timeout_ms <span class="code-operator">=</span> <span class="code-number">1000</span><span class="code-punctuation.delimiter">,</span>
+          lsp_fallback <span class="code-operator">=</span> <span class="code-keyword">not</span> <span class="code-variable">disable_filetypes</span><span class="code-punctuation.bracket">[</span><span class="code-variable">vim</span><span class="code-punctuation.delimiter">.</span>bo<span class="code-punctuation.bracket">[</span><span class="code-variable">bufnr</span><span class="code-punctuation.bracket">]</span><span class="code-punctuation.delimiter">.</span>filetype<span class="code-punctuation.bracket">]</span><span class="code-punctuation.delimiter">,</span>
+        <span class="code-constructor">}</span>
+      <span class="code-function">end</span><span class="code-punctuation.delimiter">,</span>
+      formatters_by_ft <span class="code-operator">=</span> <span class="code-constructor">{</span>
+        python <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"injected"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+        javascript <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"prettier"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+        injected <span class="code-operator">=</span> <span class="code-constructor">{</span> ignore_errors <span class="code-operator">=</span> true <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+      <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+    <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+    <span class="code-function">init</span> <span class="code-operator">=</span> <span class="code-function">function</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">)</span>
+      <span class="code-comment">-- If you want the formatexpr, here is the place to set it</span>
+      <span class="code-comment">-- vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"</span>
+    <span class="code-function">end</span><span class="code-punctuation.delimiter">,</span>
+  <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+<span class="code-constructor">}</span>
+
 </code></pre>
 <p>For <code>python</code>, you should probably put your preferred formatter in front of <code>injected</code>, otherwise, the <em>only</em>
 code that conform will format is the inline JavaScript. I use <code>python = { "ruff_format", "ruff_fix", "injected" }</code> because 
@@ -258,18 +275,22 @@ For this, we turn to a plugin called [<code>otter.nvim</code>]. Before discussin
 passing the output of the LSP attached to that hidden buffer back to the current buffer.
 This means that each separate capture must be syntactically valid in the injected language, so even though 
 callbacks of the form </p>
-<pre><code>function(x) {
-  &#47;&#47; do stuff to x ...
-  return x;
-}
+<pre><code>
+<span class="code-keyword">function</span><span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-punctuation.bracket">{</span>
+  <span class="code-comment">// do stuff to x ...</span>
+  <span class="code-keyword">return</span> <span class="code-variable">x</span><span class="code-punctuation.delimiter">;</span>
+<span class="code-punctuation.bracket">}</span>
+
 </code></pre>
 <p>evaluate to valid JavaScript once Dash gets ahold of them, they are not syntactically valid,
 since the function keyword expects a name for the declaration.
 This means that we must instead declare functions using arrow syntax, like so:</p>
-<pre><code>(x) =&#62; {
-  &#47;&#47; do stuff to x ...
-  return x;
-}
+<pre><code>
+<span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
+  <span class="code-comment">// do stuff to x ...</span>
+  <span class="code-keyword">return</span> <span class="code-variable">x</span><span class="code-punctuation.delimiter">;</span>
+<span class="code-punctuation.bracket">}</span>
+
 </code></pre>
 <p>It&#8217;s too bad that the Dash documentation exclusively uses the former syntax, but it is what it is.</p>
 <p>Second, <code>otter</code> has some weird behavior surrounding whitespace and indentation, and there are some 
@@ -277,34 +298,40 @@ This means that we must instead declare functions using arrow syntax, like so:</
 We&#8217;re working on it though! For that reason, I have pinned my <code>otter</code> version to the fix branch
 for this issue, since it seems to work more consistently. Still not consistently enough to merge into master though.
 Anyways, the configuration that I use is in <code>lua&#47;plugins&#47;otter.lua</code>: </p>
-<pre><code>return {
-  "jmbuhr&#47;otter.nvim",
-  commit = "be6324e0987c4fab347784e602c00f17c5fc0bd7",
-  -- dir = "~&#47;code&#47;otter.nvim",
-  dependencies = { "nvim-treesitter&#47;nvim-treesitter" },
-  opts = {
-    buffers = {
-      set_filetype = true,
-      write_to_disk = true,
-    },
-  },
-}
+<pre><code>
+<span class="code-keyword">return</span> <span class="code-constructor">{</span>
+  <span class="code-string">"jmbuhr/otter.nvim"</span><span class="code-punctuation.delimiter">,</span>
+  commit <span class="code-operator">=</span> <span class="code-string">"be6324e0987c4fab347784e602c00f17c5fc0bd7"</span><span class="code-punctuation.delimiter">,</span>
+  <span class="code-comment">-- dir = "~/code/otter.nvim",</span>
+  dependencies <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"nvim-treesitter/nvim-treesitter"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+  opts <span class="code-operator">=</span> <span class="code-constructor">{</span>
+    buffers <span class="code-operator">=</span> <span class="code-constructor">{</span>
+      set_filetype <span class="code-operator">=</span> true<span class="code-punctuation.delimiter">,</span>
+      write_to_disk <span class="code-operator">=</span> true<span class="code-punctuation.delimiter">,</span>
+    <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+  <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+<span class="code-constructor">}</span>
+
 </code></pre>
 <p>You can probably get away without my <code>opts</code> here, but I have them set to aid in debugging.
 Sometimes you&#8217;ll leave <code>filename.py.otter.js</code> files if things fail ungracefully, so be sure to clean those
 up from your version control, or just disable writing to disk.</p>
 <p>Finally, to activate <code>otter</code>, open any Python file containing a <code>clientside_callback</code> and run</p>
-<pre><code>:lua require(&#39;otter&#39;).activate()
+<pre><code>
+<span class="code-punctuation.delimiter">:</span><span class="code-variable">lua</span> <span class="code-function.builtin">require</span><span class="code-punctuation.bracket">(</span><span class="code-string">'otter'</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function">activate</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">)</span>
+
 </code></pre>
 <p>If I&#8217;ve explained this well enough, you should now have something like the following working:</p>
 <p><img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/></p>
 <p>If you want <code>otter</code> to automatically activate in any Python file, simply add the following to <code>after&#47;ftplugin&#47;python.lua</code>:</p>
 <pre><code>
-require("otter").activate(
-  { "javascript", "typescript", "js", "ts" },
-  true,
-  true,
-)
+
+<span class="code-function.builtin">require</span><span class="code-punctuation.bracket">(</span><span class="code-string">"otter"</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function">activate</span><span class="code-punctuation.bracket">(</span>
+  <span class="code-constructor">{</span> <span class="code-string">"javascript"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"typescript"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"js"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"ts"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+  true<span class="code-punctuation.delimiter">,</span>
+  true<span class="code-punctuation.delimiter">,</span><span class="code-variable"></span>
+<span class="code-punctuation.bracket">)</span>
+
 </code></pre>
 <h2 id="wrapping-up">Wrapping up</h2>
 <p>That&#8217;s pretty much it! This has been a large quality of life boost for me at work, as I work on
