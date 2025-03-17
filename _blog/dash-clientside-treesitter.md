@@ -31,21 +31,22 @@ Dash does [provide a way](https://dash.plotly.com/external-resources) to keep co
 but when a function is only used once, this quickly becomes a nuisance as well, since oftentimes you will end up with
 functions of the form
 
-    clientside_callback(
-      """
-      function do_business_thing(a, b, c, d, e, f) {
-          return do_business_thing_declared_elsewhere(a, b, c, d, e, f);
-      }
-      """,
-      Input("a", "prop"),
-      Input("b", "prop"),
-      Input("c", "prop"),
-      Input("d", "prop"),
-      Input("e", "prop"),
-      Input("f", "prop"),
-      Output("out", "prop")
-    )
-
+```{python}
+clientside_callback(
+  """
+  function do_business_thing(a, b, c, d, e, f) {
+      return do_business_thing_declared_elsewhere(a, b, c, d, e, f);
+  }
+  """,
+  Input("a", "prop"),
+  Input("b", "prop"),
+  Input("c", "prop"),
+  Input("d", "prop"),
+  Input("e", "prop"),
+  Input("f", "prop"),
+  Output("out", "prop")
+)
+```
 This is also not great, since now you need to keep at least two files open to develop logic that only
 ever takes place at this location. Plus, you have to keep the signatures of 
 `do_business_thing` and `do_business_thing_declared_elsewhere` in sync, which isn't too bad on its own,
@@ -62,19 +63,22 @@ I immediately had my first application: fixing Dash Clientside Callbacks!
 Armed with [this video](https://www.youtube.com/watch?v=09-9LltqWLY) from TJ DeVries (a `neovim` GOAT), and the commands 
 `:InspectTree` and `:EditQuery`, I was able to hack together the following injection:
 
-    ;extends
-    ; look for calls to functions named clientside_callback
-    (call 
-      (identifier) @name (#eq? @name clientside_callback) 
-      (argument_list 
-	; if the first argument is a string, 
-	; set the language of the child string_content to javascript
-	((string (string_content) 
-		 @injection.content 
-		 (#set! injection.include-children)
-		 (#set! injection.language "javascript")))
-	    )
-    )
+```{scheme}
+;extends
+; look for calls to functions named clientside_callback
+(call 
+  (identifier) @name (#eq? @name clientside_callback) 
+  (argument_list 
+    ; if the first argument is a string, 
+    ; set the language of the child string_content to javascript
+    ((string (string_content) 
+	     @injection.content 
+	     (#set! injection.include-children)
+	     (#set! injection.language "javascript")))
+	)
+)
+```
+
 
 Placing this injection at `$NVIM_CONFIG_LOCATION/queries/python/injections.scm` resulted in 
 good-enough JavaScript syntax highlighting in python files! Behold:

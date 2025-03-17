@@ -42,7 +42,7 @@ to developer tooling. You've also likely used (or at least encountered)
 callback manner. If you are inclined to get fancy with your tables, you will need to make use of `dash_ag_grid.getApi`,
 as demonstrated by this example more-or-less [stolen from the forums](https://community.plotly.com/t/dash-ag-grid-event-listeners-v-31-2/84848):
 
-```
+```{python}
 gridid = "grid"
 app.clientside_callback(
     """
@@ -113,7 +113,7 @@ Next, in our project root directory, we need to create a `tsconfig.json` file.
 For more information, check out [the full documentation](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 For our use case, I've found that the following configuration tends to work pretty well.
 
-```
+```{json}
 {
   "compilerOptions": {
     "alwaysStrict": true,
@@ -163,7 +163,7 @@ us don't know about Dash without being told. We can accomplish this by using a [
 The file that I use for working with Dash Ag Grid is very simple.
 Simply place the following in `assets/index.d.ts`:
 
-```
+```{typescript}
 import { GridApi, } from "ag-grid-enterprise";
 
 declare global {
@@ -225,7 +225,7 @@ Alternately, just copy the [`injections`](https://github.com/ctdunc/nvim-dash/bl
 For all of my formatting needs, I use `conform.nvim`.
 In my config, I have `lua/plugins/conform.lua`, which should contain at a minumum:
 
-```
+```{lua}
 return {
   {
     "stevearc/conform.nvim",
@@ -275,7 +275,7 @@ passing the output of the LSP attached to that hidden buffer back to the current
 This means that each separate capture must be syntactically valid in the injected language, so even though 
 callbacks of the form 
 
-```
+```{javascript}
 function(x) {
   // do stuff to x ...
   return x;
@@ -286,7 +286,7 @@ evaluate to valid JavaScript once Dash gets ahold of them, they are not syntacti
 since the function keyword expects a name for the declaration.
 This means that we must instead declare functions using arrow syntax, like so:
 
-```
+```{javascript}
 (x) => {
   // do stuff to x ...
   return x;
@@ -301,7 +301,7 @@ We're working on it though! For that reason, I have pinned my `otter` version to
 for this issue, since it seems to work more consistently. Still not consistently enough to merge into master though.
 Anyways, the configuration that I use is in `lua/plugins/otter.lua`: 
 
-```
+```{lua}
 return {
   "jmbuhr/otter.nvim",
   commit = "be6324e0987c4fab347784e602c00f17c5fc0bd7",
@@ -322,7 +322,7 @@ up from your version control, or just disable writing to disk.
 
 Finally, to activate `otter`, open any Python file containing a `clientside_callback` and run
 
-```
+```{lua}
 :lua require('otter').activate()
 ```
 
@@ -332,7 +332,7 @@ If I've explained this well enough, you should now have something like the follo
 
 If you want `otter` to automatically activate in any Python file, simply add the following to `after/ftplugin/python.lua`:
 
-```
+```{lua}
 
 require("otter").activate(
   { "javascript", "typescript", "js", "ts" },
