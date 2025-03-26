@@ -40,11 +40,12 @@ to developer tooling. You've also likely used (or at least encountered)
 [`dash_ag_grid`](https://dash.plotly.com/dash-ag-grid). 
 `dash-ag-grid` adds support for a limited subset of [Ag Grid](https://www.ag-grid.com/)'s functionality via properties in the usual Dash 
 callback manner. If you are inclined to get fancy with your tables, you will need to make use of `dash_ag_grid.getApi`,
-as demonstrated by this example more-or-less [stolen from the forums](https://community.plotly.com/t/dash-ag-grid-event-listeners-v-31-2/84848):
+as demonstrated by this example more-or-less [stolen from the forums](https://community.plotly.com/t/dash-ag-grid-event-listeners-v-31-2/84848)[^1]:
 
 ```{python}
+from dash import clientside_callback, Input, Output
 gridid = "grid"
-app.clientside_callback(
+clientside_callback(
     """
 (id) => {
   dash_ag_grid.getApiAsync(id).then((api) => {
@@ -347,3 +348,5 @@ custom row dragging logic for a table using Tree Data in a Dash app.
 If you find this helpful or have any suggestions for ways that I can improve this setup, please feel free
 to hit me up on any of my socials ([github](https://github.com/ctdunc), [linkedin](https://www.linkedin.com/in/connortduncan/), [twitter](https://x.com/_ctdunc)),
 or just email me (it's on my homepage).
+
+[^1]: If you're wondering how I managed to get injected syntax highlighting working here, I am using a program I wrote using [tree-sitter-rust](https://github.com/tree-sitter/tree-sitter/tree/master/highlight). Once I clean it up a bit, I'll post it on Github.

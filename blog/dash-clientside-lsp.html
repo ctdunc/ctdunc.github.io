@@ -52,19 +52,20 @@ to developer tooling. You&#8217;ve also likely used (or at least encountered)
 <a href="https://dash.plotly.com/dash-ag-grid"><code>dash_ag_grid</code></a>. 
 <code>dash-ag-grid</code> adds support for a limited subset of <a href="https://www.ag-grid.com/">Ag Grid</a>&#8217;s functionality via properties in the usual Dash 
 callback manner. If you are inclined to get fancy with your tables, you will need to make use of <code>dash_ag_grid.getApi</code>,
-as demonstrated by this example more-or-less <a href="https://community.plotly.com/t/dash-ag-grid-event-listeners-v-31-2/84848">stolen from the forums</a>:</p>
+as demonstrated by this example more-or-less <a href="https://community.plotly.com/t/dash-ag-grid-event-listeners-v-31-2/84848">stolen from the forums</a><sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup>:</p>
 <pre><code>
+<span class="code-keyword">from</span> <span class="code-variable">dash</span> <span class="code-keyword">import</span> <span class="code-variable">clientside_callback</span>, <span class="code-constructor">Input</span>, <span class="code-constructor">Output</span>
 <span class="code-variable">gridid</span> <span class="code-operator">=</span> <span class="code-string">"grid"</span>
-<span class="code-variable">app</span>.<span class="code-property">clientside_callback</span>(
+<span class="code-function">clientside_callback</span>(
     <span class="code-string">"""
-(id) => {
-  dash_ag_grid.getApiAsync(id).then((api) => {
-    api.addEventListener("cellFocused", (params) => {
-      console.log(params);
-    });
-  });
-  return dash_clientside.no_update;
-};
+<span class="code-punctuation.bracket">(</span><span class="code-variable">id</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
+  <span class="code-variable">dash_ag_grid</span><span class="code-punctuation.delimiter">.</span><span class="code-function">getApiAsync</span><span class="code-punctuation.bracket">(</span><span class="code-variable">id</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function">then</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">(</span><span class="code-variable">api</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
+    <span class="code-variable">api</span><span class="code-punctuation.delimiter">.</span><span class="code-function">addEventListener</span><span class="code-punctuation.bracket">(</span><span class="code-string">"cellFocused"</span><span class="code-punctuation.delimiter">,</span> <span class="code-punctuation.bracket">(</span><span class="code-variable">params</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
+      <span class="code-variable.builtin">console</span><span class="code-punctuation.delimiter">.</span><span class="code-function">log</span><span class="code-punctuation.bracket">(</span><span class="code-variable">params</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">;</span>
+    <span class="code-punctuation.bracket">}</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">;</span>
+  <span class="code-punctuation.bracket">}</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">;</span>
+  <span class="code-keyword">return</span> <span class="code-variable">dash_clientside</span><span class="code-punctuation.delimiter">.</span><span class="code-property">no_update</span><span class="code-punctuation.delimiter">;</span>
+<span class="code-punctuation.bracket">}</span><span class="code-punctuation.delimiter">;</span>
     """</span>,
     <span class="code-function">Output</span>(<span class="code-variable">gridid</span>, <span class="code-string">"id"</span>),
     <span class="code-function">Input</span>(<span class="code-variable">gridid</span>, <span class="code-string">"id"</span>),
@@ -331,4 +332,14 @@ custom row dragging logic for a table using Tree Data in a Dash app.
 If you find this helpful or have any suggestions for ways that I can improve this setup, please feel free
 to hit me up on any of my socials (<a href="https://github.com/ctdunc">github</a>, <a href="https://www.linkedin.com/in/connortduncan/">linkedin</a>, <a href="https://x.com/_ctdunc">twitter</a>),
 or just email me (it&#8217;s on my homepage).</p>
+<div class="footnotes">
+<hr/>
+<ol>
+
+<li id="fn1">
+<p>If you&#8217;re wondering how I managed to get injected syntax highlighting working here, I am using a program I wrote using <a href="https://github.com/tree-sitter/tree-sitter/tree/master/highlight">tree-sitter-rust</a>. Once I clean it up a bit, I&#8217;ll post it on Github.&#160;<a href="#fnref1" rev="footnote">&#8617;</a></p>
+</li>
+
+</ol>
+</div>
 
