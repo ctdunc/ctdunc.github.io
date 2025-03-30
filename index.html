@@ -43,29 +43,31 @@
         <summary>About Me</summary>
         <p> 
           I am a Quantitative Analyst on the Fixed Income ETF Portfolio Management desk at Invesco.
-          I recently graduated from the 
-          University of Illinois in Chicago with a Master's in Applied Math. Before that,
-          I attended the
+          Before becoming a Quant, I completed a Master's in Applied Mathematics at the
+          University of Illinois in Chicago, focusing primarily on Numerical Partial Differential Equations.
+          Even longer ago, I attended the
           University of California, Berkeley, where I studied Applied Math
           and Physics.
         </p> 
         <p>
-          I enjoy working on software to solve problems in PDEs, Mixed Integer Programming, and Data Science.
-          I also like hacking on Vim, and teaching my editor to catch my mistakes before I do.
+          I like working on problems in Optimization (especially Mixed-Integer Programming), PDEs and Data Science.
+          I also believe the title "quant" isn't an excuse to leave everything in a jupyter notebook, and consequently
+          spend a good chunk of time configuring my development environment to find bugs as I write them.
         </p>
       </details>
-      <details>
+      <details open="true">
         <summary>Side Projects</summary>
         <p>
-          I work on a few opensource projects in my spare time. The use cases are (fairly)
-          niche, but if you work with string data validation in Polars or want a trimmed-down,
-          gruvbox version of <a href="https://github.com/ThePrimeagen">the primeagen's</a> nvim/tmux
-          setup, you might be interested in the following:
+          I work on a few opensource projects in my spare time. The use cases are relatively niche, but if you
+          maintain a static blog, need to do security identifier validation in Polars, or want some simple
+          scripts for a tmux/suckless Linux setup, you might be interested!
           <ul>
             <li>
-              <a href="https://github.com/ctdunc/dotfiles"> my dotfiles </a>: neovim/tmux config, with nice zsh defaults.
-              Configured primarly for Python (ruff/pyright) and Rust development (rust-analyzer).
-            </li>
+              <a href="https://github.com/ctdunc/mordant"> mordant </a>: actually static syntax highlighting for markdown code blocks, with support for language injections!
+              <i>Zero javascript required</i>, just bring your own stylesheet (<a href="./code.css">or use mine</a>). 
+              Written in Rust, still very early stages. You can check out a demonstration of the results
+              <a href="https://www.connorduncan.xyz/blog/dash-clientside-lsp.html">on my blog.</a>
+            </li> 
             <li>
               <a href="https://github.com/abstractqqq/polars_istr"> polars_istr </a>: string validations in Polars, implemented in Rust.
               I wrote the part that deals with security ID validation. I've found it useful for dealing
@@ -73,15 +75,8 @@
               for use in a join with a properly structured data source).
             </li>
             <li>
-              <a href="https://github.com/scipopt/PySCIPOpt"> pyscipopt </a>: python wrapper for SCIP (Solving Constraint Integer Programs) a mixed-integer programming
-              library. I've made a few contributions here attempting to improve performance
-              for combinatorially constrained problems. 
-              I think it is generally a cool project worth checking out.
-            </li>
-            <li>
-              <a href="https://github.com/ctdunc/vim-dadbod-snowflake"> vim-dadbod-snowflake </a>: a 
-              fork of the excellent tpope plugin that adds support for Snowflake. Hopefully this gets merged
-              and I can delete this repo. Until then, here it remains!
+              <a href="https://github.com/ctdunc/dotfiles"> my dotfiles </a>: neovim/tmux config, with nice zsh defaults.
+              Configured primarly for Python (ruff/pyright) and Rust development (rust-analyzer).
             </li>
           </ul>
         </p>
