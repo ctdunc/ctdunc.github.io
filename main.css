@@ -1,3 +1,64 @@
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg_h: #1d2021;
+    --bg:   #282828;
+    --bg_s: #32302f;
+    --bg1:  #3c3836;
+    --bg2:  #504945;
+    --bg3:  #665c54;
+    --bg4:  #7c6f64;
+
+    --fg:  #fbf1c7;
+    --fg1: #ebdbb2;
+    --fg2: #d5c4a1;
+    --fg3: #bdae93;
+    --fg4: #a89984;
+
+    --red:    #fb4934;
+    --green:  #b8bb26;
+    --yellow: #fabd2f;
+    --blue:   #83a598;
+    --purple: #d3869b;
+    --aqua:   #8ec07c;
+    --gray:   #928374;
+    --orange: #fe8019;
+    
+    --dark-red: #722529;
+    --dark-green: #62693e;
+    --dark-aqua: #49503b;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --fg_h: #1d2021;
+    --fg:   #282828;
+    --fg_s: #32302f;
+    --fg1:  #3c3836;
+    --fg2:  #504945;
+    --fg3:  #665c54;
+    --fg4:  #7c6f64;
+
+    --bg:  #fbf1c7;
+    --bg1: #ebdbb2;
+    --bg2: #d5c4a1;
+    --bg3: #bdae93;
+    --bg4: #a89984;
+
+    --red: #9d0006;
+    --green: #79740e;
+    --yellow: #b57614;
+    --blue: #076678;
+    --purple: #8f3f71;
+    --aqua: #427b58;
+    --orange: #af3a03;
+    
+    --dark-red: #fc9487;
+    --dark-green: #d5d39b;
+    --dark-aqua: #49503b;
+  }
+}
+
 @font-face{
     font-family: Charis;
     src: url('font/CharisSIL-Regular.woff2') format('woff2'), url('font/CharisSIL-Regular.woff') format('woff');
@@ -39,20 +100,16 @@ html {
    box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #282828;
-    color: #a89984;
-  }
-}
 body {
+    background-color: var(--bg);
+    color: var(--fg3);
     padding-left: 2vw;
     padding-right: 2vw;
     font-family: "Charis", serif;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
-    max-width: 1000px;
+    max-width: min(50em, 95vw);
     min-height: 100%;
     position: relative;
     z-index: -10000; -webkit-font-smoothing: subpixel-antialiased;
@@ -86,7 +143,8 @@ a {
 }
 a:hover {
     position:relative;
-    background-color: #f3f3f3;
+    background-color: var(--bg4);
+    color: var(--fg4);
     transition-property: background;
     transition-duration: 0.2s;
     border-radius: 10px;
@@ -106,8 +164,3 @@ a#mail:after {
   content: normal;
 }
 
-pre > code {
-    overflow-x: scroll;
-    max-width: 1000px;
-    display: block;
-}

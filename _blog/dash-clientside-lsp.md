@@ -334,7 +334,6 @@ If I've explained this well enough, you should now have something like the follo
 If you want `otter` to automatically activate in any Python file, simply add the following to `after/ftplugin/python.lua`:
 
 ```{lua}
-
 require("otter").activate(
   { "javascript", "typescript", "js", "ts" },
   true,
