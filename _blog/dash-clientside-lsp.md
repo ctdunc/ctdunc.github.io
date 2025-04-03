@@ -348,4 +348,4 @@ If you find this helpful or have any suggestions for ways that I can improve thi
 to hit me up on any of my socials ([github](https://github.com/ctdunc), [linkedin](https://www.linkedin.com/in/connortduncan/), [twitter](https://x.com/_ctdunc)),
 or just email me (it's on my homepage).
 
-[^1]: If you're wondering how I managed to get injected syntax highlighting working here, I am using a program I wrote using [tree-sitter-rust](https://github.com/tree-sitter/tree-sitter/tree/master/highlight). Once I clean it up a bit, I'll post it on Github.
+[^1]: If you're wondering how I managed to get injected syntax highlighting working here, I am using a new program I'm working on called [mordant](https://github.com/ctdunc/mordant). It uses `tree-sitter` to wrap syntactic elements of your code block in the tags that neovim would normally wrap them in. All you need to bring is CSS, no JavaScript required!
