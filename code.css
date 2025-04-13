@@ -76,7 +76,6 @@ pre > code
     max-width: min(50em, 95vw);
     display:block;
     color: var(--fg);
-    border-radius: 1em;
     padding-left: 1em;
 }
 code { color: var(--fg1);}

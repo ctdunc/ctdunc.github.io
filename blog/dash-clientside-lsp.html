@@ -1,7 +1,11 @@
 <html>
   <head>
   <title> Blog - Connor Duncan </title>
-    <link rel="stylesheet" type="text/css" href="../main.css">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@webtui/css/dist/full.css"
+  />
+    <link rel="stylesheet" type="text/css" href="../main-tui.css">
     <link rel="stylesheet" type="text/css" href="../code.css">
   </head>
   <body>
@@ -53,8 +57,7 @@ to developer tooling. You&#8217;ve also likely used (or at least encountered)
 <code>dash-ag-grid</code> adds support for a limited subset of <a href="https://www.ag-grid.com/">Ag Grid</a>&#8217;s functionality via properties in the usual Dash 
 callback manner. If you are inclined to get fancy with your tables, you will need to make use of <code>dash_ag_grid.getApi</code>,
 as demonstrated by this example more-or-less <a href="https://community.plotly.com/t/dash-ag-grid-event-listeners-v-31-2/84848">stolen from the forums</a><sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup>:</p>
-<pre><code>
-<span class="code-keyword.import">from</span> <span class="code-module">dash</span> <span class="code-keyword.import">import</span> <span class="code-variable">clientside_callback</span><span class="code-punctuation.delimiter">,</span> <span class="code-variable">Input</span><span class="code-punctuation.delimiter">,</span> <span class="code-variable">Output</span>
+<pre><code><span class="code-keyword.import">from</span> <span class="code-module">dash</span> <span class="code-keyword.import">import</span> <span class="code-variable">clientside_callback</span><span class="code-punctuation.delimiter">,</span> <span class="code-variable">Input</span><span class="code-punctuation.delimiter">,</span> <span class="code-variable">Output</span>
 <span class="code-variable">gridid</span> <span class="code-operator">=</span> <span class="code-string">"grid"</span>
 <span class="code-function.call">clientside_callback</span><span class="code-punctuation.bracket">(</span>
     <span class="code-string">"""
@@ -118,8 +121,7 @@ If they get around to updating the Dash Ag Grid dependency, you should use that 
 <p>Next, in our project root directory, we need to create a <code>tsconfig.json</code> file. 
 For more information, check out <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">the full documentation</a>.
 For our use case, I&#8217;ve found that the following configuration tends to work pretty well.</p>
-<pre><code>
-<span class="code-punctuation.bracket">{</span>
+<pre><code><span class="code-punctuation.bracket">{</span>
   <span class="code-property">"compilerOptions"</span><span class="code-punctuation.delimiter">:</span> <span class="code-punctuation.bracket">{</span>
     <span class="code-property">"alwaysStrict"</span><span class="code-punctuation.delimiter">:</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span>
     <span class="code-property">"noImplicitReturns"</span><span class="code-punctuation.delimiter">:</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span>
@@ -166,19 +168,18 @@ Feel free to <a href="https://github.com/ctdunc/ctdunc.github.io/issues">leave a
 us don&#8217;t know about Dash without being told. We can accomplish this by using a <a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html">TypeScript declaration file</a>.
 The file that I use for working with Dash Ag Grid is very simple.
 Simply place the following in <code>assets&#47;index.d.ts</code>:</p>
-<pre><code>
-import { GridApi, } from "ag-grid-enterprise";
+<pre><code>import { <span class="code-type">GridApi</span>, } from "ag-grid-enterprise";
 
-<span class="code-keyword">declare</span> <span class="code-module">global</span> {
-  <span class="code-keyword.type">namespace</span> dash_ag_grid {
-    export function getApi(<span class="code-variable.parameter">s</span><span class="code-punctuation.delimiter">:</span> <span class="code-type">String</span> <span class="code-punctuation.delimiter">|</span> <span class="code-type">Object</span>)<span class="code-punctuation.delimiter">:</span> <span class="code-type">GridApi</span>;
-    export function getApiAsync(<span class="code-variable.parameter">s</span><span class="code-punctuation.delimiter">:</span> <span class="code-type">String</span> <span class="code-punctuation.delimiter">|</span> <span class="code-type">Object</span>)<span class="code-punctuation.delimiter">:</span> <span class="code-type">Promise</span><span class="code-punctuation.bracket"><</span><span class="code-type">GridApi</span><span class="code-punctuation.bracket">></span>;
+<span class="code-keyword">declare</span> global {
+  <span class="code-keyword">namespace</span> dash_ag_grid {
+    <span class="code-keyword">export</span> function getApi(<span class="code-variable.parameter">s</span>: <span class="code-type">String</span> | <span class="code-type">Object</span>): <span class="code-type">GridApi</span>;
+    <span class="code-keyword">export</span> function getApiAsync(<span class="code-variable.parameter">s</span>: <span class="code-type">String</span> | <span class="code-type">Object</span>): <span class="code-type">Promise</span><span class="code-punctuation.bracket"><</span><span class="code-type">GridApi</span><span class="code-punctuation.bracket">></span>;
   }
-  <span class="code-keyword.type">namespace</span> dash_clientside {
-    export const no_update<span class="code-punctuation.delimiter">:</span> <span class="code-type">Object</span>;
+  <span class="code-keyword">namespace</span> dash_clientside {
+    <span class="code-keyword">export</span> const no_update: <span class="code-type">Object</span>;
   }
-  <span class="code-keyword.type">namespace</span> AgGrid {
-    export * from "ag-grid-enterprise";
+  <span class="code-keyword">namespace</span> <span class="code-type">AgGrid</span> {
+    <span class="code-keyword">export</span> * from "ag-grid-enterprise";
   }
 }
 
@@ -223,34 +224,33 @@ Alternately, just copy the <a href="https://github.com/ctdunc/nvim-dash/blob/mas
 <h3 id="formatting-clientside-callbacks-with-prettier">Formatting Clientside Callbacks with prettier</h3>
 <p>For all of my formatting needs, I use <code>conform.nvim</code>.
 In my config, I have <code>lua&#47;plugins&#47;conform.lua</code>, which should contain at a minumum:</p>
-<pre><code>
-<span class="code-keyword.return">return</span> <span class="code-constructor">{</span>
+<pre><code><span class="code-keyword.return">return</span> <span class="code-constructor">{</span>
   <span class="code-constructor">{</span>
     <span class="code-string">"stevearc/conform.nvim"</span><span class="code-punctuation.delimiter">,</span>
-    <span class="code-property">opts</span> <span class="code-operator">=</span> <span class="code-constructor">{</span>
-      -- if you use f-strings, this will save you lots of hassle, 
-      -- as the javascript grammar gets very confused by them.
-      <span class="code-property">notify_on_error</span> <span class="code-operator">=</span> <span class="code-boolean">false</span><span class="code-punctuation.delimiter">,</span>
-      -- you don't need this, but I like to format on save. Muscle memory I guess.
-      <span class="code-function">format_on_save</span> <span class="code-operator">=</span> <span class="code-keyword.function">function</span><span class="code-punctuation.bracket">(</span><span class="code-variable.parameter">bufnr</span><span class="code-punctuation.bracket">)</span>
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        <span class="code-keyword">local</span> <span class="code-variable">disable_filetypes</span> <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-property">c</span> <span class="code-operator">=</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span> <span class="code-property">cpp</span> <span class="code-operator">=</span> <span class="code-boolean">true</span> <span class="code-constructor">}</span>
+    opts <span class="code-operator">=</span> <span class="code-constructor">{</span>
+      <span class="code-comment">-- if you use f-strings, this will save you lots of hassle, </span>
+      <span class="code-comment">-- as the javascript grammar gets very confused by them.</span>
+      notify_on_error <span class="code-operator">=</span> <span class="code-boolean">false</span><span class="code-punctuation.delimiter">,</span>
+      <span class="code-comment">-- you don't need this, but I like to format on save. Muscle memory I guess.</span>
+      <span class="code-function">format_on_save</span> <span class="code-operator">=</span> <span class="code-keyword.function">function</span><span class="code-punctuation.bracket">(</span>bufnr<span class="code-punctuation.bracket">)</span>
+        <span class="code-comment">-- Disable "format_on_save lsp_fallback" for languages that don't</span>
+        <span class="code-comment">-- have a well standardized coding style. You can add additional</span>
+        <span class="code-comment">-- languages here or re-enable it for the disabled ones.</span>
+        <span class="code-keyword">local</span> <span class="code-variable">disable_filetypes</span> <span class="code-operator">=</span> <span class="code-constructor">{</span> c <span class="code-operator">=</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span> cpp <span class="code-operator">=</span> <span class="code-boolean">true</span> <span class="code-constructor">}</span>
         <span class="code-keyword.return">return</span> <span class="code-constructor">{</span>
-          <span class="code-property">timeout_ms</span> <span class="code-operator">=</span> <span class="code-number">1000</span><span class="code-punctuation.delimiter">,</span>
-          <span class="code-property">lsp_fallback</span> <span class="code-operator">=</span> <span class="code-keyword.operator">not</span> <span class="code-variable">disable_filetypes</span><span class="code-punctuation.bracket">[</span><span class="code-variable">vim</span><span class="code-punctuation.delimiter">.</span><span class="code-variable.member">bo</span><span class="code-punctuation.bracket">[</span><span class="code-variable">bufnr</span><span class="code-punctuation.bracket">]</span><span class="code-punctuation.delimiter">.</span><span class="code-variable.member">filetype</span><span class="code-punctuation.bracket">]</span><span class="code-punctuation.delimiter">,</span>
+          timeout_ms <span class="code-operator">=</span> <span class="code-number">1000</span><span class="code-punctuation.delimiter">,</span>
+          lsp_fallback <span class="code-operator">=</span> <span class="code-keyword.operator">not</span> <span class="code-variable">disable_filetypes</span><span class="code-punctuation.bracket">[</span><span class="code-variable">vim</span><span class="code-punctuation.delimiter">.</span>bo<span class="code-punctuation.bracket">[</span><span class="code-variable">bufnr</span><span class="code-punctuation.bracket">]</span><span class="code-punctuation.delimiter">.</span>filetype<span class="code-punctuation.bracket">]</span><span class="code-punctuation.delimiter">,</span>
         <span class="code-constructor">}</span>
       <span class="code-keyword.function">end</span><span class="code-punctuation.delimiter">,</span>
-      <span class="code-property">formatters_by_ft</span> <span class="code-operator">=</span> <span class="code-constructor">{</span>
-        <span class="code-property">python</span> <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"injected"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
-        <span class="code-property">javascript</span> <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"prettier"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
-        <span class="code-property">injected</span> <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-property">ignore_errors</span> <span class="code-operator">=</span> <span class="code-boolean">true</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+      formatters_by_ft <span class="code-operator">=</span> <span class="code-constructor">{</span>
+        python <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"injected"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+        javascript <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"prettier"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+        injected <span class="code-operator">=</span> <span class="code-constructor">{</span> ignore_errors <span class="code-operator">=</span> <span class="code-boolean">true</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
       <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
     <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
     <span class="code-function">init</span> <span class="code-operator">=</span> <span class="code-keyword.function">function</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">)</span>
-      -- If you want the formatexpr, here is the place to set it
-      -- vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+      <span class="code-comment">-- If you want the formatexpr, here is the place to set it</span>
+      <span class="code-comment">-- vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"</span>
     <span class="code-keyword.function">end</span><span class="code-punctuation.delimiter">,</span>
   <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
 <span class="code-constructor">}</span>
@@ -268,8 +268,7 @@ For this, we turn to a plugin called [<code>otter.nvim</code>]. Before discussin
 passing the output of the LSP attached to that hidden buffer back to the current buffer.
 This means that each separate capture must be syntactically valid in the injected language, so even though 
 callbacks of the form </p>
-<pre><code>
-<span class="code-keyword">function</span><span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-punctuation.bracket">{</span>
+<pre><code><span class="code-keyword">function</span><span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-punctuation.bracket">{</span>
   <span class="code-comment">// do stuff to x ...</span>
   <span class="code-keyword">return</span> <span class="code-variable">x</span><span class="code-punctuation.delimiter">;</span>
 <span class="code-punctuation.bracket">}</span>
@@ -278,8 +277,7 @@ callbacks of the form </p>
 <p>evaluate to valid JavaScript once Dash gets ahold of them, they are not syntactically valid,
 since the function keyword expects a name for the declaration.
 This means that we must instead declare functions using arrow syntax, like so:</p>
-<pre><code>
-<span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
+<pre><code><span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
   <span class="code-comment">// do stuff to x ...</span>
   <span class="code-keyword">return</span> <span class="code-variable">x</span><span class="code-punctuation.delimiter">;</span>
 <span class="code-punctuation.bracket">}</span>
@@ -291,16 +289,15 @@ This means that we must instead declare functions using arrow syntax, like so:</
 We&#8217;re working on it though! For that reason, I have pinned my <code>otter</code> version to the fix branch
 for this issue, since it seems to work more consistently. Still not consistently enough to merge into master though.
 Anyways, the configuration that I use is in <code>lua&#47;plugins&#47;otter.lua</code>: </p>
-<pre><code>
-<span class="code-keyword.return">return</span> <span class="code-constructor">{</span>
+<pre><code><span class="code-keyword.return">return</span> <span class="code-constructor">{</span>
   <span class="code-string">"jmbuhr/otter.nvim"</span><span class="code-punctuation.delimiter">,</span>
-  <span class="code-property">commit</span> <span class="code-operator">=</span> <span class="code-string">"be6324e0987c4fab347784e602c00f17c5fc0bd7"</span><span class="code-punctuation.delimiter">,</span>
-  -- dir = "~/code/otter.nvim",
-  <span class="code-property">dependencies</span> <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"nvim-treesitter/nvim-treesitter"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
-  <span class="code-property">opts</span> <span class="code-operator">=</span> <span class="code-constructor">{</span>
-    <span class="code-property">buffers</span> <span class="code-operator">=</span> <span class="code-constructor">{</span>
-      <span class="code-property">set_filetype</span> <span class="code-operator">=</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span>
-      <span class="code-property">write_to_disk</span> <span class="code-operator">=</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span>
+  commit <span class="code-operator">=</span> <span class="code-string">"be6324e0987c4fab347784e602c00f17c5fc0bd7"</span><span class="code-punctuation.delimiter">,</span>
+  <span class="code-comment">-- dir = "~/code/otter.nvim",</span>
+  dependencies <span class="code-operator">=</span> <span class="code-constructor">{</span> <span class="code-string">"nvim-treesitter/nvim-treesitter"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
+  opts <span class="code-operator">=</span> <span class="code-constructor">{</span>
+    buffers <span class="code-operator">=</span> <span class="code-constructor">{</span>
+      set_filetype <span class="code-operator">=</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span>
+      write_to_disk <span class="code-operator">=</span> <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span>
     <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
   <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
 <span class="code-constructor">}</span>
@@ -310,15 +307,13 @@ Anyways, the configuration that I use is in <code>lua&#47;plugins&#47;otter.lua<
 Sometimes you&#8217;ll leave <code>filename.py.otter.js</code> files if things fail ungracefully, so be sure to clean those
 up from your version control, or just disable writing to disk.</p>
 <p>Finally, to activate <code>otter</code>, open any Python file containing a <code>clientside_callback</code> and run</p>
-<pre><code>
-<span class="code-punctuation.delimiter">:</span><span class="code-variable">lua</span> <span class="code-function.builtin">require</span><span class="code-punctuation.bracket">(</span><span class="code-string">'otter'</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function.call">activate</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">)</span>
+<pre><code><span class="code-punctuation.delimiter">:</span><span class="code-variable">lua</span> <span class="code-function.builtin">require</span><span class="code-punctuation.bracket">(</span><span class="code-string">'otter'</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function.call">activate</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">)</span>
 
 </code></pre>
 <p>If I&#8217;ve explained this well enough, you should now have something like the following working:</p>
 <p><img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/></p>
 <p>If you want <code>otter</code> to automatically activate in any Python file, simply add the following to <code>after&#47;ftplugin&#47;python.lua</code>:</p>
-<pre><code>
-<span class="code-function.builtin">require</span><span class="code-punctuation.bracket">(</span><span class="code-string">"otter"</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function.call">activate</span><span class="code-punctuation.bracket">(</span>
+<pre><code><span class="code-function.builtin">require</span><span class="code-punctuation.bracket">(</span><span class="code-string">"otter"</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function.call">activate</span><span class="code-punctuation.bracket">(</span>
   <span class="code-constructor">{</span> <span class="code-string">"javascript"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"typescript"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"js"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"ts"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
   <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span>
   <span class="code-boolean">true</span><span class="code-punctuation.delimiter">,</span><span class="code-variable"></span>

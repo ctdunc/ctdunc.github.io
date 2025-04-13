@@ -2,7 +2,11 @@
 <html>
   <head>
     <title>Home - Connor Duncan</title>
-    <link rel="stylesheet" type="text/css" href="main.css">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@webtui/css/dist/full.css"
+  />
+    <link rel="stylesheet" href="./main-tui.css"/>
     <style>
       .hs {
         width: 50%;
@@ -17,29 +21,36 @@
   </head>
   <body>	
     <div id="content">
-      <table id="intro">
+      <table id="intro" box-="square contains:!bottom">
         <tr>
           <td class="hs">
             <img id="headshot" src="res/profile_pic_dawg.jpeg" title="Had to get a glizzy after my Master's">
           </td>
-          <td class="info">
-            <h2> Connor Duncan </h2> 
-            <h4> Quantitative Analyst </h4> 
-            <p>
-            <a href="res/resume.pdf">resume</a>
-            </br>
-            <a href="blog/index.html">blog</a>
-            </br>
-            <a href="https://github.com/ctdunc">github</a>
-            </br>
-            <a href="https://linkedin.com/in/connortduncan">linkedin</a>
-            </p>
-            <a style="font-size:90%;font-family:mono;" href="mailto:connor@connorduncan.xyz" id="mail">
-            connor@connorduncan.xyz
-            </a>
+          <td class="info" style="text-align:left">
+            <b is-="badge" variant-="background1"> Connor Duncan </b>
+            <p is-="badge" variant-="background2"> Quantitative Analyst </p>
+            <ul marker-="tree">
+              <li>
+                <a href="res/resume.pdf">resume</a>
+              </li>
+              <li>
+                <a href="blog/index.html">blog</a>
+              </li>
+              <li>
+                <a href="https://github.com/ctdunc">github</a>
+              </li>
+              <li>
+                <a href="https://linkedin.com/in/connortduncan">linkedin</a>
+              </li>
+              <li>
+                <a href="mailto:connor@connorduncan.xyz" id="mail">
+                connor@connorduncan.xyz
+                </a>
+                </li>
+            </ul>
           </td>
       </table>
-      <details open="true">
+      <details open="true" box-="square">
         <summary>About Me</summary>
         <p> 
           I am a Quantitative Analyst on the Fixed Income ETF Portfolio Management desk at Invesco.
@@ -49,39 +60,49 @@
           University of California, Berkeley, where I studied Applied Math
           and Physics.
         </p> 
+
         <p>
           I like working on problems in Optimization (especially Mixed-Integer Programming), PDEs and Data Science.
           I also believe the title "quant" isn't an excuse to leave everything in a jupyter notebook, and consequently
           spend a good chunk of time configuring my development environment to find bugs as I write them.
         </p>
       </details>
-      <details open="true">
+      <details open="true" box-="square">
         <summary>Side Projects</summary>
         <p>
           I work on a few opensource projects in my spare time. The use cases are relatively niche, but if you
           maintain a static blog, need to do security identifier validation in Polars, or want some simple
           scripts for a tmux/suckless Linux setup, you might be interested!
-          <ul>
-            <li>
-              <a href="https://github.com/ctdunc/mordant"> mordant </a>: actually static syntax highlighting for markdown code blocks, with support for language injections!
+        </p>
+            <details box-="round" id="box-mild">
+              <summary>
+                  <a href="https://github.com/ctdunc/mordant">mordant</a> (static md syntax highlighter)
+              </summary>
+              Actually static syntax highlighting for markdown code blocks, with support for language injections!
               <i>Zero javascript required</i>, just bring your own stylesheet (<a href="./code.css">or use mine</a>). 
               Written in Rust, still very early stages. You can check out a demonstration of the results
               <a href="https://www.connorduncan.xyz/blog/dash-clientside-lsp.html">on my blog.</a>
-            </li> 
-            <li>
-              <a href="https://github.com/abstractqqq/polars_istr"> polars_istr </a>: string validations in Polars, implemented in Rust.
+              </details>
+          <details box-="round" id="box-mild">
+            <summary>
+              <a href="https://github.com/abstractqqq/polars_istr">polars_istr</a> (sec id validation in polars)
+          </summary>
+          <p>
+            String validations in Polars, implemented in Rust.
               I wrote the part that deals with security ID validation. I've found it useful for dealing
               with poorly formatted data where security identifiers are mixed in one column (e.g. splitting out a CUSIP/SEDOL) column
               for use in a join with a properly structured data source).
-            </li>
-            <li>
-              <a href="https://github.com/ctdunc/dotfiles"> my dotfiles </a>: neovim/tmux config, with nice zsh defaults.
+          </p>
+            </details>
+        <details box-="round" id="box-mild">
+          <summary>
+              <a href="https://github.com/ctdunc/dotfiles">my dotfiles</a> (neovim/tmux/arch linux setup)
+          </summary>
+          neovim/tmux config, with nice zsh defaults.
               Configured primarly for Python (ruff/pyright) and Rust development (rust-analyzer).
-            </li>
-          </ul>
-        </p>
+        </details>
       </details>
-      <details>
+      <details box-="square">
         <summary>Lecture Notes (Math + Physics)</summary>
         <p>
         Here are some lecture notes I took as an undergraduate at Cal. These 
@@ -90,7 +111,7 @@
         These are mostly here for my own reference, and because they include 
         some nice TiKz pictures.
         </p>
-        <ul>
+        <ul marker-="tree">
           <li>
           <a href="notes/math222b.pdf">Partial Differential Equations II (Sung-Jin Oh, Spring 2022)</a>
           </li>

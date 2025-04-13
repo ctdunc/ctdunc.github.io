@@ -1,10 +1,10 @@
-nvim_treesitter_location = "~/.local/share/nvim/lazy/nvim-treesitter" # this is also the hardcoded default.
+nvim_treesitter_location = "~/.local/share/nvim/lazy/nvim-treesitter" 
 
 [languages.python]
 name = "python"
-language = { SourceFile = ["~/.local/share/nvim/lazy/nvim-treesitter/parser/python.so", "tree_sitter_python"] }
-highlights_query = { Path = "~/.local/share/nvim/lazy/nvim-treesitter/queries/python/highlights.scm" }
-injections_query = { Text = '''
+language = { path = "~/.local/share/nvim/lazy/nvim-treesitter/parser/python.so", symbol_name = "tree_sitter_python" }
+highlights_query = { path = "~/.local/share/nvim/lazy/nvim-treesitter/queries/python/highlights.scm" }
+injections_query = { query = '''
 (call
   (identifier) @name (#eq? @name clientside_callback) 
   (argument_list 
@@ -18,3 +18,13 @@ injections_query = { Text = '''
 
 [languages.javascript]
 name = "javascript"
+
+[languages.lua]
+name = "lua"
+
+[languages.typescript]
+name = "typescript"
+
+[languages.json]
+name = "json"
+highlights_query = { path = "~/.local/share/nvim/lazy/nvim-treesitter/queries/json/highlights.scm" }
