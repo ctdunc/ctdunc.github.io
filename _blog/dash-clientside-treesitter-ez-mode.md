@@ -1,5 +1,9 @@
-# Making Dash Clientside Dev Nicer (Ez Mode)
-##### Connor Duncan, 01/22/2025
+---
+author: Connor Duncan
+copyright: Copyright 2025, Connor Duncan
+title: Making Dash Clientside Dev Nicer (Ez Mode)
+date: 2025-01-22
+---
 
 Really quick update to [part 1](./dash-clientside-treesitter.html). You can now 
 install the syntax highlighting trick for clientside callbacks as a plugin in neovim

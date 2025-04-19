@@ -73,10 +73,11 @@
 pre > code
 {
     overflow-x: auto;
-    max-width: min(50em, 95vw);
+    max-width: min(80em, 95vw);
     display:block;
-    color: var(--fg);
+    color: var(--fg_h);
     padding-left: 1em;
+    padding-top: 1em;
 }
 code { color: var(--fg1);}
 .code-variable {

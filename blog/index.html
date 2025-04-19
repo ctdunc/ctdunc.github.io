@@ -1,24 +1,50 @@
+<!DOCTYPE html>
 <html>
   <head>
-  <title> Blog - Connor Duncan </title>
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@webtui/css/dist/full.css"
-  />
-    <link rel="stylesheet" type="text/css" href="../main-tui.css">
-    <link rel="stylesheet" type="text/css" href="../code.css">
+    <meta charset="utf-8" /> 
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    
+    
+    <meta name="copyright" content="2025, Connor Duncan" />
+    
+    
+    
+    
+    <title>Thoughts</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webtui/css/dist/full.css"/>  
+    <link rel="stylesheet" href="../code.css"/>
+    <link rel="stylesheet" href="../main.css"/>
   </head>
   <body>
-  <div style="display:flex;flex-direction:row;">
-      <a href="../index.html" style="padding-right:10px;">Home</a>
-
-      <a href="./index.html" style="padding-right:10px;">Blog</a>
-  </div>
-<h2 id="thoughts">Thoughts</h2>
-<p>Listed in the order I feel like listing them in.</p>
+    
+    <nav box-="square" class="nav-box">
+      <a href="../index.html" is-="badge" variant-="background2">home</a>
+      <a href="./index.html" is-="badge" variant-="background2">blog</a>
+    </nav>
+    <article is-="typography-block" box-="square contain:none" class="article-box">
+      <div align-="between" style="display: flex; flex-direction: row; justify-content: space-between;">
+	
+	<header is-="badge" variant-="background2">
+	  <h1>Thoughts</h1>
+	</header>
+	
+	<div>
+	  
+	  
+	</div>
+      </div>
+      <p>Listed in the order I feel like listing them in.</p>
 <ul>
 <li><a href="./dash-clientside-lsp.html">enabling LSP support for <code>clientside_callbacks</code> in dash</a></li>
 <li><a href="./dash-clientside-treesitter-ez-mode.html"><code>{vsc,nvim}-dash</code> are plugins now</a></li>
 <li><a href="./dash-clientside-treesitter.html">fixing dash <code>clientside_callbacks</code> with <code>treesitter</code></a></li>
 </ul>
 
+      <span align-="between" style="display: flex; flex-direction: row; justify-content: flex-end">
+	
+	  <div is-="badge" variant-="background1">2025, Connor Duncan</div>
+	
+      </span>
+    </article>
+  </body>
+</html>

@@ -1,6 +1,10 @@
-# Enabling LSP Support for Dash Clientside Callbacks
-##### Connor Duncan, 02/23/25
-##### parts [one](./dash-clientside-treesitter.html) and [two](./dash-clientside-treesitter-ez-mode.html)
+---
+author: Connor Duncan
+copyright: Copyright 2025, Connor Duncan
+date: 2025-02-23
+title: Enabling LSP Support for Dash Clientside Callbacks
+---
+
 
 - [Why Even Bother?](#why-even-bother)
 - [What Will We Cover?](#what-will-we-cover)

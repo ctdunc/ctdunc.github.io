@@ -1,5 +1,9 @@
-# Making Clientside Callbacks Nicer in Dash
-##### Connor Duncan, 01/09/2025
+---
+author: Connor Duncan
+copyright: Copyright 2025, Connor Duncan
+date: 2025-01-09
+title: Making Clientside Callbacks Nicer in Dash
+---
 
 Be sure to check out the sequels to this post, where I 
 explain how to install this as a plugin ([part two](./dash-clientside-treesitter-ez-mode.html)), and how to get Language Server features

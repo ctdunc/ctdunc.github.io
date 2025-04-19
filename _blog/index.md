@@ -1,4 +1,7 @@
-## Thoughts
+---
+copyright: 2025, Connor Duncan
+title: Thoughts
+---
 Listed in the order I feel like listing them in.
 
 - [enabling LSP support for `clientside_callbacks` in dash](./dash-clientside-lsp.html)
