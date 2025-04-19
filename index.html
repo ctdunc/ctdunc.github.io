@@ -2,21 +2,21 @@
 <html>
   <head>
     <title>Home - Connor Duncan</title>
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@webtui/css/dist/full.css"
-  />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@webtui/css/dist/full.css"
+    />
     <link rel="stylesheet" href="./main.css"/>
     <style>
-      .hs {
-        width: 50%;
-        padding: 5% 5%;
-      }
-      .info{
-        width: 50%;
-        margin: auto;
-        text-align: center;
-      }
+    .hs {
+      width: 50%;
+      padding: 5% 5%;
+    }
+    .info{
+      width: 50%;
+      margin: auto;
+      text-align: center;
+    }
     </style>
   </head>
   <body>	
@@ -44,9 +44,9 @@
               </li>
               <li>
                 <a href="mailto:connor@connorduncan.xyz" id="mail">
-                connor@connorduncan.xyz
+                  connor@connorduncan.xyz
                 </a>
-                </li>
+              </li>
             </ul>
           </td>
       </table>
@@ -63,7 +63,7 @@
 
         <p>
           I like working on problems in Optimization (especially Mixed-Integer Programming), PDEs and Data Science.
-          I also believe the title "quant" isn't an excuse to leave everything in a jupyter notebook, and consequently
+          I also believe the title "Quant" isn't an excuse to leave everything in a Jupyter notebook, and consequently
           spend a good chunk of time configuring my development environment to find bugs as I write them.
         </p>
       </details>
@@ -74,46 +74,46 @@
           maintain a static blog, need to do security identifier validation in Polars, or want some simple
           scripts for a tmux/suckless Linux setup, you might be interested!
         </p>
-            <details box-="round" id="box-mild">
-              <summary>
-                  <a href="https://github.com/ctdunc/mordant">mordant</a> (static markdown syntax highlighter)
-              </summary>
-              Actually static syntax highlighting for markdown code blocks, with support for language injections!
-              <i>Zero javascript required</i>, just bring your own stylesheet (<a href="./code.css">or use mine</a>). 
-              Written in Rust, still very early stages. You can check out a demonstration of the results
-              <a href="./blog/dash-clientside-lsp.html">on my blog.</a>
-              </details>
-          <details box-="round" id="box-mild">
-            <summary>
-              <a href="https://github.com/abstractqqq/polars_istr">polars_istr</a> (sec id validation in polars)
+        <details box-="round" id="box-mild">
+          <summary>
+            <a href="https://github.com/ctdunc/mordant">mordant</a> (static markdown syntax highlighter)
+          </summary>
+          Actually static syntax highlighting for markdown code blocks, with support for language injections!
+          <i>Zero javascript required</i>, just bring your own stylesheet (<a href="./code.css">or use mine</a>). 
+          Written in Rust, still very early stages. You can check out a demonstration of the results
+          <a href="./blog/dash-clientside-lsp.html">on my blog.</a>
+        </details>
+        <details box-="round" id="box-mild">
+          <summary>
+            <a href="https://github.com/abstractqqq/polars_istr">polars_istr</a> (sec id validation in polars)
           </summary>
           <p>
             String validations in Polars, implemented in Rust.
-              I wrote the part that deals with security ID validation. I've found it useful for dealing
-              with poorly formatted data where security identifiers are mixed in one column (e.g. splitting out a CUSIP/SEDOL) column
-              for use in a join with a properly structured data source).
+            I wrote the part that deals with security ID validation. I've found it useful for dealing
+            with poorly formatted data where security identifiers are mixed in one column (e.g. splitting out a CUSIP/SEDOL) column
+            for use in a join with a properly structured data source).
           </p>
-            </details>
+        </details>
         <details box-="round" id="box-mild">
           <summary>
-              <a href="https://github.com/ctdunc/dotfiles">my dotfiles</a> (neovim/tmux/arch linux setup)
+            <a href="https://github.com/ctdunc/dotfiles">my dotfiles</a> (neovim/tmux/arch linux setup)
           </summary>
           neovim/tmux config, with nice zsh defaults.
-              Configured primarly for Python (ruff/pyright) and Rust development (rust-analyzer).
+          Configured primarly for Python (ruff/pyright) and Rust development (rust-analyzer).
         </details>
       </details>
       <details box-="square">
         <summary>Lecture Notes (Math + Physics)</summary>
         <p>
-        Here are some lecture notes I took as an undergraduate at Cal. These 
-        are provided as-is with zero-editing (except PDEs II), and are probably not a great primary
-        source if you're in any of these classes. 
-        These are mostly here for my own reference, and because they include 
-        some nice TiKz pictures.
+          Here are some lecture notes I took as an undergraduate at Cal. These 
+          are provided as-is with zero-editing (except PDEs II), and are probably not a great primary
+          source if you're in any of these classes. 
+          These are mostly here for my own reference, and because they include 
+          some nice TiKz pictures.
         </p>
         <ul marker-="tree">
           <li>
-          <a href="notes/math222b.pdf">Partial Differential Equations II (Sung-Jin Oh, Spring 2022)</a>
+            <a href="notes/math222b.pdf">Partial Differential Equations II (Sung-Jin Oh, Spring 2022)</a>
           </li>
           <li><a href="notes/math104.pdf">Metric Differential Geometry (Rui Wang, Spring 2020)</a></li>
           <li><a href="notes/math185.pdf">Complex Analysis (Peter Koroteev, Spring 2020)</a></li>

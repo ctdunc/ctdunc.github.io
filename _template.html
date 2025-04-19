@@ -31,10 +31,10 @@
       <a href="./index.html" is-="badge" variant-="background2">blog</a>
     </nav>
     <article is-="typography-block" box-="square contain:none" class="article-box">
-      <div align-="between" style="display: flex; flex-direction: row; justify-content: space-between;">
+      <div align-="between" style="display: flex; flex-direction: row; justify-content: space-between; flex-wrap: wrap;">
 	$ifdef(title)$
 	<header is-="badge" variant-="background2">
-	  <h1>$title.escapehtml$</h1>
+	  $title.escapehtml$
 	</header>
 	$endif$
 	<div>
