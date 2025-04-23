@@ -1,7 +1,7 @@
 ---
 author: Connor Duncan
 copyright: Copyright 2025, Connor Duncan
-date: 2025-04-19
+date: 2025-04-23
 title: mordant: Actually Static Syntax Highlighting for Markdown
 ---
 <br/>
