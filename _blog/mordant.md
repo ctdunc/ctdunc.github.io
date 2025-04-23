@@ -8,6 +8,22 @@ title: mordant: Actually Static Syntax Highlighting for Markdown
 TL;DR---I wrote a syntax highlighter for markdown files that produces very customizable output.
 Check it out on [github](https://github.com/ctdunc/mordant)!
 
+
+- [What is mordant?](#what-is-mordant)
+- [Why not just use highlight.js or Hugo like a normal person?](#why-not-just-use-highlightjs-or-hugo-like-a-normal-person)
+- [Look at these cool examples](#look-at-these-cool-examples)
+  - [SQL Literals in Rust](#sql-literals-in-rust)
+  - [Scheme inside of mordant.toml](#scheme-inside-of-mordanttoml)
+  - [Regex in JavaScript in Python](#regex-in-javascript-in-python)
+- [How can I try mordant for myself?](#how-can-i-try-mordant-for-myself)
+  - [Installation](#installation)
+  - [Language Setup](#language-setup)
+    - [From Source](#from-source)
+    - [Adding a new builtin language](#adding-a-new-builtin-language)
+  - [Styling](#styling)
+  - [A dirt simple build pipeline](#a-dirt-simple-build-pipeline)
+- [Wrapping up](#wrapping-up)
+
 # What is mordant?
 mordant is a program that takes fenced code blocks in Markdown files, and uses tree-sitter to replace them with
 inline html containing enough information to get editor-quality syntax highlighting, with *only css*.
@@ -288,7 +304,7 @@ $ cargo install --path /path/to/mordant --features=rust,sql
 The [README](https://github.com/ctdunc/mordant?tab=readme-ov-file#adding-new-languages) will contain the most up-to-date
 documentation on configuring languages.
 If you would rather read it here (I think my website is prettier), I'll repeat 
-my README advice here (as of April 23, 2025).
+my README advice (as of April 23, 2025).
 
 ### From Source
 If you are looking to work with a proprietary language that you don't want to contribute upstream,
@@ -960,4 +976,6 @@ My immediate roadmap contains the following items:
 
 If you'd like to take a stab at any of these, feel free to open an issue, or reach out to me on my socials: 
 [github](https://github.com/ctdunc), [twitter](https://x.com/_ctdunc), [linkedin](https://www.linkedin.com/in/connortduncan/).
-You can also email me, but I'll refer you to my homepage, lest the robots crawl my email and fill it with spam.
+You can also email me, but I'll refer you to my homepage, lest the robots crawl my email and fill it with (even more) spam.
+
+Thanks for reading, and happy highlighting!

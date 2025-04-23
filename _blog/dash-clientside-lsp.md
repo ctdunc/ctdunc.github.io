@@ -37,7 +37,7 @@ TypeScript file, or at least that there is a clippy popup along the lines of
 Anyways, [here are the docs](https://code.visualstudio.com/Docs/languages/typescript) just in case.
 For other editors, you're own your own, cowboy.
 
-## Why Even Bother?
+# Why Even Bother?
 If you work with Plotly's [Dash](https://dash.plotly.com) framework, you've probably noticed 
 that clientside callbacks are treated somewhat as second-class citizens when it comes
 to developer tooling. You've also likely used (or at least encountered)
@@ -85,7 +85,7 @@ to get jumping to definition working for members of `dagfuncs`, for example, whi
 also lighten this load.
 
 
-## What Will We Cover?
+# What Will We Cover?
 In the rest of this post, I will assume absolutely zero prior JavaScript tooling experience (I didn't have much when I
 set out to figure this out), and explain:
 
@@ -93,8 +93,8 @@ set out to figure this out), and explain:
 to correctly recognize and generate completions for various Dash-isms and imports that are assumed to be globally available.
 2. How to configure neovim to correctly recognize inline JS, and expose JavaScript language server capabilities from within Python.
 
-## Setting Up tsc for Dash
-### Installation
+# Setting Up tsc for Dash
+## Installation
 First, you will need to install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html). 
 If you're on Linux, you can install both through your package manager (e.g. for [Arch Linux](https://archlinux.org/packages/extra/any/typescript/) (btw)).
 Node officially recommends using a version manager, so if you're inclined, you can do that as well.
@@ -113,7 +113,7 @@ $ npm install --save-dev ag-grid-enterprise@31.2.1 prettier typescript
 We need to pin Ag Grid to the [same version as Dash](https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text).
 If they get around to updating the Dash Ag Grid dependency, you should use that one instead.
 
-### Configuring tsc
+## Configuring tsc
 Next, in our project root directory, we need to create a `tsconfig.json` file. 
 For more information, check out [the full documentation](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 For our use case, I've found that the following configuration tends to work pretty well.
@@ -162,7 +162,7 @@ recommend keeping this as `false`, as you cannot use JSDoc comments in clientsid
 The rest of these I _think_ are a matter of preference, but I haven't tested this very extensively. 
 Feel free to [leave an issue](https://github.com/ctdunc/ctdunc.github.io/issues) if I'm wrong.
 
-### Creating and Emitting Declarations
+## Creating and Emitting Declarations
 Now, we need to declare the existence of some globally available functions, since any language servers available to 
 us don't know about Dash without being told. We can accomplish this by using a [TypeScript declaration file](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html).
 The file that I use for working with Dash Ag Grid is very simple.
@@ -204,7 +204,7 @@ make sure to keep an eye out there. Similarly, if you find any other declaration
 useful, please [submit an issue](https://github.com/ctdunc/dash-clientside-lsp-demo/issues) so that I
 can update this post and the demo repository!
 
-## Inline LSP Support in neovim
+# Inline LSP Support in neovim
 For the eight developers who are working on large-scale Dash applications in neovim, this section is for you.
 My configuration can be found [on github](https://github.com/ctdunc/dotfiles/tree/otter/nvim/.config/nvim).
 The relevant files are `lua/plugins/conform.lua`, `lua/plugins/dash.lua`, `lua/plugins/lsp.lua`, and `lua/plugins/otter.lua`.
@@ -219,14 +219,14 @@ The `otter` bit is still a bit buggy, so I have yet to include this feature in [
 It's also why the linked configuration is on the `otter` branch, instead of `master`.
 Once I (or someone else) fix(es) the issue linked to [this pr](https://github.com/jmbuhr/otter.nvim/pull/198), we will be *so back*!
 
-### Using TreeSitter Injections with Dash
+## Using TreeSitter Injections with Dash
 I wrote [a whole post](https://www.connorduncan.xyz/blog/dash-clientside-treesitter.html) about getting this working, so give that a read.
 I maintain an updated and expanding `injections.scm` file in a [neovim plugin](https://github.com/ctdunc/nvim-dash).
 You can install it with your preferred package manager with `ctdunc/nvim-dash`.
 Alternately, just copy the [`injections`](https://github.com/ctdunc/nvim-dash/blob/master/queries/python/injections.scm) into your 
 `queries/python/injections.scm`.
 
-### Formatting Clientside Callbacks with prettier
+## Formatting Clientside Callbacks with prettier
 For all of my formatting needs, I use `conform.nvim`.
 In my config, I have `lua/plugins/conform.lua`, which should contain at a minumum:
 
@@ -271,7 +271,7 @@ If you've followed my explanation so far, your editor should now be capable of s
 
 <img src="/res/img/dash-inline-format.gif" alt="GIF showing inline formatting"/>
 
-### Getting ts_ls Working with otter.nvim
+## Getting ts_ls Working with otter.nvim
 Now that we have formatting working fairly well, it's time to get autocomplete working on our embedded JavaScript.
 For this, we turn to a plugin called [`otter.nvim`]. Before discussing setup, a few things to note.
 
@@ -345,7 +345,7 @@ require("otter").activate(
 )
 ```
 
-## Wrapping up
+# Wrapping up
 That's pretty much it! This has been a large quality of life boost for me at work, as I work on
 custom row dragging logic for a table using Tree Data in a Dash app.
 If you find this helpful or have any suggestions for ways that I can improve this setup, please feel free

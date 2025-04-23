@@ -71,7 +71,7 @@ TypeScript file, or at least that there is a clippy popup along the lines of </p
 </blockquote>
 <p>Anyways, <a href="https://code.visualstudio.com/Docs/languages/typescript">here are the docs</a> just in case.
 For other editors, you&#8217;re own your own, cowboy.</p>
-<h2 id="why-even-bother">Why Even Bother?</h2>
+<h1 id="why-even-bother">Why Even Bother?</h1>
 <p>If you work with Plotly&#8217;s <a href="https://dash.plotly.com">Dash</a> framework, you&#8217;ve probably noticed 
 that clientside callbacks are treated somewhat as second-class citizens when it comes
 to developer tooling. You&#8217;ve also likely used (or at least encountered)
@@ -116,7 +116,7 @@ the file tree for what should be local behavior outweighs any benefit you gain
 in terms of tooling. Especially now that this post exists :). Plus, it should be possible (I am still working this out)
 to get jumping to definition working for members of <code>dagfuncs</code>, for example, which would
 also lighten this load.</p>
-<h2 id="what-will-we-cover">What Will We Cover?</h2>
+<h1 id="what-will-we-cover">What Will We Cover?</h1>
 <p>In the rest of this post, I will assume absolutely zero prior JavaScript tooling experience (I didn&#8217;t have much when I
 set out to figure this out), and explain:</p>
 <ol>
@@ -124,8 +124,8 @@ set out to figure this out), and explain:</p>
 to correctly recognize and generate completions for various Dash-isms and imports that are assumed to be globally available.</li>
 <li>How to configure neovim to correctly recognize inline JS, and expose JavaScript language server capabilities from within Python.</li>
 </ol>
-<h2 id="setting-up-tsc-for-dash">Setting Up tsc for Dash</h2>
-<h3 id="installation">Installation</h3>
+<h1 id="setting-up-tsc-for-dash">Setting Up tsc for Dash</h1>
+<h2 id="installation">Installation</h2>
 <p>First, you will need to install <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm">npm</a> and <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">tsc</a>. 
 If you&#8217;re on Linux, you can install both through your package manager (e.g. for <a href="https://archlinux.org/packages/extra/any/typescript/">Arch Linux</a> (btw)).
 Node officially recommends using a version manager, so if you&#8217;re inclined, you can do that as well.
@@ -139,7 +139,7 @@ with the following command:</p>
 </code></pre>
 <p>We need to pin Ag Grid to the <a href="https://dash.plotly.com/dash-ag-grid?trk=public_post_comment-text">same version as Dash</a>.
 If they get around to updating the Dash Ag Grid dependency, you should use that one instead.</p>
-<h3 id="configuring-tsc">Configuring tsc</h3>
+<h2 id="configuring-tsc">Configuring tsc</h2>
 <p>Next, in our project root directory, we need to create a <code>tsconfig.json</code> file. 
 For more information, check out <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">the full documentation</a>.
 For our use case, I&#8217;ve found that the following configuration tends to work pretty well.</p>
@@ -185,7 +185,7 @@ recommend keeping this as <code>false</code>, as you cannot use JSDoc comments i
 </ul>
 <p>The rest of these I <em>think</em> are a matter of preference, but I haven&#8217;t tested this very extensively. 
 Feel free to <a href="https://github.com/ctdunc/ctdunc.github.io/issues">leave an issue</a> if I&#8217;m wrong.</p>
-<h3 id="creating-and-emitting-declarations">Creating and Emitting Declarations</h3>
+<h2 id="creating-and-emitting-declarations">Creating and Emitting Declarations</h2>
 <p>Now, we need to declare the existence of some globally available functions, since any language servers available to 
 us don&#8217;t know about Dash without being told. We can accomplish this by using a <a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html">TypeScript declaration file</a>.
 The file that I use for working with Dash Ag Grid is very simple.
@@ -223,7 +223,7 @@ discover will likely be posted to <a href="https://github.com/ctdunc/dash-client
 make sure to keep an eye out there. Similarly, if you find any other declarations
 useful, please <a href="https://github.com/ctdunc/dash-clientside-lsp-demo/issues">submit an issue</a> so that I
 can update this post and the demo repository!</p>
-<h2 id="inline-lsp-support-in-neovim">Inline LSP Support in neovim</h2>
+<h1 id="inline-lsp-support-in-neovim">Inline LSP Support in neovim</h1>
 <p>For the eight developers who are working on large-scale Dash applications in neovim, this section is for you.
 My configuration can be found <a href="https://github.com/ctdunc/dotfiles/tree/otter/nvim/.config/nvim">on github</a>.
 The relevant files are <code>lua&#47;plugins&#47;conform.lua</code>, <code>lua&#47;plugins&#47;dash.lua</code>, <code>lua&#47;plugins&#47;lsp.lua</code>, and <code>lua&#47;plugins&#47;otter.lua</code>.
@@ -237,13 +237,13 @@ code blocks as delineated by <code>treesitter</code>. </li>
 <p>The <code>otter</code> bit is still a bit buggy, so I have yet to include this feature in <a href="https://github.com/ctdunc/nvim-dash"><code>nvim-dash</code></a>. 
 It&#8217;s also why the linked configuration is on the <code>otter</code> branch, instead of <code>master</code>.
 Once I (or someone else) fix(es) the issue linked to <a href="https://github.com/jmbuhr/otter.nvim/pull/198">this pr</a>, we will be <em>so back</em>!</p>
-<h3 id="using-treesitter-injections-with-dash">Using TreeSitter Injections with Dash</h3>
+<h2 id="using-treesitter-injections-with-dash">Using TreeSitter Injections with Dash</h2>
 <p>I wrote <a href="https://www.connorduncan.xyz/blog/dash-clientside-treesitter.html">a whole post</a> about getting this working, so give that a read.
 I maintain an updated and expanding <code>injections.scm</code> file in a <a href="https://github.com/ctdunc/nvim-dash">neovim plugin</a>.
 You can install it with your preferred package manager with <code>ctdunc&#47;nvim-dash</code>.
 Alternately, just copy the <a href="https://github.com/ctdunc/nvim-dash/blob/master/queries/python/injections.scm"><code>injections</code></a> into your 
 <code>queries&#47;python&#47;injections.scm</code>.</p>
-<h3 id="formatting-clientside-callbacks-with-prettier">Formatting Clientside Callbacks with prettier</h3>
+<h2 id="formatting-clientside-callbacks-with-prettier">Formatting Clientside Callbacks with prettier</h2>
 <p>For all of my formatting needs, I use <code>conform.nvim</code>.
 In my config, I have <code>lua&#47;plugins&#47;conform.lua</code>, which should contain at a minumum:</p>
 <pre><code><span class="code-keyword.return">return</span> <span class="code-constructor">{</span>
@@ -283,7 +283,7 @@ code that conform will format is the inline JavaScript. I use <code>python = { "
 ruff is wicked fast.</p>
 <p>If you&#8217;ve followed my explanation so far, your editor should now be capable of something like this (note that <code>otter</code> is <em>not</em> enabled here):</p>
 <p><img src="/res/img/dash-inline-format.gif" alt="GIF showing inline formatting"/></p>
-<h3 id="getting-ts_ls-working-with-otter.nvim">Getting ts_ls Working with otter.nvim</h3>
+<h2 id="getting-ts_ls-working-with-otter.nvim">Getting ts_ls Working with otter.nvim</h2>
 <p>Now that we have formatting working fairly well, it&#8217;s time to get autocomplete working on our embedded JavaScript.
 For this, we turn to a plugin called [<code>otter.nvim</code>]. Before discussing setup, a few things to note.</p>
 <p>First, <code>otter</code> works more or less by passing the captured ranges of <code>injection.content</code> to a hidden buffer, and then
@@ -342,7 +342,7 @@ up from your version control, or just disable writing to disk.</p>
 <span class="code-punctuation.bracket">)</span>
 
 </code></pre>
-<h2 id="wrapping-up">Wrapping up</h2>
+<h1 id="wrapping-up">Wrapping up</h1>
 <p>That&#8217;s pretty much it! This has been a large quality of life boost for me at work, as I work on
 custom row dragging logic for a table using Tree Data in a Dash app.
 If you find this helpful or have any suggestions for ways that I can improve this setup, please feel free

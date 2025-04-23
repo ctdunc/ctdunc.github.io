@@ -9,7 +9,13 @@ Be sure to check out the sequels to this post, where I
 explain how to install this as a plugin ([part two](./dash-clientside-treesitter-ez-mode.html)), and how to get Language Server features
 like code completion and show definition working in clientside callbacks ([part three](./dash-clientside-lsp.html)).
 
-## Why Clientside Callbacks?
+- [Why Clientside Callbacks?](#why-clientside-callbacks)
+- [What's the problem?](#whats-the-problem)
+- [Enter `treesitter`](#enter-treesitter)
+- [And to my VS Code Enjoyers...](#and-to-my-vs-code-enjoyers)
+- [Update 01/22/2025](#update-01222025)
+
+# Why Clientside Callbacks?
 I work on a fairly large [Plotly `Dash`](https://dash.plotly.com/) app in my day job, which contains
 many inputs that require validation.
 One of the downsides of Dash is that under their "expected" pattern of use, this sort of input validation
@@ -18,7 +24,7 @@ If you want to build an app that doesn't require network calls and annoying
 delays to determine whether a text field input matches a regex, you need a way to do this
 sort of thing in the browser, which is why Dash introduced [`clientside_callback`](https://dash.plotly.com/clientside-callbacks).
 
-## What's the problem?
+# What's the problem?
 These work pretty well once you're done writing them, but writing them is an absolute _drag_, since 
 they are kept as Strings in your Python code. 
 Below is an example of a clientside callback which takes the `value` output of a [`TagsInput`](https://www.dash-mantine-components.com/components/tagsinput)
@@ -56,7 +62,7 @@ ever takes place at this location. Plus, you have to keep the signatures of
 `do_business_thing` and `do_business_thing_declared_elsewhere` in sync, which isn't too bad on its own,
 but is annoying when you have hundreds of these declarations floating around.
 
-## Enter `treesitter`
+# Enter `treesitter`
 Over the last year, I have made the switch from `vim` to `neovim` ([dotfile](https://github.com/ctdunc/dotfiles) plug),
 which has been very good to me so far.
 One of the really cool things about `neovim` is [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter),
@@ -94,7 +100,7 @@ it took about an hour, and has been a giant quality of life boost for me, and re
 big performance improvements to our Dash tool at work.
 
 
-## And to my VS Code Enjoyers...
+# And to my VS Code Enjoyers...
 Something like this might be possible for VS Code users as well. There are quite a few 
 `treesitter` [plugins](https://marketplace.visualstudio.com/search?term=tree%20sitter&target=VSCode&category=All%20categories&sortBy=Relevance)
 at least [one](https://marketplace.visualstudio.com/items?itemName=AlecGhost.tree-sitter-vscode) 
@@ -109,5 +115,5 @@ support exists), and works for functions declared on a single line as well (nice
 nullish coalescing and the like). Plus, you don't have to have all those extra comments
 lying around!
 
-## Update 01/22/2025
+# Update 01/22/2025
 See [part 2](./dash-clientside-treesitter-ez-mode.html) for an easier way to install this capability!

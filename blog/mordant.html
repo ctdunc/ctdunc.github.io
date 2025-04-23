@@ -42,6 +42,26 @@
       <br/>
 <p>TL;DR&#8212;I wrote a syntax highlighter for markdown files that produces very customizable output.
 Check it out on <a href="https://github.com/ctdunc/mordant">github</a>!</p>
+<ul>
+<li><a href="#what-is-mordant">What is mordant?</a></li>
+<li><a href="#why-not-just-use-highlightjs-or-hugo-like-a-normal-person">Why not just use highlight.js or Hugo like a normal person?</a></li>
+<li><a href="#look-at-these-cool-examples">Look at these cool examples</a>
+<ul>
+<li><a href="#sql-literals-in-rust">SQL Literals in Rust</a></li>
+<li><a href="#scheme-inside-of-mordanttoml">Scheme inside of mordant.toml</a></li>
+<li><a href="#regex-in-javascript-in-python">Regex in JavaScript in Python</a></li>
+</ul></li>
+<li><a href="#how-can-i-try-mordant-for-myself">How can I try mordant for myself?</a>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#language-setup">Language Setup</a></li>
+<li><a href="#from-source">From Source</a></li>
+<li><a href="#adding-a-new-builtin-language">Adding a new builtin language</a></li>
+<li><a href="#styling">Styling</a></li>
+<li><a href="#a-dirt-simple-build-pipeline">A dirt simple build pipeline</a></li>
+</ul></li>
+<li><a href="#wrapping-up">Wrapping up</a></li>
+</ul>
 <h1 id="what-is-mordant">What is mordant?</h1>
 <p>mordant is a program that takes fenced code blocks in Markdown files, and uses tree-sitter to replace them with
 inline html containing enough information to get editor-quality syntax highlighting, with <em>only css</em>.
@@ -300,7 +320,7 @@ Rust and SQL:</p>
 <p>The <a href="https://github.com/ctdunc/mordant?tab=readme-ov-file#adding-new-languages">README</a> will contain the most up-to-date
 documentation on configuring languages.
 If you would rather read it here (I think my website is prettier), I&#8217;ll repeat 
-my README advice here (as of April 23, 2025).</p>
+my README advice (as of April 23, 2025).</p>
 <h3 id="from-source">From Source</h3>
 <p>If you are looking to work with a proprietary language that you don&#8217;t want to contribute upstream,
 or need to work with a language that does not have an existing rust crate, it is also possible to include languages
@@ -956,7 +976,8 @@ My immediate roadmap contains the following items:</p>
 </ol>
 <p>If you&#8217;d like to take a stab at any of these, feel free to open an issue, or reach out to me on my socials: 
 <a href="https://github.com/ctdunc">github</a>, <a href="https://x.com/_ctdunc">twitter</a>, <a href="https://www.linkedin.com/in/connortduncan/">linkedin</a>.
-You can also email me, but I&#8217;ll refer you to my homepage, lest the robots crawl my email and fill it with spam.</p>
+You can also email me, but I&#8217;ll refer you to my homepage, lest the robots crawl my email and fill it with (even more) spam.</p>
+<p>Thanks for reading, and happy highlighting!</p>
 
       <span align-="between" style="display: flex; flex-direction: row; justify-content: flex-end">
 	
