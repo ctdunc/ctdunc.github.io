@@ -24,7 +24,7 @@
       <a href="./index.html" is-="badge" variant-="background2">blog</a>
     </nav>
     <article is-="typography-block" box-="square contain:none" class="article-box">
-      <div align-="between" style="display: flex; flex-direction: row; justify-content: space-between; flex-wrap: wrap;">
+      <div align-="between" class="article-header">
 	
 	<header is-="badge" variant-="background2">
 	  Making Clientside Callbacks Nicer in Dash
@@ -93,19 +93,20 @@ I won&#8217;t pretend to be a <code>treesitter</code> expert, but when I discove
 I immediately had my first application: fixing Dash Clientside Callbacks!</p>
 <p>Armed with <a href="https://www.youtube.com/watch?v=09-9LltqWLY">this video</a> from TJ DeVries (a <code>neovim</code> GOAT), and the commands 
 <code>:InspectTree</code> and <code>:EditQuery</code>, I was able to hack together the following injection:</p>
-<pre><code class="language-%7Bscheme%7D">;extends
-; look for calls to functions named clientside_callback
-(call 
-  (identifier) @name (#eq? @name clientside_callback) 
-  (argument_list 
-    ; if the first argument is a string, 
-    ; set the language of the child string_content to javascript
-    ((string (string_content) 
-         @injection.content 
-         (#set! injection.include-children)
-         (#set! injection.language "javascript")))
-    )
-)
+<pre><code><span class="code-comment">;extends</span>
+<span class="code-comment">; look for calls to functions named clientside_callback</span>
+<span class="code-punctuation.bracket">(</span><span class="code-function">call</span> 
+  <span class="code-punctuation.bracket">(</span><span class="code-function">identifier</span><span class="code-punctuation.bracket">)</span> <span class="code-variable">@name</span> <span class="code-punctuation.bracket">(</span>#eq? <span class="code-variable">@name</span> <span class="code-variable">clientside_callback</span><span class="code-punctuation.bracket">)</span> 
+  <span class="code-punctuation.bracket">(</span><span class="code-function">argument_list</span> 
+    <span class="code-comment">; if the first argument is a string, </span>
+    <span class="code-comment">; set the language of the child string_content to javascript</span>
+    <span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">(</span><span class="code-function.builtin">string</span> <span class="code-punctuation.bracket">(</span><span class="code-function">string_content</span><span class="code-punctuation.bracket">)</span> 
+         <span class="code-variable">@injection.content</span> 
+         <span class="code-punctuation.bracket">(</span>#set! <span class="code-variable">injection.include-children</span><span class="code-punctuation.bracket">)</span>
+         <span class="code-punctuation.bracket">(</span>#set! <span class="code-variable">injection.language</span> <span class="code-string">"javascript"</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.bracket">)</span>
+    <span class="code-punctuation.bracket">)</span>
+<span class="code-punctuation.bracket">)</span>
+
 </code></pre>
 <p>Placing this injection at <code>$NVIM_CONFIG_LOCATION&#47;queries&#47;python&#47;injections.scm</code> resulted in 
 good-enough JavaScript syntax highlighting in python files! Behold:</p>

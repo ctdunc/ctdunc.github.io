@@ -46,6 +46,8 @@ body {
   max-width: var(--max-width);
   min-height: 100%;
   z-index: -10000; -webkit-font-smoothing: subpixel-antialiased;
+  color: var(--foreground0);
+  background-color: var(--background0);
 }
 
 img {

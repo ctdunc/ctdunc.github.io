@@ -24,7 +24,7 @@
       <a href="./index.html" is-="badge" variant-="background2">blog</a>
     </nav>
     <article is-="typography-block" box-="square contain:none" class="article-box">
-      <div align-="between" style="display: flex; flex-direction: row; justify-content: space-between; flex-wrap: wrap;">
+      <div align-="between" class="article-header">
 	
 	<header is-="badge" variant-="background2">
 	  Enabling LSP Support for Dash Clientside Callbacks
@@ -83,9 +83,9 @@ as demonstrated by this example more-or-less <a href="https://community.plotly.c
 <span class="code-variable">gridid</span> <span class="code-operator">=</span> <span class="code-string">"grid"</span>
 <span class="code-function.call">clientside_callback</span><span class="code-punctuation.bracket">(</span>
     <span class="code-string">"""
-<span class="code-punctuation.bracket">(</span><span class="code-variable">id</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
-  <span class="code-variable">dash_ag_grid</span><span class="code-punctuation.delimiter">.</span><span class="code-function.method">getApiAsync</span><span class="code-punctuation.bracket">(</span><span class="code-variable">id</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function.method">then</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">(</span><span class="code-variable">api</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
-    <span class="code-variable">api</span><span class="code-punctuation.delimiter">.</span><span class="code-function.method">addEventListener</span><span class="code-punctuation.bracket">(</span><span class="code-string">"cellFocused"</span><span class="code-punctuation.delimiter">,</span> <span class="code-punctuation.bracket">(</span><span class="code-variable">params</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
+<span class="code-punctuation.bracket">(</span><span class="code-variable">id</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=&gt;</span> <span class="code-punctuation.bracket">{</span>
+  <span class="code-variable">dash_ag_grid</span><span class="code-punctuation.delimiter">.</span><span class="code-function.method">getApiAsync</span><span class="code-punctuation.bracket">(</span><span class="code-variable">id</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function.method">then</span><span class="code-punctuation.bracket">(</span><span class="code-punctuation.bracket">(</span><span class="code-variable">api</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=&gt;</span> <span class="code-punctuation.bracket">{</span>
+    <span class="code-variable">api</span><span class="code-punctuation.delimiter">.</span><span class="code-function.method">addEventListener</span><span class="code-punctuation.bracket">(</span><span class="code-string">"cellFocused"</span><span class="code-punctuation.delimiter">,</span> <span class="code-punctuation.bracket">(</span><span class="code-variable">params</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=&gt;</span> <span class="code-punctuation.bracket">{</span>
       <span class="code-variable.builtin">console</span><span class="code-punctuation.delimiter">.</span><span class="code-function.method">log</span><span class="code-punctuation.bracket">(</span><span class="code-variable">params</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">;</span>
     <span class="code-punctuation.bracket">}</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">;</span>
   <span class="code-punctuation.bracket">}</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">;</span>
@@ -195,7 +195,7 @@ Simply place the following in <code>assets&#47;index.d.ts</code>:</p>
 <span class="code-keyword">declare</span> global {
   <span class="code-keyword">namespace</span> dash_ag_grid {
     <span class="code-keyword">export</span> function getApi(<span class="code-variable.parameter">s</span>: <span class="code-type">String</span> | <span class="code-type">Object</span>): <span class="code-type">GridApi</span>;
-    <span class="code-keyword">export</span> function getApiAsync(<span class="code-variable.parameter">s</span>: <span class="code-type">String</span> | <span class="code-type">Object</span>): <span class="code-type">Promise</span><span class="code-punctuation.bracket"><</span><span class="code-type">GridApi</span><span class="code-punctuation.bracket">></span>;
+    <span class="code-keyword">export</span> function getApiAsync(<span class="code-variable.parameter">s</span>: <span class="code-type">String</span> | <span class="code-type">Object</span>): <span class="code-type">Promise</span><span class="code-punctuation.bracket">&lt;</span><span class="code-type">GridApi</span><span class="code-punctuation.bracket">&gt;</span>;
   }
   <span class="code-keyword">namespace</span> dash_clientside {
     <span class="code-keyword">export</span> const no_update: <span class="code-type">Object</span>;
@@ -299,7 +299,7 @@ callbacks of the form </p>
 <p>evaluate to valid JavaScript once Dash gets ahold of them, they are not syntactically valid,
 since the function keyword expects a name for the declaration.
 This means that we must instead declare functions using arrow syntax, like so:</p>
-<pre><code><span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=></span> <span class="code-punctuation.bracket">{</span>
+<pre><code><span class="code-punctuation.bracket">(</span><span class="code-variable">x</span><span class="code-punctuation.bracket">)</span> <span class="code-operator">=&gt;</span> <span class="code-punctuation.bracket">{</span>
   <span class="code-comment">// do stuff to x ...</span>
   <span class="code-keyword">return</span> <span class="code-variable">x</span><span class="code-punctuation.delimiter">;</span>
 <span class="code-punctuation.bracket">}</span>
