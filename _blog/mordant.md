@@ -84,10 +84,12 @@ The better answer is that highlight.js is a great library, with support for a *t
 very easy to extend. Coupled with my inherent dislike of JavaScript for blogging and the fact that I've already invested a decent
 chunk of time in learning tree-sitter, it just didn't seem like a good fit for my website. 
 Since I plan to continue my [series of posts](./dash-clientside-lsp.html) describing tools to make [Dash](https://github.com/plotly/dash) 
-(semi-)usable when writing performant, interactive applications (beyond just dashboarding), it seemed natural
+more usable when writing performant, interactive applications (beyond just dashboarding), it seemed natural
 to broaden my tree-sitter horizons beyond neovim.
 
 # Look at these cool examples
+I'm just going to flex here. Please enjoy the pretty colors, do not focus on whether or not 
+this code will actually compile/run. It probably won't, it's just here to look pretty.
 
 ## SQL Literals in Rust
 An example taken from the [sqlx docs](https://docs.rs/sqlx/latest/sqlx/macro.query.html).
