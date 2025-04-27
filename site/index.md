@@ -15,7 +15,7 @@ noblog: 1
 <p is-="badge" variant-="background2"> Quantitative Analyst </p>
 <ul marker-="tree">
   <li>
-    <a href="res/resume.pdf">resume</a>
+    <a href="/static/res/resume.pdf">resume</a>
   </li>
   <li>
     <a href="blog/index.html">blog</a>

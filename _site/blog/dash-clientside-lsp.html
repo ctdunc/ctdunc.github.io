@@ -58,7 +58,7 @@
 <li><a href="#wrapping-up">Wrapping up</a></li>
 </ul>
 <p>If you stick with me through this post, here is the setup we will arrive at.</p>
-<p><img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/></p>
+<p><img src="/static/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/></p>
 <p>NOTE: You do not need to be a neovim user to benefit from this post. Many of the tips covered below
 apply equally well to any editor that can take advantage of a JavaScript Language Server.</p>
 <p>The code demonstrated in this post is available as a sample Dash project on <a href="https://github.com/ctdunc/dash-clientside-lsp-demo">Github</a>.
@@ -216,7 +216,7 @@ of this article with no hassle.</li>
 </ul>
 <p>Finally, once we have our declaration in <code>assets&#47;</code>, run <code>$ tsc</code> in the root of your Dash project.
 If you already have a JavaScript LSP installed, you should now be able to accomplish something like the following: </p>
-<p><img src="/res/img/grid-jsdoc.png" alt="A Working LSP Setup!"/></p>
+<p><img src="/static/res/img/grid-jsdoc.png" alt="A Working LSP Setup!"/></p>
 <p>Note the presence of <a href="https://jsdoc.app/">JSDoc</a> comments denoting the types of arguments our function is equipped to 
 accept. We cannot use type hints the same way that we can in Python, as that feature is TypeScript-only and Dash only accepts vanilla JS (afaik).
 Still, this is a great start! I am still playing around with the declarations and what is&#47;isn&#8217;t necessary. Any changes I 
@@ -283,7 +283,7 @@ In my config, I have <code>lua&#47;plugins&#47;conform.lua</code>, which should 
 code that conform will format is the inline JavaScript. I use <code>python = { "ruff_format", "ruff_fix", "injected" }</code> because 
 ruff is wicked fast.</p>
 <p>If you&#8217;ve followed my explanation so far, your editor should now be capable of something like this (note that <code>otter</code> is <em>not</em> enabled here):</p>
-<p><img src="/res/img/dash-inline-format.gif" alt="GIF showing inline formatting"/></p>
+<p><img src="/static/res/img/dash-inline-format.gif" alt="GIF showing inline formatting"/></p>
 <h2 id="getting-ts_ls-working-with-otter.nvim">Getting ts_ls Working with otter.nvim</h2>
 <p>Now that we have formatting working fairly well, it&#8217;s time to get autocomplete working on our embedded JavaScript.
 For this, we turn to a plugin called [<code>otter.nvim</code>]. Before discussing setup, a few things to note.</p>
@@ -334,7 +334,7 @@ up from your version control, or just disable writing to disk.</p>
 
 </code></pre>
 <p>If I&#8217;ve explained this well enough, you should now have something like the following working:</p>
-<p><img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/></p>
+<p><img src="/static/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/></p>
 <p>If you want <code>otter</code> to automatically activate in any Python file, simply add the following to <code>after&#47;ftplugin&#47;python.lua</code>:</p>
 <pre><code><span class="code-function.builtin">require</span><span class="code-punctuation.bracket">(</span><span class="code-string">"otter"</span><span class="code-punctuation.bracket">)</span><span class="code-punctuation.delimiter">.</span><span class="code-function.call">activate</span><span class="code-punctuation.bracket">(</span>
   <span class="code-constructor">{</span> <span class="code-string">"javascript"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"typescript"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"js"</span><span class="code-punctuation.delimiter">,</span> <span class="code-string">"ts"</span> <span class="code-constructor">}</span><span class="code-punctuation.delimiter">,</span>
