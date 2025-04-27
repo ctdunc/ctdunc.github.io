@@ -7,7 +7,7 @@
 \usepackage{FiraMono}
 \usepackage{hyperref}
 \usepackage[dvipsnames]{xcolor}
-\usepackage[margin=.9in]{geometry}
+\usepackage[margin=.8in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{enumitem}
@@ -28,9 +28,8 @@
     \par{\centering{\LARGE{\theauthor}}\par}
     \centering\small\color{gray}
 
-     \href{mailto:connor@connorduncan.xyz}{connor@connorduncan.xyz}
+      \underline{\href{https://www.connorduncan.xyz/}{website}} | \underline{\href{https://github.com/ctdunc}{github}} | \href{mailto:connor@connorduncan.xyz}{connor@connorduncan.xyz}
     \end{minipage}
-    \\
 }
 % changing title formatting
 \titleformat{\section}{\sffamily\scshape\raggedright}{}{0em}{}[{\titlerule[1pt]}]
@@ -71,9 +70,10 @@
 \maketitle
 \vspace{1em}
 
-Eager, motivated, and analytical mathematician with experience in software development,
-optimization, and data science. I enjoy automating tedious tasks, and raising the skill floor
-for front-office software projects.
+{\centering Motivated, eager and curious Quantitative Analyst specializing in Fixed-Income ETF portfolio
+management across Treasuries, IG/HY/EM Credit, and Municipal Bonds. Math, Linux and Classical/Jazz Piano enjoyer.
+
+}
 
 \section{Education}
 \entry{2022--2023}{M.Sc. in Applied Mathematics}{University of Illinois at Chicago}{ || 3.86/4.0 GPA}
@@ -83,14 +83,21 @@ for front-office software projects.
 \section{Experience}
 \entry{2023 --}{Quantitative Analyst (Fixed Income ETF Portfolio Management)}{Invesco}{
     \begin{itemize}
-        \item Developed on-desk dashboard in Python (Dash/Snowflake/Polars) used for daily portfolio management tasks, including
-            pricing/accounting/holding/risk/index reconciliation, flow optimization, and communication
-            of baskets with third parties.
-        \item Planned and implemented improvements to CI and code quality: brought DDL under version control, added 
-            static type analysis and testing to critical code, implemented Jinja templating of SQL queries.
-        \item Managed ongoing transition of front-office systems from Aladdin to Charles River, requiring
-            complete re-sourcing of all data pulled from Aladdin.
-        \item Migrated dataframe libraries from Pandas to Polars (this was an excellent decision).
+        \item Developed an interactive, introspectable In-Kind Basket Generation/Portfolio Construction tool, decreasing
+            decreasing basket negotiation times to as short as 5 minutes.
+        \item Implemented a position reconciliation tool, notably improving error detection rates and resolution times with data management.
+        \item Developed editor plugins for neovim and VS Code adding zero-overhead syntax highlighting and LSP support for
+            Python files containing other languages as string literals (\underline{\href{https://www.connorduncan.xyz/blog/dash-clientside-lsp.html}{blog post}}),
+            enabling significant performance and correctness gains.
+        \item Prototyped in-house optimizer, using Branch \& Bound to minimize continuous and integer objectives
+            with linear/quadratic continuous/integer constraints.
+        \item Maintained intra-day flow reconciliation tool ensuring synchronization of basket/trade quantities between our 
+            custodian, IBOR and APs.
+        \item Managed ongoing transition of front-office systems from Aladdin to Charles River,
+            requiring complete re-sourcing and validation of all data ($\sim80$ tables).
+        \item Migrated DataFrame libraries from Pandas to Polars, enabling anywhere from $2\times$-$100\times$ performance improvements
+            across our ETL.
+        \item Spearheaded addition of static type analysis and documentation to critical code.
     \end{itemize}
 }
 
@@ -101,15 +108,13 @@ for front-office software projects.
 {National Renewable Energy Laboratory}
 {
     \begin{itemize}
-        \item Developed React app visualizing projected impact of environmental policy changes in the LA area
+        \item Developed React app visualizing environmental policy changes in the LA area.
     \end{itemize}
 }
 
 \entry{2018--2020}{Research Assistant, Pyle Group}{\Cal; SLAC}{
     \begin{itemize}
-        \item Assisted with installation of Helium Dilution Refrigerator
-        \item Assisted with Linux server administration (RIP CentOS)
-            and DAQ Dashboard development.
+        \item Administered CentOS Linux Server, developed readout infrastructure for Dark Matter Search detector R\&D.
     \end{itemize}
 }
 \section{Technical Skills}
@@ -126,25 +131,19 @@ for front-office software projects.
     \end{itemize}
 }
 
-\skill{Other Tech}{
+\skill{Other}{
     \begin{itemize}
-        \item In descending order of expertise: 
-            (n)vim, SQL, git, \LaTeX, JavaScript, Aladdin, MATLAB, Rust, 
-            Bloomberg, Axioma, C/C++, Redis, R, Excel.
+        \item  By expertise ($\downarrow$): (n)vim, SQL, git, \LaTeX, JavaScript, Bloomberg, Atlassian, GitHub, 
+            Rust, Aladdin, MATLAB, lua, Axioma, C/C++, Redis, R, Excel.
     \end{itemize}
 }
 
 \section{/etc}
-\skill{Spanish}{
-    \begin{itemize}
-        \item Conversational speaker.
-    \end{itemize}
-}
 \skill{Interests}{
     \begin{itemize}
         \item {\scshape At Work}: 
-            Mixed Integer Programming, Linux, Data Science, CI Improvements (that don't annoy fast-moving quant teams).
-        \item {\scshape After Work}: Piano, 
-            Traveling, Strategy Games (e.g. Stellaris).
+            Mixed Integer Programming, Linux, Data Science, Dev Tools, Numerical Analysis of PDEs.
+        \item {\scshape After Work}: Piano, Travel, Science Fiction, \underline{
+                \href{https://connorduncan.xyz/blog}{blogging}}.\footnote{\underline{\href{https://github.com/ctdunc/ctdunc.github.io/blob/master/site/blog/index.md}{This link}} will work if my site was blocked by your firewall. The .com domain is taken!}
     \end{itemize}}
 \end{document}
