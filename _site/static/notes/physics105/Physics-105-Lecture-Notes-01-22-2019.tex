@@ -1,0 +1,50 @@
+\documentclass{article} \usepackage{amsmath} \usepackage{amssymb} \usepackage{amsthm} \usepackage[margin=0.2in]{geometry} \usepackage{hyperref} \usepackage{physics} \usepackage{tikz} \usepackage{mathtools} \mathtoolsset{showonlyrefs} \theoremstyle{definition} \newtheorem{theorem}{Theorem}[section] \newtheorem{corollary}{Corollary}[theorem] \newtheorem{lemma}[theorem]{Lemma} \newtheorem{definition}{Definition}[section] \author{Connor Duncan} \date{\today}
+\title{Physics-105-Lecture-Notes-01-22-2019}
+\begin{document}
+\maketitle\tableofcontents
+\noindent\abstract{A single PDF with all lectures in a single document can be downloaded at \url{https://www.dropbox.com/sh/8sqzvxghvbjifco/AAC9LoSRnsRQDp7pYedgWpQMa?dl=0}. The password is 'analytic.mech.dsp'. The syllabus hasn't been posted yet, but I'll take care of it as soon as it is!}
+\section{Math Review}
+\subsection{Orthogonal Transformation}
+Changes basis of vectors to orthogonal basis. You know how to do this from linear algebra my guy.
+
+In an orthogonal basis, recall that for every basis vector, $\lambda\lambda^\dag=1$
+
+Imagine some vector $\vec{z}=\vec{z}\prime$ in some other coordinate system. Our change of coordinate matrix should be
+\begin{align}
+	\begin{bmatrix}
+	x\prime\\y\prime\\z\prime
+	\end{bmatrix}
+		=
+	\begin{bmatrix}
+			\cos\theta &\sin\theta &0\\
+			-\sin\theta&\cos\theta&0\\
+			0&0&0
+	\end{bmatrix}
+	\begin{bmatrix}
+		x\\y\\z
+	\end{bmatrix}
+	=
+	\lambda
+	\begin{bmatrix}
+		x\\y\\z
+	\end{bmatrix}
+\end{align}
+For a rotation about the $z$-axis.
+
+Orthogonal transformation given by $\lambda\lambda^\dag=1$, where $\lambda$ is the transformation matrix.
+what if we take $S\rightarrow S'\rightarrow S''$.
+Then $x'=\lambda x$, and $x''=\lambda x'=w(\lambda x)$, where $w$ is the change of coordinate matrix from $S'\rightarrow S''$.
+
+Orthogonal operators form a \emph{group}, i.e. multiplication of one orthogonal operator by another will produce another orthogonal operator, $\lambda,w\in G\rightarrow \lambda\cdot w\in G$.
+
+Do they commute? No. $AB\neq BA$ in all cases.
+
+Also know that $\det(\lambda\lambda^\dag)=1=\det(\lambda)\det(\lambda^\dag)=|\det(\lambda)|^2\rightarrow\det\lambda=\pm 1$
+
+\subsection{Scalar, Vector Fields}
+Scalar Fields don't depend on coordinate system (invariant with respect to transformation), i.e. a number associated with every point in space.
+
+Vector fields \emph{do} depend on coordinate system. When you have $v_i'=\lambda_jv_j$, it satisifes coordinate transformations. (i.e. $\exists$ transformation matrix $\lambda$)
+
+
+\end{document}

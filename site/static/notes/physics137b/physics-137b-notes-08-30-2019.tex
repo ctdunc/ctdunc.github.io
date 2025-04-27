@@ -1,0 +1,46 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+\title{notes-08-30-2019}
+\begin{document}
+\subsection{Operators$\rightarrow$ observables}
+\subsubsection{Operators, Bases, Linear Algebra}
+Observables include our old friends $\hat x,\hat p,\hat H, \hat L\,\hat s$.
+
+What is an operator tho? 
+\begin{equation}
+	\begin{matrix}
+		\hat A:		&	\mathcal H\rightarrow\mathcal H
+	\end{matrix}
+\end{equation}
+also $\exists$ adjoint operator, $A^{\dag}$ from $\mathcal H$ to itself.
+
+We can construct projection operators by taking the outer product of two vectors.
+
+Also lets us have some resolution of identity by summing over the projection operators in any orthonormal basis.
+
+Also, matrix representations exist by arranging $A_{mn}=\bra{\varphi_m}\hat A\ket{\varphi_n}$, for some particular basis $\varphi_i$
+
+In other words
+\begin{equation}
+	\hat A=\sum_{ij}\ket{\varphi_i}A_{ij}\bra{\varphi_j}
+\end{equation}
+
+Cute stuff with the momentum operator.
+
+\end{document}

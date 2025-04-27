@@ -1,0 +1,186 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\usepackage{graphicx}\graphicspath{{./images/}}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-11-06-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+\subsection{Density of States}
+Recall, we have this weird transition rate in first order perturbation theory,
+\begin{equation}
+	\omega_{fi}-=\frac{2}{\hbar^2}\left[|V_{fi}|^2\delta(\omega_{fi}-\omega)
+	+|V_{fi}^\dag|^2\delta(\omega_{fi}+\omega)\right]
+\end{equation}
+Now, we want to rewrite this in terms of a transition into a continuum of levels, i.e.
+\begin{equation}
+	W(\omega)=\sum_{f}^{}W_{fi}(\omega)\mapsto\int dE\rho(E)W(E,\omega)
+\end{equation}
+In the continuum limit, we have that the sum over final states is going to map to an integral.\footnote{This shows up a lot in 112 and 141A (Statistical Mechanics and Solid State Physics). Worth Checking out maybe Ashcroft \& Mermin  and Kittel Solid State.}
+We can think of this as a change of variables, where the density of states is the jacobian which transforms $\int_{}^{}dn\mapsto\int dE\left|\pdv{n}{E}\right|$.
+\subsubsection{Ex: Free particles in one dimension}
+We have $E=\frac{\hbar^2k^2}{2m}$ with $\hbar k=p$. Consider a finite 1d system of size $L$ with periodic boundary conditions, i.e. $\varphi_k(x)=\varphi_k(x+L)=\bra{x}\ket{k}=\frac{1}{\sqrt{L}}e^{ikx}=\frac{1}{\sqrt{L}}e^{ix\frac{2\pi}{L}}$
+Integrating over the number of states then becomes 
+\begin{equation}
+	\int_{-\infty }^{\infty}dn=\frac{L}{2\pi}\int_{-\infty}^{\infty}dk
+\end{equation}
+Now, we need to change variables to energy to get
+\begin{equation}
+	\pdv{k}{E}=\frac{1}{\hbar}\sqrt{\frac{m}{2E}}
+\end{equation}
+So, after our requsite change of variables, we should get
+\begin{equation}
+	\int_{-\infty}^{\infty}dn=\frac{L}{2\pi\hbar}\int_{-\infty}^{\infty}dE\sqrt{\frac{m}{2E}}
+\end{equation}
+which is interesting, since in 1-d the density of states diverges as $\frac{1}{\sqrt{E}}$. We can plot it as
+\begin{center}
+	\begin{tikzpicture}[scale=2]
+		\draw[->] (-1,0)--(1,0) node[anchor=west] {$E$};
+		\draw[->] (0,-1)--(0,1) node[anchor=south] {$\rho$};
+		\draw[blue,thick] plot[domain=0.1:1,variable=\x,smooth] ({\x},{.3/sqrt(\x)});
+	\end{tikzpicture}
+\end{center}
+
+\subsubsection{Ex: Free Particles in 2 Dimensions}
+We have, with the same periodicity requirements
+\begin{equation}
+	\int_{}^{}dn=\frac{L^2}{(2\pi)^2}\int_{}^{}d^2k=\frac{L^2}{(2\pi)^2}\int_{}^{}dk2\pi k
+	=\frac{L^2}{(2\pi^2)\hbar}\int_{}^{}dE\sqrt{\frac{m}{2E}}2\pi\frac{1}{\hbar}\sqrt{2mE}
+\end{equation}
+which gives density of states in 2-dimensions is constant, i.e. independent of energy
+\begin{equation}
+	\rho_{2d}=\frac{L^2m}{2\pi\hbar^2}
+\end{equation}
+3-d is probably gonna be a homework problem. Freakin statistical mechanics man!!
+
+\subsection{Fermi's Golden Rule}
+If we stick the density of states into our equation from before, we should find (with the $\hbar^2$ in the denominator dissapearing from our change of variables from $\omega\mapsto E$)
+\begin{align}
+	W_i(\omega)=\frac{2}{\hbar}\int dE\rho(E)\left[
+		|V_i(E)|^2\delta(E-E_i-\hbar\omega)+|V_i(E)|^2\delta(E-E_i+\hbar\omega)
+		\right]
+		\\
+	=\frac{2}{\hbar}\left[
+		\rho(E_i+\hbar\omega)|V_i(\omega)|^2+\rho(E_i-\hbar\omega)|V_i(-\omega)|^2
+		\right]
+\end{align}
+Your intuition for this should go that we have the rate of transition will be the density of states at your current energy plus $\hbar\omega$, times the matrix element of transitioning to this probability.
+The crucial assumption that we've made here is that the matrix elements themselves are smooth functions on $\omega$.  This might not always be the case, which means (probably not in our class) there are instances where it is worthwhile to check the matrix element of transition case by case.
+
+\subsection{Higher Order Time Dependent Perturbation Theory}
+Here, we're going to discuss a nicer framework for deriving time dependent perturbation theory, and use it to see how we might be able to go to higher orders. 
+Specifically, we're going to highlight it in the \textbf{interaction picture}.
+\subsubsection{Different Interpretations of Quantum Mechanics}
+\paragraph{Schroedinger Picture}
+The schroedinger equation is one picture of quantum mechanics. It stems from the fundamental equation
+\begin{equation}
+	i\hbar\pdv{t}\ket{\psi_s}=H_s\ket{\psi_s}
+\end{equation}
+where the subscript $s$ denotes that we are working with the schroedinger picture.
+
+We have time dependent wavefunctions $\ket{\psi_s(t)}=U_s(t,t_0)\ket{\psi_s(t_0)}$, where $U_s$ is some unitary time translation operator. 
+In the simplest case of a time independent hamiltonian, we have $U_s(t,t_0)=e^{-iH(t-t_0)/\hbar}$. In general though, we can solve our differential equation to find such a $U$.
+
+Also, observables exist and are time independent, and hermitian.
+
+\paragraph{Heisenberg Picture} We basically fix the states as time independent, and apply some unitary transformation to the operators which gives them the requisite time dependence. I.e.
+\begin{equation}
+	\bra{\psi_s(t_0)}U^\dag(t,t_0)\hat OU(t,t_0)\ket{\psi_s(t_0)}
+\end{equation}
+and we just call
+\begin{equation}
+\tilde O=U^\dag(t,t_0)\hat OU(t,t_0)
+\end{equation}
+where we now have
+\begin{equation}
+	\ket{\psi_H}=U^\dag(t,t_0)\ket{\psi_s(t)}
+\end{equation}
+Our new equation to find the operator becomes
+\begin{equation}
+	\pdv{\hat O_H}{t}=\frac{i}{\hbar}[H,\hat O_H]
+\end{equation}
+which we call the \textbf{Heisenberg Equation of Motion}. This is basically a meme'd poisson bracket.\footnote{OMG THAT IS SO COOL THOUGH.}
+
+\paragraph{Interaction Picture}
+We want to consider our hamiltonian as some $H=H_0+\hat V$, where $\hat V$ is some interaction, and $H_0$ is something that we can solve analytically. Now, we want to only yeet the ``rotation'' due to time evolution of $H_0$, but not the time evolution of the interaction, so that we can consider the slow evolution due to $\hat V$.
+
+We can write down an interaction wavefunction (lack of subscript denotes the schroedinger picture)
+\begin{equation}
+	\ket{\psi_i(t)}=U_0^\dag(t,t_0)\ket{\psi(t)}
+	=U_0^\dag(t,t_0)U(t,t_0)\ket{\psi(t_0)}
+\end{equation}
+We define the new operator
+\begin{equation}
+	U_I(t,t_0)=U_0(t,t_0)U(t,t_0)
+\end{equation}
+
+We can try to find a schroedinger-adjoint equation for $\psi_I$, which comes out to
+\begin{align}
+	i\hbar\pdv{t}\ket{\psi_I(t)}=i\hbar\left(\pdv{t}U_0^\dag\right)\ket{\psi}+i\hbar U_0^\dag\left(\pdv{t}\ket{\psi}\right)
+	\\
+	=-U_0^\dag H_0\ket{\psi}+U_0^\dag\left(H_0+V\right)\ket{\psi}=U_0^\dag\hat V\ket{\psi}
+	\\
+	=U_0^\dag VU_0U_0^\dag\ket{\psi}
+\end{align}
+where we let $V_I=U_0^\dag VU_0$ and $\ket{\psi_I}=U_0^\dag\ket{\psi}$.
+So, we have the final result
+\begin{equation}
+	i\hbar\pdv{t}\ket{\psi_I(t)}=\hat V_I(t)\ket{\psi_I(t)}
+\end{equation}
+where operators evolve very quickly $O_I(t)=U_0^\dag\hat OU_0$.
+
+\subsubsection{Higher Order Perturbations}
+Our goal now becomes to find $U_I(t,t_0)$.
+If we have $i\hbar\pdv{U_I}{t}=V_I(t)U_I$, then we want 
+\begin{equation}
+	U_I(t,t_0)=1-\frac{i}{\hbar}\int_{t_0}^{t}V_I(t')U_I(t',t_0)dt'
+\end{equation}
+To first order, we have that $U_I(t',t_0)=\mathbb{I}$, so so
+\begin{equation}
+	U_I(t,t_0)=1-\frac{i}{\hbar}\int_{t_0}^{t}V_I(t')dt'
+\end{equation}
+if we want to go to arbitrarily higher orders, we should have
+\begin{equation}
+	U_I(t,t_0)=\sum_{n=0}^{\infty}\left(-\frac{i}{\hbar}\right)^n\int_{t_0}^{t}dt_1\int_{t_0}^{t_1}dt_2\dots\int_{t_0}^{t_{n-1}}dt_nV_I(t_1)V_I(t_2)\dots V_I(t_n)
+\end{equation}
+which is a time ordered product.
+We can write this compactly by saying
+\begin{equation}
+	U_I(t,t_0)=\sum_{n=0}^{\infty}\left(-\frac{i}{\hbar}\right)^n\int_{t_0}^{t}dt_1\int_{t_0}^{t_1}dt_2\dots\int_{t_0}^{t_{n-1}}dt_nV_I(t_1)V_I(t_2)\dots V_I(t_n)
+	=\mathbb{T}\exp(-\frac{i}{\hbar}\int_{0}^{t}dt'V_I(t'))
+\end{equation}
+where the $\mathbb{T}$ means we should time order our products.
+
+\subsection{Homework Hints 11-6-19}
+Basically, he's going to have us write down 
+\begin{equation}
+	d_f(\infty)=-\frac{i}{\hbar}\int_{-\infty}^{\infty}dt'\bra{f}\hat V\ket{i}g(t')e^{i\omega_{fi}t'}
+\end{equation}
+Basically, we just need to compute some nice fourier transforms. It shouldn't be terrible.
+We do need to think about which matrix elements are nonzero though.
+
+The other two questions have a similar flavor as well.
+Essentially what we have is $H_0=\frac{p^2}{2m}-\alpha\delta(x)$, and we apply some perturbation $H_1=e\varepsilon_0\hat x\cos(\omega t)$. This here is a classic example of using fermi's golden rule. The idea is that we should only ever give density of states in the subspace of nonvaninshing integrals.
+
+If we have some 
+\begin{equation}
+	H_0=\frac{p^2}{2m}\otimes1+\frac{1}{2}m\omega_0^2\hat x^2\otimes\frac{1}{2}(1-\sigma_z)
+	+1\otimes\frac{1}{2}\Delta\sigma_z
+\end{equation}
+
+\end{document}

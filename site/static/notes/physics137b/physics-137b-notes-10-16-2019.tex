@@ -1,0 +1,25 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\usepackage{graphicx}\graphicspath{{./images/}}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-10-16-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+We first define the \textbf{scattering amplitude} $f(\theta,\phi)$, and connect it to the physical quantity $\pdv{\sigma}{\Omega}$, the \textbf{differential cross section}. We need some spherically symmetric $V(r)$ with what Altman referred to as ``finite support'', which means it is nonzero in a finite region of space, and decays as $\frac{1}{r^{2+\varepsilon}}\sim V(r)$. \subsubsection{Solving the Schroedinger in Spherical Coordinates} I'm pretty sure we did this in 137A, but basically, these bad boys separate out to \begin{equation} \psi_{\ell,m}(\vec{r})=R_{\ell}(r)Y_{\ell,m}(\theta,\phi) \end{equation} We then get a radial equation, where $u_\ell=R_\ell(r)r$, \begin{equation} Eu_\ell=\frac{-\hbar^2}{2m}\pdv[2]{u_\ell}{r}+\frac{\ell(\ell+1)}{2mr^2}u_\ell \end{equation} In the limit where $r\rightarrow\infty$, we get that our solutions are \begin{center} \begin{tabular}{ccc} & Outgoing & Incoming\\ $R_\ell(r)$ & $e^{ikr}/r$ & $e^{-i(kr+Et)}/r$ \end{tabular} \end{center} We also have the current density \begin{equation} \frac{j_{sc}d\vec{A}}{j_{inc}}=d\sigma=\frac{d\sigma}{d\Omega}d\Omega=\frac{\text{current scattered into }d\Omega}{\text{incident current per unit area}} \end{equation} we should also note $dA=r^2d\Omega\hat r$. \subsubsection{Probability Current} We can recall the probability current from 137A, where we have $p(r)=|\psi(r)|^2$, and then apply some continuity equation so that \begin{equation} \partial_tp(r)=-\nabla j \end{equation} Now, we have \begin{equation} \partial_t(\psi^*\psi)=\psi^*\partial_t\psi+\psi\partial_t\psi^* \end{equation} We also have \begin{equation} j=\frac{\hbar}{2mi}(\psi^*\nabla\psi-\psi\nabla\psi^*)=\frac{\hbar}{m}\Re[\psi^*\hat p\psi] \end{equation} So, for the incident wave, we have \begin{equation} j_{\mathrm{inc}}=\frac{\hbar k}{m} \end{equation} Now, we take $j_\mathrm{sc}$. \begin{align} j_\mathrm{sc}=\frac{\hbar k}{mr^2}|f(\theta,\phi)|^2\hat r \end{align} So, we have \begin{equation} \pdv{\sigma}{\Omega}d\Omega=\frac{j_\mathrm{sc}\hat rr^2d\Omega}{j_\mathrm{inc}}=|f(\theta)|^2d\Omega \end{equation} which all yields that \begin{equation} \pdv{\sigma}{\Omega}=|f(\theta)|^2 \end{equation} where we have made the approximation that $r\rightarrow\infty$ for the scattered component of the wavefunction. \subsection{Born Approximation} We're going to take $E=\frac{\hbar^2k^2}{2m}$, with \begin{equation} (\nabla^2+k^2)\psi(r)=\frac{2m}{\hbar^2}V(r)\psi(r) \end{equation} We're going to use Green's functions to solve this, which gives \begin{equation} \psi(r)=e^{ikz}+\int d^3r'G_0(k,r,r')\frac{2m}{\hbar^2}V(r')\psi(r') \end{equation} We need $(\nabla^2+k^2)G(k^2,r,r')=\delta^3(r-r')$, where $G$ is still the greens function. If we apply our operator to the above equation, we get \begin{equation} (\nabla^2+k^2)\psi(r)=(\nabla^2+k^2)\left(e^{ikz}+\int d^3r'G_0(k,r,r')\frac{2m}{\hbar^2}V(r')\psi(r')\right) \end{equation} As an aside, we can think of greens function as being the inverse of the operator $\nabla^2+k^2$ so that $\hat G_0=(\nabla^2+k^2)^{-1}$
+\end{document}
