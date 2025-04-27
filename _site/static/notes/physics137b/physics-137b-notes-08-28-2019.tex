@@ -1,0 +1,92 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+\title{notes-09-04-2019}
+
+\begin{document}
+\section*{Administration}
+30\% Homework, 30\% Midterm (Tentative Midterm Oct. 18), 40\% Final. 
+
+Quizzes in section (monday), don't count towards the final grade.
+
+The syllabus will track basically as follows:
+\begin{enumerate}
+	\item Stationary Perturbation Theory (time independent)
+	\item Variational Principle (not in townsend)
+	\item WKB (semicalssical) approximation (not in townsend, may skip)
+	\item Time Dependent Perturbation Theory
+	\item Coupling of Quantum Particles + Electromagnetic Fields (Aharonov-Bohm effect)
+	\item Quantize Light, Physics of Photons and Photon-Atom interaction.
+\end{enumerate}
+
+\section{Review}
+
+\subsection{State Vector, Kets, Bras}
+$\ket{\psi}, \psi(x)$, difference between the two. 
+State vector $\ket{\psi}$ can be constructed out of other vectors. I.e. $\ket{\psi}=\sum_{i}c_i\ket{\psi_i}$.
+
+Our hilbert space is over $\mathbb{C}$.
+
+Bra objects are the dual of their respective kets.
+\begin{align}
+	\ket{\psi}\in\mathcal{H}	&&	\bra{\psi}\in\mathcal{H}^*
+\end{align}
+$\mathcal{H}^*$ is the space of linear operators
+\begin{equation}
+		\begin{matrix}
+			\bra{\psi}:	&	\mathcal{H}\rightarrow\mathbb{C}\\
+					&	\bra{\psi}\ket{\psi}=\bra{\psi}\ket{\psi}^*=||\ket{\psi}||^2
+		\end{matrix}
+\end{equation}
+We have to make a choice of basis in order to gain any useful information from this vector space.
+
+A basis is any minimal collection of vectors whose span is the desired hilbert space.
+
+Typically, we choose an orthonormal basis such that 
+$\bra{\psi_i}\ket{\psi_j}=\delta_{ij}$
+
+Under this expression, we have
+\begin{align}
+	\ket{\psi}=\sum_i\psi_i\ket{\phi_i}\\
+	\bra{\psi}\ket{\psi}\sum_i\sum_j\psi_i^*\psi_j\bra{\phi_i}\ket{\phi_j}=\sum_i|\phi_i|^2=1
+\end{align}
+
+Inner product is defined in the usual way.
+
+We are allowed to have continuous bases. E.g. a particle on a 1-d line.
+We can attempt to measure a position of the particle on the line. We essentially use the same formalism, but with
+\begin{equation}
+	\bra{x}\ket{x'}=\delta(x-x')
+\end{equation}
+where $\delta$ is now the Dirac Delta function.
+
+Similarly, we have
+\begin{align}
+	\ket{\psi}=\int dx\psi(x)\ket{x}
+	&&
+	\bra{\psi}=\int dx\psi^*(x)\bra{x}
+\end{align}
+Leading to the usual definition of the probability of $\ket{\psi}$ at a given $x$ as
+\begin{equation}
+	\bra{x}\ket{\psi}=\int dx'\psi(x')\bra{x}\ket{x'}=\psi(x)
+\end{equation}
+and our other favorite
+\begin{equation}
+	\bra{\chi}\ket{\psi}=\int dx\chi^*(x)\psi(x)
+\end{equation}
+\end{document}

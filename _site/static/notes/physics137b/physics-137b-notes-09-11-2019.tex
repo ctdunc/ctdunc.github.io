@@ -1,0 +1,24 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-09-12-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+We continue with gdegenerate perutrbation theroy, taking \begin{equation} \bra{\varphi_{n,j}}\left(\hat H_0\ket{\varphi_n^{(1)}}+\hat H_1\sum_{i=1}^Nc_i\ket{\varphi_{n,i}^{(0)}} = E_n^{(0)}\ket{\varphi_n^{(1)}}+E_n^{(1)}\sum_{i=1}^Nc_i\ket{\varphi_{n,i}^{(0)}} \right) \end{equation} which starts simplifying out to \begin{equation} \sum_{i=1}^N \bra{\varphi_{n,j}^{(0)}}\hat H_1\ket{\varphi_{n,i}^{(0)}}c_i=E_n^{(1)}c_i \end{equation} \begin{equation} \sum_{i=1}^N\left[\hat H_1\right]_{ji}c_i=E_n^{(1)}c_i \end{equation} where the final equality is just matrix multiplication of a vector. \subsubsection{Hydrogen Atom} Take \begin{align} H_0=\frac{\hat p^2}{2m}-\frac{e^2}{|\hat r|} \\ H_1=-\mu_e\cdot\vec{E}=-e\hat r\cdot\vec{E}=eE\hat z \\ H=H_0+H_1 \end{align} We're allowed to ignore spin here, since the electric field points along the spin axis. \paragraph{Review: Spectrum of Hydrogen Atom} Given by quantum numbers, \begin{equation} \ket{\varphi^{(0)}_{n,\ell,m}}=\ket{n,\ell,m} \end{equation} where $n$ is the principal quantum number, $\ell$ is related to $L^2$, and $m$ is related to $L^z$. For higher values of $n$, we have an increasing number of allowable values for $\ell$, e.g. for $n=1$ only $\ell=0$ is allowed, but for $n=3,\ell\in\{0,1,2\}$.\footnote{TODO: review this in townsend.} \paragraph{Nondegenerate $n=1$} Now, we want to ask ourselevs what \begin{equation} E_{1,0,0}^{(1)}=\mathcal E\bra{1,0,0}\hat z\ket{1,0,0}=0 \end{equation} Since we know its invariant under rotation, we have the last equality This means we need to go to second order in our energy correction, so we want \begin{equation} E_{1,0,0}^{(2)}=\mathcal E^2\sum_{n=1}^{\infty}\sum_{\ell,m} \frac{|\bra{n,\ell,m}\hat z\ket{1,0,0}|}{E_1^{(0}-E_n^{(0)}} \end{equation} This sum is really hard to evaluate, but we do know that it converges, and it's a challenge problem to show that it does. We note that the state cannot ever mix different values of $m$, from symmetry arguments \paragraph{Degenerate $n=2$} This is cool for the nondegenerate case where $n=1$, but what about the case where $n=2$? It might be degenerate! This is something different. Our basis can be written as \begin{align} \ket{2,0,0} && \ket{2,1,0} && \ket{2,1,1} && \ket{2,1,-1} \end{align} If we didnt know any better, it is actually possible to write this matrix out in its full glory. Altman did it on the board, but was pretty clear that it's ``boring to do'', and unnecessary. The question he poses is whether or not there's a simplification that can make this problem fun. For one thing, many matrix elements are actually 0 by symmetry arguments, so we can just eliminate those as contenders immediately. The way he keeps posing this argument is as a statement about integrating over functions that are odd under parity. The final form of the matrix he writes down is roughly \begin{equation} \hat H=-\mathcal H\begin{bmatrix} 0 & \bra{2,0,0}\hat z\ket{2,1,0} & 0 & 0 \\ \bra{2,1,0}\hat z\ket{2,0,0} & 0 & 0 &0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ \end{bmatrix} \end{equation} <++>
+\end{document}

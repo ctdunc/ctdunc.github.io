@@ -1,0 +1,24 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-10-04-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+\subsection{Multi-Electron Atoms} What we expect from perturbation theory from the non-interacting model of these energy shells is \begin{center} \begin{tabular}{c|c|c|c} $n$ & $\ell$ & Degeneracy & N\\ \hline 1 & 0 & 2 & 2\\ 2 & 0,1 & 2(1+3)=8 & 2+8=10\\ 3 & 0,1,2 & 2(1+3+5)=18 & 2+10+18=28\\ 4 & 0,1,2,3 & 2(1+3+5+7)=32 & 2+8+18+32=60 \end{tabular} \end{center} What is the origin of this degeneracy though? in $m$, it's clear that this comes from rotational invariance of the hydrgoen atom, but for $\ell$, it's much less clear. Turns out there's an $SO(4)$ symmetry in the hydrogen atom.\footnote{TODO: for fun, read weinberg paper} It's no bueno in experiment. It holds for $n=1,2$ for hydrogen and neon, but for argon, it sucks! We get $n=3, N=18$. No Bueno! Brief overview of $s,p,d,f$ notation. We can take the next row of the PTE \begin{center} \begin{tabular}{c|cccccccc} $Z$ & 3&4&5&6&7&8&9&10\\ \hline & Li&Be&B&C&N&O&F&Ne\\ He & $2s^1$ & $2s^2$ & $2s^22p^1$ & $2s^22p^2$ & $2s^22p^3$ &$2s^22p^4$ &$2s^22p^5$ & $2s^22p^6$ \end{tabular} \end{center} But why the heck is, for instance, in Argon, and it's rows, is the $4s$ orbital filled before the $3d$ orbital? An electron in a MEA feels an effective potential of \begin{equation} U(r)=\left\{\begin{matrix*}[l] -\frac{e^2}{r} & r\rightarrow\infty \\ -\frac{Ze^2}{r} & r\rightarrow 0 \end{matrix*} \right. \end{equation} The self-consistent approach to solving this problem is to iteratively solve for better and better approximations of this, using some interpolating function to get $U(r)$ to exhibit this behavior.\footnote{TODO: Look up Hartree-Fock approximation/Self-consistent field method.} \subsection{$H_2$} \begin{center} \begin{tikzpicture}[scale=3] \coordinate (nr) at (-1,0); \coordinate (pr) at (1,0); \coordinate (0) at (0,0); \draw[fill] (nr) circle (.4pt); \draw[dashed] (nr) circle (4pt); \draw[dashed] (pr) circle (4pt); \draw[fill] (pr) circle (.4pt); \draw (nr) node[anchor=north] {$-\frac{R}{2}$}; \draw (pr) node[anchor=north] {$\frac{R}{2}$}; \end{tikzpicture} \end{center} This has some hamiltonian \begin{equation} H=\frac{p^2}{2m}-\frac{e^2}{\left|r-\frac{R}{2}\right|}-\frac{e^2}{\left|r+\frac{R}{2}\right|}+\frac{e^2}{|R|} \end{equation} What we want to find is some ground state energy of this $H$. We think it's probably going to look something like \begin{center} \begin{tikzpicture}[scale=3] \draw[->] (0,0)--(1,0) node[anchor=west]{$R$}; \draw[->] (0,0)--(0,1) node[anchor=south]{$E$}; \draw plot[tension=1,smooth] coordinates {(0,1)(0.4,-0.4)(0.9,0.001)}; \end{tikzpicture} \end{center} The full wavefunction is going to be \begin{equation} \ket{\psi(R)}=\ket{\psi_e}\otimes\ket{R/2}\otimes\ket{-R/2} \end{equation} We can pick some non-orthogonal set of states $\ket{1}$, $\ket{2}$, which are the states where we ignore the existence of proton $1$, $2$ antirespectively, and compute the behavior of the electron about each remaining proton. We can express this as \begin{equation} \ket{\varphi_e^\pm}=\ket{1}\pm\ket{2} \end{equation} where \begin{align} \bra{x}\ket{1}=\varphi_{100}\left(x-\frac{R}{2}\right)\\ \bra{x}\ket{2}=\varphi_{100}\left(x+\frac{R}{2}\right) \end{align} We like this, because it's symmetric under permutation. We're going to treate $R$ as our variational parameter. Since we haven't actually normalized our state, we need to divide through by the normalization in perturbation theory, so we get \begin{equation} E_\pm(R)=\frac{\bra{\psi^\pm}H\ket{\psi^\pm}}{\bra{\psi^\pm}\ket{\psi^\pm}} = \frac{1}{\bra{\psi^{\pm}}\ket{\psi^{\pm}}}\left(\bra{1}H\ket{1}+\bra{2}H\ket{2}\pm(\bra{1}H\ket{2}+\bra{2}H\ket{1})\right) \end{equation}
+\end{document}

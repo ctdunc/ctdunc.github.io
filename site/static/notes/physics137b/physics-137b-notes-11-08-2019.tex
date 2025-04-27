@@ -1,0 +1,25 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\usepackage{graphicx}\graphicspath{{./images/}}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-11-08-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+\subsubsection{Deriving Higher Order Corrections} Now, lets say we have some initial state $\ket{\psi_i(0)}=\ket{i}$, and we want to transition it into some other state. We should have in the schroedinger picture $\ket{\psi_i(t)}=U(t,0)\ket{i}$ or, in the interaction picture \begin{equation} \ket{\psi_i(t)}=U_0(t,t_0)U_I(t,t_0)\ket{i} \end{equation} Now, recall our $d_f(t)=e^{\frac{i}{\hbar}E_ft}\bra{f}\ket{\psi_i(t)}$, so we can write \begin{align} d_f(t)=e^{\frac{i}{\hbar}E_ft}\bra{f}\ket{\psi_i(t)} \\ =e^{\frac{i}{\hbar}E_ft}\bra{f}U_0(t,t_0)U_I(t,t_0))\ket{i} \\ =\bra{f}U_i(t,t_0)\ket{i} \end{align} This gives us a formula for $d_f$. \begin{equation} d_f(t)=\delta_{fi}-\frac{i}{\hbar}\int_{t_0}^{t}\bra{f}V_I(t_1)\ket{i}dt_1 \end{equation} and, if we want to go to second order, \begin{equation} d_f(t)=\delta_{fi}-\frac{i}{\hbar}\int_{t_0}^{t}\bra{f}V_I(t_1)\ket{i}dt_1 -\frac{1}{\hbar^2}\int_{t_0}^{t}dt_1\int_{t_0}^{t_1}dt_2\bra{f}V_I(t_1)V_I(t_2)\ket{i} \end{equation} in the second term, we're going to insert a unit matrix, resolution of identity, so that we have \begin{equation} d_f(t)=\delta_{fi}-\frac{i}{\hbar}\int_{t_0}^{t}\bra{f}V_I(t_1)\ket{i}dt_1 -\frac{1}{\hbar^2}\int_{t_0}^{t}dt_1\int_{t_0}^{t_1}dt_2\sum_{m}^{}\bra{f}V_I(t_1)\ket{m}\bra{m}V_I(t_2)\ket{i} \end{equation} if we now insert the form for $V_I$ we derived earlier, we should have, letting $V_{fi}(t)=\bra{f}V\ket{i}$, \begin{equation} d_f(t)=\delta_{fi} -\frac{i}{\hbar}\int_{t_0}^{t}dt_1e^{i\omega_{fi}t_1}V_{fi} -\sum_{m}^{}\frac{1}{\hbar^2}\int_{t_0}^{t}dt_1\int_{t_0}^{t_1}dt_2e^{i\omega_{fm}t_1}e^{i\omega_{mi}t_2}V_{fm}(t_1)V_{mi}(t_2) \end{equation} This is really hinting at the path integral formulation of quantum mechancis, but we're gonna yeet that now. \subsection{Ex: Harmonic Perturbation} Consider our perturbation to be $V(t)=\hat Ve^{-i\omega t+\varepsilon t}$ If we assume that $\bra{f}\hat V\ket{i}=0$, we can immediately compute that \begin{equation} d_f^{(2)}=-\frac{1}{\hbar^2}\sum_{m}\bra{f}\hat V\ket{m}\bra{m}\hat V\ket{i} \int_{-\infty}^{t}dt_1\int_{-\infty}^{t_1}dt_2 e^{i(\omega_{fm}-\omega-i\varepsilon)t_1} e^{i(\omega_{mi}-\omega-i\varepsilon)t_2} \end{equation} This is kind of a nasty integral, but we can get it by taking \begin{equation} d_f^{(2)}=\frac{1}{\hbar}e^{i(\omega_{fi}-2\omega)}\frac{e^{2\varepsilon t}}{\omega_{fi}-2\omega-2i\varepsilon}\sum_{m}^{}\frac{\bra{f}V\ket{m}\bra{m}V\ket{i}}{\omega_{mi}-\omega-i\varepsilon} \end{equation} Then, we want the transition rate, which we find by taking the time derivative of the modulus as $\varepsilon\rightarrow 0$, which gives \begin{equation} \lim_{\varepsilon\rightarrow 0}W_{fi}=\lim_{\varepsilon\rightarrow 0}\dv{t}|d_f^{(2)}|^2=\frac{2\pi}{\hbar^4}\left|\sum_{m}^{}\frac{V_{fm}V_{mi}}{\omega_{mi}-\omega-i\varepsilon}\right|^2\delta(\omega_{fi}-2\omega) \end{equation} where the $\delta$ appears since there is a lorenzian term in there. It's not super necessary to keep the $\varepsilon$ in the denominator of the sum, but he's about to explain why we did. \begin{equation} W_{fi}=\frac{2\pi}{\hbar^4} \left| \sum_{m}^{}\frac{V_{fm}V_{mi}}{\omega_{mi}-\omega} \right|^2 \delta(\omega_{fi}-2\omega) \end{equation} Basically, just watch out for resonances. Our interpretation of the intermediate terms should be in terms of paths, \begin{center} \begin{tikzpicture} \node (f) at (1,1) {$\ket{f}$}; \node (i) at (-1,-1) {$\ket{i}$}; \node (3) at (0,2) {$\ket{3}$}; \node (1) at (0,0) {$\ket{1}$}; \draw[->] (i) to[in=-180] (1); \draw[->] (1) to[in=180] (f); \draw[->] (i) to[out=120,in=-120] (3); \draw[->] (3) to[in=45] (f); \end{tikzpicture} \end{center}
+\end{document}

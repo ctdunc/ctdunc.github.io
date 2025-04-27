@@ -1,0 +1,25 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\usepackage{graphicx}\graphicspath{{./images/}}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+
+\title{notes-10-23-2019}
+\begin{document}
+\abstract{A single document copy of these notes, as well as a mirror of every note, can be found at \url{connorduncan.xyz/notes}}
+\subsection{Method of Partial Waves (Guest Lecturer N. Yao)} Idea is we want to learn about scatter-er by takoing $\varphi(r)=\varphi_\mathrm{inc}(r)+\varphi_\mathrm{sc}(r)$. Partial waves is distinct from born approximation. We want to calculate phase shifts in low energies relative to the potential. We're going to assume a radial potential $V(r)$, will give us that angular momentum is a good basis. We can break this down into $\ell=0,1,2\dots$, and get that for each $\ell$ we have an individual scattering problem. \begin{equation} g(\theta,\varphi)=\sum_{\ell=0}^\infty\sum_{m=-\ell}^\ell f_{\ell m}Y_{\ell m}(\theta,\varphi) \end{equation} since $f$ independent of $\varphi$, we really have some $f_k(\theta)$, where \begin{equation} f_{k}(\theta)=\sum_{\ell=0}^\infty f_{\ell 0}Y_{\ell 0}(\theta) \end{equation} Now, we're going to change into the \emph{Legendre Basis}, where \begin{equation} f_{k}(\theta)=\sum_{\ell=0}^\infty f_{\ell 0}Y_{\ell 0}(\theta)=\sum\frac{2\ell+1}{k}f_\ell P_\ell(\cos\theta) \end{equation} where now, our $f_\ell$ are known as the \textbf{partial wave scattering amplitudes} $f_\ell(k)$. So now, if we have \begin{equation} \varphi_\mathrm{inc}(r,\theta)=e^{ikr\cos\theta}=\sum_{\ell}(2\ell+1)u_\ell(kr)P_\ell(\cos\theta) \end{equation} The Legendre polynomials have a nice property \begin{equation} \int_{-1}^1\omega P_\ell(\omega)P_\varpi(\omega)=\frac{2}{2\ell+1}\delta_{\ell\varpi} \end{equation} Now, we're going to solve for $u_\ell(kr)$. Let's multipy $\varphi_\mathrm{inc}$ by $P_\ell(\cos\theta)$ and integrate\footnote{check out david Tong's lectures} \begin{equation} u_\ell(kr)=\frac{1}{2}\int_{-1}^{1}d\omega e^{ikr\omega}P_\ell(\omega) \end{equation} If we integrate this by parts, we have \begin{equation} u_\ell(kr)=-\frac{i}{2kr}\left[e^{ikr\omega}P_\ell(\omega)\right]_{-1}^1+\frac{1}{2ikr}\int_{-1}^1d\omega e^{ikr\omega}\pdv{P_\ell}{\omega} \end{equation} where \begin{equation} \frac{1}{2ikr}\int_{-1}^1d\omega e^{ikr\omega}\pdv{P_\ell}{\omega}\sim\frac{1}{r^2} \end{equation} The fina answer ends up being \begin{equation} \varphi_\mathrm{inc}(r)=\sum_{\ell=0}^\infty\frac{2\ell+1}{2ik}\left[(-1)^{\ell+1}\frac{e^{-ikr}}{r}+\frac{e^{ikr}}{r}\right]P_\ell(\cos\theta) \end{equation} If we put this togehter with the scattered component, we get the full wavefunction \begin{equation} \sum_\ell\frac{2\ell+1}{k}\left[(-1)^{\ell+1}\frac{e^{-ikr}}{r}+\left(1+2if_\ell(k)\right)\frac{e^{ikr}}{r}\right]P_\ell(\cos\theta) \end{equation} So we want a unitarity property, i.e. conservation of probability density. \begin{equation} |(-1)^{\ell+1}|=|1+2if_\ell(k)| \end{equation} and \begin{equation} 1+2if_\ell(k)=e^{2i\delta_\ell(k)} \end{equation} where $\delta_\ell(k)$ is known as the \textbf{Partial Wave Scattering Phase Shift}. This all gives that \begin{equation} f(\theta)=\frac{1}{k}\sum_\ell(2\ell+1)\sin(\delta_\ell(k))e^{i\delta_\ell(k)}P_\ell(\cos\theta) \end{equation} Intuitively, we should have that the net effect of the potential on the wavefunction will be a phase shift. This is because we have reduced the equation in $f(k,\theta)$ in two variables to an infinite series of $f_\ell(k)$, where for small potentials we can consider finitely many $\ell$ to a good approximation. For future reference, we have the scattering length $a_\ell\frac{\delta_\ell}{k}$.
+\end{document}

@@ -1,0 +1,23 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+\title{notes-09-04-2019}
+
+\begin{document}
+\newcommand{\adj}{^{\dag}} \subsubsection{Observables$\leftrightarrow$Hermitian Operators} Hermitian operators are those operators that are self adjoint, e.g. \begin{align} H=H\adj && A_{ij}=A_{ji}^* \end{align} \begin{itemize} \item Eigenvalues are real \item Eigenvectors form a complete orthonormal basis. \end{itemize} If we have degenerate eigenvalues, e.g. states $\{\ket{a_1},\ldots,\ket{a_g}\}$ that are degenerate, then any superposition of those states will also be an eigenvector with the same eigenvalue (e.g. they lie along their own span). e.g. spin has a degeneracy. Eigenvalues are always $a=s(s+1)$. It is degenerate $2s+1$ states. That's why we label by $\ket{s,m}$, because the operator corresponding to $m$ is nondegenerate and commutes with $S$. Went over an explanation of a pauli matrix for the $S_z$ operator. We can do the same thing for $S_x$. This is an excercise We then want the bloch sphere representation \begin{equation} \ket{\psi}=\alpha\ket{+z}+\beta\ket{-z}=\cos\frac{\theta}{2}\ket{+z}+e^{i\phi}\sin\frac{\theta}{2}\ket{-z} \end{equation} Operators need not commute with each other.\footnote{Q: Don't operators form a group under $\times$? How can we talk about commutation relations in a simpler way? Where does this relations $[A,B]$ come from?} Also, if we want to make the hamiltonian simpler, we cann just put it into a block structure and solve it. \paragraph{commuting observables} Sets of commuting observables have mutual eigenvectors. e.g. \begin{equation} \hat B\ket{E,a,b,c}=b{E,a,b,c} \end{equation} called \emph{quantum numbers}. \paragraph{noncommuting observables} We can also have noncommuting observables. Since we can't diagonalize them simultaneously, we cannot have complete symmetry because we collapse the wavefunction simultaneously. We need to define the variance of an operator $A$ as \begin{equation} \Delta A^2=|\bra{\psi}A^2\ket{\psi}|-|\bra{psi}A\ket{\psi}|^2 \end{equation} Then, for two observables, we have \begin{align} [A,B]=\hat C\\ \Delta A\Delta B=\frac{1}{2}\langle \hat C\rangle \end{align} <++> \subsubsection{Symmetries$\leftrightarrow$Unitary Operators}
+\end{document}

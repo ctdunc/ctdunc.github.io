@@ -1,0 +1,75 @@
+\documentclass{article} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage[margin=0.2in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{physics} 
+\usepackage{tikz} 
+\usepackage{mathtools}
+\usepackage{graphicx}\graphicspath{{./images/}}
+\mathtoolsset{showonlyrefs} 
+\theoremstyle{definition} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{definition}{Definition}[section] 
+
+\author{Connor Duncan}
+\date{\today}
+\begin{document}
+\subsubsection{Optical Theorem (Guest Lecutrer: M. Zaletel)}
+We have the differential cross section
+\begin{equation}
+	\pdv{\sigma}{\Omega}=|f(\theta)|^2=\frac{1}{k^2}\sum_{\ell,\ell'}(2l+1)(2\ell'+1)f_\ell f^*_{\ell'}P_\ell(\cos\theta)P_{\ell'}(\cos\theta)
+\end{equation}
+Legendre polynomials are orthonormal, so we can take 
+\begin{equation}
+	\sigma_T=2\pi\int_{-1}^1d\cos\theta |f^2(\theta)|^2=\frac{4\pi}{k^2}\sum_{\ell}(2\ell+1)\sin^2(\delta_\ell)
+\end{equation}
+There's also a unitarity bound. He erased before I was able to write this down so TODO: GO to the Tong lecture.
+
+\subsubsection{Hard-Sphere Scattering}
+Let's consider the following hard-sphere scattering.
+
+\begin{align}
+	\psi(r,\theta)=\sum_\ell R_\ell(r)P_\ell(\cos\theta)
+\end{align}
+Then, for $r>a$,
+\begin{align}
+	\left[\dv[2]{r}-\frac{\ell(\ell+1)}{r^2}+k^2\right](rR_\ell(r))
+\end{align}
+Basically, we write it down in terms of the bessell functions 
+\begin{align}
+	\rho\gg 1\Rightarrow\left\{\begin{matrix}
+		j_\ell(\rho)=\frac{1}{\rho}\sin(\rho-\ell\pi/2)
+		\\
+		n_\ell(\rho)=\frac{1}{\rho}\sin(\rho-\ell\pi/2)
+	\end{matrix}\right.
+	&&
+	\rho\ll 1\Rightarrow\left\{\begin{matrix}
+		j_\ell(\rho)=\frac{\rho^{\ell}}{(2\ell+1)!!}
+		\\
+		n_\ell(\rho)=(2\ell-1)!!\rho^{-(2\ell+1)}
+	\end{matrix}\right.
+\end{align}
+Taking asymtotics then, we take
+\begin{equation}
+	\lim_{\rho\rightarrow\infty}R_\ell(\rho)\propto
+	\left[(-1)^{\ell+1}\frac{e^{-i\rho}}{\rho}+e^{2i\delta_\ell}\frac{e^{i\rho}}{\rho}\right]
+	=
+	\frac{e^{i\delta\ell}e^{i\pi\ell/2}}{\rho}\left[-e^{i(\rho+\delta_\ell-\pi\ell/2)}+e^{i(\rho+\delta_\ell-\pi\ell/2)}\right]
+\end{equation}
+We can solve for various $\ell$ by substituting in the asymptotics for $\ell$. For instance, in the limit where $\rho\ll 1$, $\tan(\alpha_\ell=\delta_\ell)=\frac{j_\ell(ka)}{n_\ell(ka)}$, which gives
+\begin{equation}
+	\lim_{\rho\ll 1}\tan(\delta_\ell)=\frac{(ka)^{2\ell+1}}{(2\ell+1)!!(2\ell-1)!!}
+\end{equation}
+Now, we can take the total contribution from all sections
+\begin{equation}
+	\sigma_T=\sum_{\ell=0}^\infty\sigma_\ell=\frac{4\pi}{k^2}(ka)^2+\dots=4\pi a^2+\dots
+\end{equation}
+
+We can also always define $a_\ell=\lim_{k\rightarrow 0}\frac{\tan(\delta_\ell)}{k}$
+
+
+\end{document}
