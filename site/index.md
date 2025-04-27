@@ -5,10 +5,10 @@ noblog: 1
 ---
 
 <div style="display: flex; max-width: 100%; justify-content: space-around; flex-wrap: wrap; width: 100%;">
-<div style="flex-grow: 1; max-height: 20em; text-align: center; margin: 1em; width: calc(0.4 * var(--max-width));">
+<div style="flex-grow: 1; max-height: 20em; text-align: center; margin: 1em; width: calc(0.3 * var(--max-width));">
 <img src="/static/res/profile_pic_dawg.jpeg" alt="Had to get a glizzy" style="height: 100%;"/>
 </div>
-<div style="flex-grow: 1; max-height: 20em; margin: 1em; width: calc(0.4 * var(--max-width));">
+<div style="flex-grow: 1; max-height: 20em; margin: 1em; width: calc(0.3 * var(--max-width));">
 <b is-="badge" variant-="background1"> Connor Duncan </b>
 <p is-="badge" variant-="background2"> Quantitative Analyst </p>
 <ul marker-="tree">
