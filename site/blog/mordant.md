@@ -49,7 +49,7 @@ block.
 
 ***
 
-![github highlight example](../res/github-highlight.png)
+![github highlight example](/static/res/github-highlight.png)
 
 <details box-="square">
 <summary> view generated html </summary>

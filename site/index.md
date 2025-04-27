@@ -6,7 +6,7 @@ noblog: 1
 
 <div style="display: flex;">
 <div style="flex-grow: 1; min-width: 50%;">
-<img src="res/profile_pic_dawg.jpeg" alt="Had to get a glizzy"/>
+<img src="/static/res/profile_pic_dawg.jpeg" alt="Had to get a glizzy"/>
 </div>
 <div style="flex-grow: 1;">
 

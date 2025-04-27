@@ -33,7 +33,7 @@ and ensures that all inputs can be parsed according to some custom business logi
 If they can't be parsed, they are output to the components `error` property, which prompts
 the user to correct their mistake.
 
-<img src="/res/img/dash-clientside-nts.png" alt="Dash Clientside Callback No Highlight"/>
+<img src="/static/res/img/dash-clientside-nts.png" alt="Dash Clientside Callback No Highlight"/>
 
 Writing JS like this is not too bad for smaller/simpler, functions
 but once things get much longer, this begins to suck big time.
@@ -93,7 +93,7 @@ Armed with [this video](https://www.youtube.com/watch?v=09-9LltqWLY) from TJ DeV
 Placing this injection at `$NVIM_CONFIG_LOCATION/queries/python/injections.scm` resulted in 
 good-enough JavaScript syntax highlighting in python files! Behold:
 
-<img src="/res/img/dash-clientside-ts.png" alt="Dash Clientside Callback Highlighted"/>
+<img src="/static/res/img/dash-clientside-ts.png" alt="Dash Clientside Callback Highlighted"/>
 
 This wasn't overly complicated. Between watching TJ's video and figuring out the Scheme syntax,
 it took about an hour, and has been a giant quality of life boost for me, and resulted in

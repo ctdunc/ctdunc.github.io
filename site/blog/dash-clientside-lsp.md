@@ -21,7 +21,7 @@ title: Enabling LSP Support for Dash Clientside Callbacks
 
 If you stick with me through this post, here is the setup we will arrive at.
 
-<img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/>
+<img src="/static/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/>
 
 NOTE: You do not need to be a neovim user to benefit from this post. Many of the tips covered below
 apply equally well to any editor that can take advantage of a JavaScript Language Server.
@@ -194,7 +194,7 @@ of this article with no hassle.
 Finally, once we have our declaration in `assets/`, run `$ tsc` in the root of your Dash project.
 If you already have a JavaScript LSP installed, you should now be able to accomplish something like the following: 
 
-<img src="/res/img/grid-jsdoc.png" alt="A Working LSP Setup!"/>
+<img src="/static/res/img/grid-jsdoc.png" alt="A Working LSP Setup!"/>
 
 Note the presence of [JSDoc](https://jsdoc.app/) comments denoting the types of arguments our function is equipped to 
 accept. We cannot use type hints the same way that we can in Python, as that feature is TypeScript-only and Dash only accepts vanilla JS (afaik).
@@ -269,7 +269,7 @@ ruff is wicked fast.
 
 If you've followed my explanation so far, your editor should now be capable of something like this (note that `otter` is _not_ enabled here):
 
-<img src="/res/img/dash-inline-format.gif" alt="GIF showing inline formatting"/>
+<img src="/static/res/img/dash-inline-format.gif" alt="GIF showing inline formatting"/>
 
 ## Getting ts_ls Working with otter.nvim
 Now that we have formatting working fairly well, it's time to get autocomplete working on our embedded JavaScript.
@@ -333,7 +333,7 @@ Finally, to activate `otter`, open any Python file containing a `clientside_call
 
 If I've explained this well enough, you should now have something like the following working:
 
-<img src="/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/>
+<img src="/static/res/img/dash-inline-lsp.gif" alt="GIF showing inline formatting"/>
 
 If you want `otter` to automatically activate in any Python file, simply add the following to `after/ftplugin/python.lua`:
 
