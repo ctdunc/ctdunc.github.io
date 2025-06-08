@@ -3,7 +3,7 @@ nvim_treesitter_location = "~/.local/share/nvim/lazy/nvim-treesitter"
 [languages.python]
 name = "python"
 language = { path = "~/.local/share/nvim/lazy/nvim-treesitter/parser/python.so", symbol_name = "tree_sitter_python" }
-highlights_query = { path = "./mordant/queries/python/highlights.scm" }
+highlights_query = { path = "../mordant/queries/python/highlights.scm" }
 injections_query = { query = '''
 (call
   (identifier) @name (#eq? @name clientside_callback) 
@@ -32,8 +32,8 @@ highlights_query = { path = "~/.local/share/nvim/lazy/nvim-treesitter/queries/js
 
 [languages.html]
 name = "html"
-highlights_query = { path = "./mordant/queries/html/highlights.scm" }
-injections_query = { path = "./mordant/queries/html/injections.scm" }
+highlights_query = { path = "../mordant/queries/html/highlights.scm" }
+injections_query = { path = "../mordant/queries/html/injections.scm" }
 
 [languages.css]
 name = "css"
@@ -61,7 +61,7 @@ injections_query = { query = '''
 [languages.toml]
 name = "toml"
 language = { path = "~/.local/share/nvim/lazy/nvim-treesitter/parser/toml.so" }
-highlights_query = { path = "./mordant/queries/toml/highlights.scm" }
+highlights_query = { path = "../mordant/queries/toml/highlights.scm" }
 injections_query = { query = '''
 (pair 
   (bare_key) @key
@@ -84,4 +84,4 @@ highlights_query = { path = "~/.local/share/nvim/lazy/nvim-treesitter/queries/re
 [languages.sh]
 name = "sh"
 language = { path = "~/.local/share/nvim/lazy/nvim-treesitter/parser/bash.so", symbol_name = "tree_sitter_bash" }
-highlights_query = { path = "./mordant/queries/bash/highlights.scm" }
+highlights_query = { path = "../mordant/queries/bash/highlights.scm" }

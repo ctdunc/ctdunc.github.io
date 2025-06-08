@@ -1,3 +1,4 @@
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg_h: #1d2021;
@@ -73,6 +74,7 @@
 pre > code
 {
     overflow-x: auto;
+    white-space: pre;
     max-width: min(80em, 95vw);
     display:block;
     color: var(--fg_h);
