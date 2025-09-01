@@ -84,6 +84,15 @@ spend a good chunk of time configuring my development environment to find bugs a
   neovim/tmux config, with nice zsh defaults.
   Configured primarly for Python (ruff/pyright) and Rust development (rust-analyzer).
 </details>
+<details box-="round" id="box-mild">
+  <summary>
+    <a href="https://github.com/ctdunc/webring">webring</a> (very barebones webring in Rust)
+  </summary>
+  <p>
+      Spin up a webring in 2 minutes. TOML-configured, there are basically no features by design.
+      I'll make it multi-threaded if I think people are reading my (or anyone elses) blog.
+  </p>
+</details>
 </details>
 <details box-="square">
 <summary>Lecture Notes (Math + Physics)</summary>
