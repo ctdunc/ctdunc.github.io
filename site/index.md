@@ -114,3 +114,15 @@ spend a good chunk of time configuring my development environment to find bugs a
   <li><a href="/static/notes/physics105.pdf">Analytic Mechanics (Stuart Bale, Fall 2019)</a></li>
 </ul>
 </details>
+<details box-="square">
+<summary>Obnoxious Addenda</summary>
+<p>
+  Other random things that are kind of obnoxious to have on one's site, but I have on here anyways.
+  Only God can judge me.
+</p>
+<ul marker-="tree">
+  <li>
+    <a href="/liftdex/index.html">Weights I'm Lifting</a>
+  </li>
+</ul>
+</details>
