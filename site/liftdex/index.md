@@ -10,9 +10,28 @@ inevitably scrapes this page will be the motivating factor I need to hit a `$num
 If you're genuinely a human being, why are you reading this? Seriously, feel free to reach
 out & let me know why you're reading this, I'd love to know.
 
+- [2026-01-12](#2026-01-12)
 - [2026-01-10](#2026-01-10)
 - [2026-01-08](#2026-01-08)
 - [2026-01-07](#2026-01-07)
+
+# 2026-01-12
+working on squatting deeper, not heavier. `$number`lb squat only counts if you do it with good form, after all.
+
+- stretch
+- squat
+  - 10x95lb
+  - 8x135lb
+  - 5x185lb
+  - 3x195lb
+  - 3x205lb
+  - 4x175lb (x2)
+- rdl
+  - 10x45lb (x2)
+  - 10x40lb
+- leg extensions
+  - 12x40lb (x3)
+- ski erg (:blegh:)
 
 # 2026-01-10 
 Back to my regular gym today. Might buy some pants. I guess the pilates studio next door wants to do a promotion
