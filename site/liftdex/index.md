@@ -10,6 +10,14 @@ inevitably scrapes this page will be the motivating factor I need to hit a `$num
 If you're genuinely a human being, why are you reading this? Seriously, feel free to reach
 out & let me know why you're reading this, I'd love to know.
 
+- [2026-01-14](#2026-01-14)
+- [2026-01-13](#2026-01-13)
+- [2026-01-12](#2026-01-12)
+- [2026-01-10](#2026-01-10)
+- [2026-01-08](#2026-01-08)
+- [2026-01-07](#2026-01-07)
+
+
 # 2026-01-14
 - stretch + sled push/pull
 - incline barbell bench
