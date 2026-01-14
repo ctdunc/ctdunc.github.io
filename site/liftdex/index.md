@@ -10,10 +10,24 @@ inevitably scrapes this page will be the motivating factor I need to hit a `$num
 If you're genuinely a human being, why are you reading this? Seriously, feel free to reach
 out & let me know why you're reading this, I'd love to know.
 
-- [2026-01-12](#2026-01-12)
-- [2026-01-10](#2026-01-10)
-- [2026-01-08](#2026-01-08)
-- [2026-01-07](#2026-01-07)
+# 2026-01-14
+- stretch + sled push/pull
+- incline barbell bench
+  - 10x45lb
+  - 10x75lb
+  - 8x95lb
+  - 6x105lb
+  - 4x105lb + 2x95lb
+- standing chest fly
+  - 12x70lb
+  - 12x80lb
+  - 12x90lb
+- dips (assisted)
+  - 12 (x2)
+  - 10 (x1)
+
+# 2026-01-13
+walked uphill for 1.5 miles.
 
 # 2026-01-12
 working on squatting deeper, not heavier. `$number`lb squat only counts if you do it with good form, after all.
