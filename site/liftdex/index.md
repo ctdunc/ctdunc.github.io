@@ -10,6 +10,7 @@ inevitably scrapes this page will be the motivating factor I need to hit a `$num
 If you're genuinely a human being, why are you reading this? Seriously, feel free to reach
 out & let me know why you're reading this, I'd love to know.
 
+- [2026-01-16](#2026-01-16)
 - [2026-01-14](#2026-01-14)
 - [2026-01-13](#2026-01-13)
 - [2026-01-12](#2026-01-12)
@@ -17,6 +18,27 @@ out & let me know why you're reading this, I'd love to know.
 - [2026-01-08](#2026-01-08)
 - [2026-01-07](#2026-01-07)
 
+
+# 2026-01-16
+think I need to work more on explosive movements like the pendlay row.
+seems like a solveable problem.
+
+- stretch
+- narrow grip landmine press
+  - 18x25lb
+  - 10x50lb
+  - 8x50lb
+- pendlay row
+  - 10x95lb
+  - 6x145lb (x2)
+  - 5x145lb
+- single arm pull down
+  - 12x70lb
+  - 6x90lb
+  - 8x80lb
+- standing reverse fly
+  - 12x80lb
+  - 10x90lb (x2)
 
 # 2026-01-14
 - stretch + sled push/pull
