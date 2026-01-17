@@ -10,16 +10,49 @@ inevitably scrapes this page will be the motivating factor I need to hit a `$num
 If you're genuinely a human being, why are you reading this? Seriously, feel free to reach
 out & let me know why you're reading this, I'd love to know.
 
-- [2026-01-16](#2026-01-16)
-- [2026-01-14](#2026-01-14)
-- [2026-01-13](#2026-01-13)
-- [2026-01-12](#2026-01-12)
-- [2026-01-10](#2026-01-10)
-- [2026-01-08](#2026-01-08)
-- [2026-01-07](#2026-01-07)
+- [one-rep maxima (that i'm proud of)](#one-rep-maxima-that-im-proud-of)
+- [log](#log)
+  - [2026-01-17](#2026-01-17)
+  - [2026-01-16](#2026-01-16)
+  - [2026-01-14](#2026-01-14)
+  - [2026-01-13](#2026-01-13)
+  - [2026-01-12](#2026-01-12)
+  - [2026-01-10](#2026-01-10)
+  - [2026-01-08](#2026-01-08)
+  - [2026-01-07](#2026-01-07)
 
+# one-rep maxima (that i'm proud of)
 
-# 2026-01-16
+|movement     | weight|
+|-------------|-------|
+|hex deadlift |305lb  |
+|barbell squat|245lb  |
+
+# log
+## 2026-01-17
+let's GO! pb deadlift! first time being consistent without added height on the bar & a big leap (from 245lb) in one rep max!
+hip mobility exercises paying dividends. it's called texas hex b/c the bar weighs 55lb, instead of 45lb (it's bigger).
+
+- trx row
+  - 12 (x2)
+- kettlebell snatch
+  - 10x40lb (x2)
+- texas hex deadlift
+  - 10x145lb (6 on high handles) 
+  - 8x145lb
+  - 6x175lb
+  - 6x200lb
+  - 4x225lb
+  - 5x245lb
+  - 1x275lb
+  - 1x305lb
+- cable lat pulldown
+  - 12x80lb
+  - 8x100lb (x2)
+- standing chest fly
+  - 10x20lb (x3)
+
+## 2026-01-16
 think I need to work more on explosive movements like the pendlay row.
 seems like a solveable problem.
 
@@ -40,7 +73,7 @@ seems like a solveable problem.
   - 12x80lb
   - 10x90lb (x2)
 
-# 2026-01-14
+## 2026-01-14
 - stretch + sled push/pull
 - incline barbell bench
   - 10x45lb
@@ -56,10 +89,10 @@ seems like a solveable problem.
   - 12 (x2)
   - 10 (x1)
 
-# 2026-01-13
+## 2026-01-13
 walked uphill for 1.5 miles.
 
-# 2026-01-12
+## 2026-01-12
 working on squatting deeper, not heavier. `$number`lb squat only counts if you do it with good form, after all.
 
 - stretch
@@ -77,7 +110,7 @@ working on squatting deeper, not heavier. `$number`lb squat only counts if you d
   - 12x40lb (x3)
 - ski erg (:blegh:)
 
-# 2026-01-10 
+## 2026-01-10 
 Back to my regular gym today. Might buy some pants. I guess the pilates studio next door wants to do a promotion
 with our gym. It'd be fun if that worked out.
 
@@ -97,7 +130,7 @@ with our gym. It'd be fun if that worked out.
   - 6x25lb
 - horizontal high knee
 
-# 2026-01-08
+## 2026-01-08
 Knowing I was gonna put this on the internet persuaded me to do an extra bench set. Early signs promising.
 
 - walk uphill (14% incline; ~25 minutes; 3mph)
@@ -111,7 +144,7 @@ Knowing I was gonna put this on the internet persuaded me to do an extra bench s
 
 Going to dinner with my grandpa. Is this going to turn into a diary?
 
-# 2026-01-07 
+## 2026-01-07 
 Coming back from vacation + haven't lifted in a bit. Getting back in the swing of things.
 
 - assorted stretching
