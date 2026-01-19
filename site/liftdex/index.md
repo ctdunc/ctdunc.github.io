@@ -12,6 +12,7 @@ out & let me know why you're reading this, I'd love to know.
 
 - [one-rep maxima (that i'm proud of)](#one-rep-maxima-that-im-proud-of)
 - [log](#log)
+  - [2026-01-19](#2026-01-19)
   - [2026-01-17](#2026-01-17)
   - [2026-01-16](#2026-01-16)
   - [2026-01-14](#2026-01-14)
@@ -29,6 +30,21 @@ out & let me know why you're reading this, I'd love to know.
 |barbell squat|245lb  |
 
 # log
+## 2026-01-19
+it's MLK day.
+
+- stretch
+- squat 
+  - 10x95lb
+  - 10x135lb
+  - 6x185lb
+  - 4x205lb
+  - 2x225lb
+  - 5x195lb (x2)
+
+- RDL
+  - 10x40lb (x3)
+
 ## 2026-01-17
 let's GO! pb deadlift! first time being consistent without added height on the bar & a big leap (from 245lb) in one rep max!
 hip mobility exercises paying dividends. it's called texas hex b/c the bar weighs 55lb, instead of 45lb (it's bigger).
