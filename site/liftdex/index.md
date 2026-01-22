@@ -12,6 +12,7 @@ out & let me know why you're reading this, I'd love to know.
 
 - [one-rep maxima (that i'm proud of)](#one-rep-maxima-that-im-proud-of)
 - [log](#log)
+  - [2026-01-21](#2026-01-21)
   - [2026-01-19](#2026-01-19)
   - [2026-01-17](#2026-01-17)
   - [2026-01-16](#2026-01-16)
@@ -22,14 +23,36 @@ out & let me know why you're reading this, I'd love to know.
   - [2026-01-08](#2026-01-08)
   - [2026-01-07](#2026-01-07)
 
+
 # one-rep maxima (that i'm proud of)
 
 |movement     | weight|
 |-------------|-------|
 |hex deadlift |305lb  |
 |barbell squat|245lb  |
+|barbell bench|135lb  |
 
 # log
+## 2026-01-21
+Bench press PR! Let's go!
+
+- stretch
+- TRX row
+  - 12 (x2)
+- bench press
+  - 15x45lb
+  - 8x85lb
+  - 8x105lb
+  - 5x115lb
+  - 4x125lb
+  - 1x135lb (x2)
+- machine shoulder press
+  - 12x10lb
+  - 8x20lb (x2)
+  - 10x20lb
+- lat raise
+  - 10x7.5lb (x3)
+
 ## 2026-01-19
 it's MLK day.
 
