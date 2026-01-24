@@ -12,6 +12,7 @@ out & let me know why you're reading this, I'd love to know.
 
 - [one-rep maxima (that i'm proud of)](#one-rep-maxima-that-im-proud-of)
 - [log](#log)
+  - [2026-01-24](#2026-01-24)
   - [2026-01-21](#2026-01-21)
   - [2026-01-19](#2026-01-19)
   - [2026-01-17](#2026-01-17)
@@ -23,7 +24,6 @@ out & let me know why you're reading this, I'd love to know.
   - [2026-01-08](#2026-01-08)
   - [2026-01-07](#2026-01-07)
 
-
 # one-rep maxima (that i'm proud of)
 
 |movement     | weight|
@@ -33,6 +33,21 @@ out & let me know why you're reading this, I'd love to know.
 |barbell bench|135lb  |
 
 # log
+## 2026-01-24
+running on multiple days of very little sleep & feeling it.
+getting better about consistently hitting an acute angle while squatting.
+
+- GHD 10x (x2)
+- hip stretches
+- squat
+  - 10x95lb
+  - 10x135lb
+  - 6x185lb
+  - 4x205lb
+  - 4x185lb (x2)
+- leg extension
+  - 12x40lb (x3)
+
 ## 2026-01-21
 Bench press PR! Let's go!
 
