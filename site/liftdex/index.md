@@ -12,6 +12,7 @@ out & let me know why you're reading this, I'd love to know.
 
 - [one-rep maxima (that i'm proud of)](#one-rep-maxima-that-im-proud-of)
 - [log](#log)
+  - [2026-01-26](#2026-01-26)
   - [2026-01-24](#2026-01-24)
   - [2026-01-21](#2026-01-21)
   - [2026-01-19](#2026-01-19)
@@ -24,6 +25,7 @@ out & let me know why you're reading this, I'd love to know.
   - [2026-01-08](#2026-01-08)
   - [2026-01-07](#2026-01-07)
 
+
 # one-rep maxima (that i'm proud of)
 
 |movement     | weight|
@@ -33,6 +35,28 @@ out & let me know why you're reading this, I'd love to know.
 |barbell bench|135lb  |
 
 # log
+## 2026-01-26
+it is so unbelievably cold outside. excited to go back to CA for a bit.
+
+- reverse hyperextension
+  - 10x50lb x3
+- farmer's carry
+  - 50lb x3
+- trx w
+  - 10x x2
+- barbell bench
+  - 15x45lb 
+  - 10x85lb 
+  - 8x95lb 
+  - 6x115lb
+  - 4x125lb
+  - 6x115lb 
+- machine single arm row 
+  - 10x45lb 
+  - 8x70lb (x2)
+- face pulls
+  - 15x40lb (x3)
+
 ## 2026-01-24
 running on multiple days of very little sleep & feeling it.
 getting better about consistently hitting an acute angle while squatting.
