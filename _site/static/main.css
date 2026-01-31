@@ -78,6 +78,22 @@ p {
 h1, h2, h3 {
   padding-top: 1em;
 }
+
+h1::before {
+  content: "#"
+}
+h2::before {
+  content: "##"
+}
+h3::before {
+  content: "###"
+}
+h4::before {
+  content: "####"
+}
+h5::before {
+  content: "#####"
+}
 .article-header {
   display: flex; 
   flex-direction: row; 
