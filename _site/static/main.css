@@ -75,25 +75,6 @@ p {
 .article-box {
   --box-border-color: var(--aqua);
 }
-h1, h2, h3 {
-  padding-top: 1em;
-}
-
-h1::before {
-  content: "#"
-}
-h2::before {
-  content: "##"
-}
-h3::before {
-  content: "###"
-}
-h4::before {
-  content: "####"
-}
-h5::before {
-  content: "#####"
-}
 .article-header {
   display: flex; 
   flex-direction: row; 
@@ -107,4 +88,23 @@ h5::before {
     height: unset;
     white-space:normal;
   }
+}
+h1, h2, h3, h4, h5 {
+  padding-top: 1em;
+}
+
+h1::before {
+  content: "# "
+}
+h2::before {
+  content: "## "
+}
+h3::before {
+  content: "### "
+}
+h4::before {
+  content: "#### "
+}
+h5::before {
+  content: "##### "
 }
