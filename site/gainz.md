@@ -1,6 +1,6 @@
 ---
 title: My Lifting Log
-copyright: Copyright 2025, Connor Duncan
+copyright: 2025, Connor Duncan
 ---
 
 I'm trying a new thing where I write down what and how much I lifted on a given day.
@@ -22,12 +22,13 @@ out & let me know why you're reading this, I'd love to know.
 |hex deadlift |305lb  |1    |
 |deadlift     |245lb  |3    |
 |barbell squat|245lb  |1    |
-|barbell bench|135lb  |1    |
+|barbell bench|135lb  |3    |
 
 # log
 ## January 2026
 
-- [2026-01-30](#2026-01-30)
+- [2026-01-31](#2026-01-31)
+- [2026-01-29](#2026-01-29)
 - [2026-01-26](#2026-01-26)
 - [2026-01-24](#2026-01-24)
 - [2026-01-21](#2026-01-21)
@@ -41,7 +42,28 @@ out & let me know why you're reading this, I'd love to know.
 - [2026-01-08](#2026-01-08)
 - [2026-01-07](#2026-01-07)
 
-### 2026-01-30
+### 2026-01-31
+can finally do 1 plate bench for more than a single rep. and without the block! let's go!
+
+- stretch 
+- trx row (10x)
+- barbell bench 
+  - 15x45lb
+  - 10x75lb
+  - 8x95lb
+  - 6x115lb
+  - 3x135lb
+  - 2x135lb
+  - 7x115lb
+- landmine press
+  - 12x25lb
+  - 16x35lb
+  - 9x35lb
+- cable lat pulldown 
+  - 12x70lb x3
+- stretch again
+
+### 2026-01-29
 deadlift pb! extremely long day.
 
 - stretch 

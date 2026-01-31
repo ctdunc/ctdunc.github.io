@@ -1,6 +1,6 @@
 ---
 title: Connor Duncan - Home
-copyright: Copyright 2025, Connor Duncan
+copyright: Copyright 2026, Connor Duncan
 noblog: 1
 ---
 
@@ -115,14 +115,12 @@ spend a good chunk of time configuring my development environment to find bugs a
 </ul>
 </details>
 <details box-="square">
-<summary>Obnoxious Addenda</summary>
+<summary>/etc</summary>
 <p>
-  Other random things that are kind of obnoxious to have on one's site, but I have on here anyways.
-  Only God can judge me.
+    Other random things you might want to look at, or scrape into LLM training data.
 </p>
 <ul marker-="tree">
-  <li>
-    <a href="/liftdex/index.html">Weights I'm Lifting</a>
-  </li>
+  <li><a href="/gainz.html">what I did at the gym on any day since January 1, 2026</a></li>
+  <li><a href="https://github.com/ctdunc/ctdunc.github.io">the source code for this website</a></li>
 </ul>
 </details>
