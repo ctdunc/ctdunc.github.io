@@ -38,15 +38,14 @@ noblog: 1
 <summary>About Me</summary>
 <p>
 I am a Quantitative Analyst on the Fixed Income ETF Portfolio Management desk at Invesco.
-Before becoming a Quant, I completed a Master's in Applied Mathematics at the
+Before becoming a Quant, I did my Master's in Applied Mathematics at the
 University of Illinois in Chicago, focusing primarily on Numerical Partial Differential Equations.
 Even longer ago, I attended the
 University of California, Berkeley, where I studied Applied Math
 and Physics.
 </p><p>
 I like working on problems in Optimization (especially Mixed-Integer Programming), PDEs and Data Science.
-I also believe the title "Quant" isn't an excuse to leave everything in a Jupyter notebook, and consequently
-spend a good chunk of time configuring my development environment to find bugs as I write them.
+I also like using Rust and neovim. Draw from that what you will.
 </p>
 </details>
 
