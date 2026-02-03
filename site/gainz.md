@@ -12,6 +12,7 @@ out & let me know why you're reading this, I'd love to know.
 
 - [maxima (that i'm proud of)](#maxima-that-im-proud-of)
 - [log](#log)
+  - [February 2026](#february-2026)
   - [January 2026](#january-2026)
 
 
@@ -25,6 +26,35 @@ out & let me know why you're reading this, I'd love to know.
 |barbell bench|135lb  |3    |
 
 # log
+## February 2026
+
+- [2026-02-02](#2026-02-02)
+
+### 2026-02-02
+
+another day of working on squat form before moving back to weight.
+finally truly cleared the hurdle of consistently breaking the ninety degree plane
+with my legs. 
+tried barbell RDLs for the first time. need to work on that stabilizer muscle on my back right.
+
+- ghd
+- stretch 
+- squat
+  - 10x95lb
+  - 8x135lb
+  - 4x165lb
+  - 3x185lb
+  - 2x205lb
+  - 3x205lb
+- barbell rdl
+  - 8x95lb
+  - 6x80lb
+- hamstring curls 
+  - 12x20lb
+  - 9x30lb (failure)
+  - 12x20lb
+- core
+
 ## January 2026
 
 - [2026-01-31](#2026-01-31)
