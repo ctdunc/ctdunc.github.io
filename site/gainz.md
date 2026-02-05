@@ -28,7 +28,28 @@ out & let me know why you're reading this, I'd love to know.
 # log
 ## February 2026
 
+- [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+### 2026-02-05
+
+first 6AM workout since starting this page. not likely to see gains at such an early hour, still too tired.
+
+- stretch/reverse hyper 
+- bench
+  - 10x85lb
+  - 10x105lb
+  - 5x125lb
+  - 6x125lb
+- chest fly
+  - 12x70lb
+  - 12x80lb
+- lat pulldowns
+  - 12x80lb
+  - 10x95lb
+  - 10x90lb
+- core
+
 
 ### 2026-02-02
 
