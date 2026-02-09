@@ -28,8 +28,25 @@ out & let me know why you're reading this, I'd love to know.
 # log
 ## February 2026
 
+- [2026-02-06](#2026-02-06)
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+### 2026-02-06
+
+still hitting good squat form, moving a bit more weight. hooray!
+
+- stretch 
+- squat
+  - 10x115lb
+  - 10x135lb
+  - 6x185lb
+  - 4x205lb
+  - 2x225lb (x2)
+- rdl
+  - 10x40lb (3x)
+- Leg extensions
+  - 12x60lb  (x3)
 
 ### 2026-02-05
 
