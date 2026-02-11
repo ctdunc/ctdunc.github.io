@@ -28,9 +28,35 @@ out & let me know why you're reading this, I'd love to know.
 # log
 ## February 2026
 
+- [2026-02-10](#2026-02-10)
 - [2026-02-06](#2026-02-06)
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+### 2026-02-10
+
+guess who got a cold in california??? this guy! ironic, coming from illinois.
+
+- Stretch 
+- Incline becnh
+  - 5x5x5
+  - 10x75lb
+  - 10x95lb
+  - 4x115lb
+  - 4x105lb
+  - 6x95lb
+- chest fly
+  - 12x80lb
+  - 10x80lb (x2)
+- lat pulldown
+  - 10x80lb
+  - 10x95lb
+  - 10x90lb
+- face pulls (low to high)
+  - 12x40lb
+  - 12x50lb (x2)
+- suitcase carry 
+  - 60lb 25yd (x2)
 
 ### 2026-02-06
 
