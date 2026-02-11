@@ -38,7 +38,7 @@ out & let me know why you're reading this, I'd love to know.
 guess who got a cold in california??? this guy! ironic, coming from illinois.
 
 - Stretch 
-- Incline becnh
+- inclined bench (bar)
   - 5x5x5
   - 10x75lb
   - 10x95lb
