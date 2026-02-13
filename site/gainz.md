@@ -28,10 +28,29 @@ out & let me know why you're reading this, I'd love to know.
 # log
 ## February 2026
 
+- [2026-02-13](#2026-02-13)
 - [2026-02-10](#2026-02-10)
 - [2026-02-06](#2026-02-06)
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+### 2026-02-13
+
+- reverse hyper 
+  - 10x70lb (x3)
+- squat
+  - 10x95lb
+  - 10x135lb
+  - 6x165lb
+  - 4x185lb
+  - 3x205lb
+- hamstring curls
+  - 12x20lb
+  - 10x30lb (x2)
+- leg extenzions
+  - 10x40lb
+  - 10x50lb
+  - 12x60lb
 
 ### 2026-02-10
 
