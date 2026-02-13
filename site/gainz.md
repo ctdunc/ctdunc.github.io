@@ -47,7 +47,7 @@ out & let me know why you're reading this, I'd love to know.
 - hamstring curls
   - 12x20lb
   - 10x30lb (x2)
-- leg extenzions
+- leg extensions
   - 10x40lb
   - 10x50lb
   - 12x60lb
