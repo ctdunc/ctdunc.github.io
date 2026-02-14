@@ -28,11 +28,41 @@ out & let me know why you're reading this, I'd love to know.
 # log
 ## February 2026
 
+- [2026-02-14](#2026-02-14)
 - [2026-02-13](#2026-02-13)
 - [2026-02-10](#2026-02-10)
 - [2026-02-06](#2026-02-06)
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+### 2026-02-14
+
+landmine press goes kinda hard.
+
+- ghd 
+  - 10x3
+- stretch
+- landmine press
+  - 12x35lb
+  - 12x50lb
+  - 9x60lb
+  - 10x50lb
+- chest fly
+  - 12x80lb
+  - 7x100lb 
+  - 10x90lb
+- lat pulldowns
+  - 10x80lb
+  - 10x90lb (x2)
+- assisted dips 
+  - 10x100lb
+  - 10x90lb
+  - 10x100lb
+- jn press (bar)
+  - 12x40lb (x2)
+- bicep curl (bar)
+  - 10x40lb
+  - 12x30lb
 
 ### 2026-02-13
 
