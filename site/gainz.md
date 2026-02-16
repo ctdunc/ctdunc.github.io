@@ -21,19 +21,45 @@ out & let me know why you're reading this, I'd love to know.
 |movement     | weight| reps|
 |-------------|-------|-----|
 |hex deadlift |305lb  |1    |
-|deadlift     |245lb  |3    |
+|deadlift     |245lb  |4    |
 |barbell squat|245lb  |1    |
 |barbell bench|135lb  |3    |
 
 # log
 ## February 2026
 
+- [2026-02-16](#2026-02-16)
 - [2026-02-14](#2026-02-14)
 - [2026-02-13](#2026-02-13)
 - [2026-02-10](#2026-02-10)
 - [2026-02-06](#2026-02-06)
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+
+### 2026-02-16
+
+extended deadlift PR to more reps today. 
+
+- reverse hyper 
+  - 10x70lb (x2)
+- deadlift (mixed grip) 
+  - 6x135lb (x2)
+  - 4x185lb
+  - 3x225lb
+  - 3x245lb
+  - 4x245lb
+- chest supported rows 
+  - 10x45lb
+  - 10x70lb (x2)
+- shoulder press (dumbell, no back support)
+  - 10x25lb (x2)
+  - 6x25lb (failure, finish 4x20lb)
+- reverse fly (single arm)
+  - 10x70lb (x2)
+- bicep curl
+  - 12x50lb
+  - 6x50lb (failure, finish 4x40lb)
 
 ### 2026-02-14
 
