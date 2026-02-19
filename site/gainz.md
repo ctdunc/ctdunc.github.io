@@ -28,6 +28,7 @@ out & let me know why you're reading this, I'd love to know.
 # log
 ## February 2026
 
+- [2026-02-18](#2026-02-18)
 - [2026-02-16](#2026-02-16)
 - [2026-02-14](#2026-02-14)
 - [2026-02-13](#2026-02-13)
@@ -36,6 +37,31 @@ out & let me know why you're reading this, I'd love to know.
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
 
+### 2026-02-18
+
+- trx w
+- bench 
+  - 5x5x5
+  - 10x95lb
+  - 8x115lb
+  - 3x135lb (x2)
+  - 6x115lb
+- chest fly 
+  - 10x70lb
+  - 10x90lb (x2)
+- lat pd
+  - 10x80lb
+  - 10x95lb (x2)
+- landmine press
+  - 12x35lb
+  - 8x45lb
+  - 10x40lb (x2)
+- reverse fly
+  - 12x60lb
+  - 10x70lb
+  - 10x50lb
+
+  Suitcase carry
 
 ### 2026-02-16
 
