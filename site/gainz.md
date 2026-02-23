@@ -28,6 +28,7 @@ out & let me know why you're reading this, I'd love to know.
 # log
 ## February 2026
 
+- [2026-02-20](#2026-02-20)
 - [2026-02-18](#2026-02-18)
 - [2026-02-16](#2026-02-16)
 - [2026-02-14](#2026-02-14)
@@ -36,6 +37,26 @@ out & let me know why you're reading this, I'd love to know.
 - [2026-02-06](#2026-02-06)
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+
+### 2026-02-20
+
+- stretch 
+- incline bench
+  - 5x5x5
+  - 10x75lb
+  - 8x95lb
+  - 6x105lb
+  - 4x105lb
+- single leg hip thrusts
+  - 10each side 
+- trx w
+  - 10 (x3)
+- hamstring curl
+  - 12x20lb (x3)
+- abductor
+  - 12x90lb (x3)
+- prone ys
 
 ### 2026-02-18
 
