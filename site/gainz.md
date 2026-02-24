@@ -38,6 +38,25 @@ out & let me know why you're reading this, I'd love to know.
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
 
+### 2026-02-23
+
+I think I may have torched my knee, so taking a break from squats. still put in a nice deadlift pb.
+
+- stretch 
+- deadlift
+  - 8x135lb
+  - 4x185lb
+  - 4x205lb
+  - 2x255lb
+  - 1x265lb
+  - 1x275lb
+- trx w 
+  - 12 (x3)
+- chest supported rows
+  - 12x35lb
+  - 10x45lb
+  - 12x45lb
+
 
 ### 2026-02-20
 
