@@ -38,6 +38,34 @@ out & let me know why you're reading this, I'd love to know.
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
 
+### 2026-02-25
+
+- Reverse hyper
+  - 12x70lb
+  - 10x70lb (x2)
+- reverse fly
+  - 12x60lb (x2)
+- bench 
+  - 5x5x5
+  - 10x75lb
+  - 6x95lb
+  - 6x115lb
+  - 4x125lb
+  - 3x125lb
+- single arm chest fly 
+  - 12x70lb 
+  - 10x80lb
+  - 10x70lb
+- lat pulldown
+  - 10x85lb 
+  - 10x90lb
+  - 10x80lb
+- shoulder press
+  - 10x20lb
+  - 8x20lb
+  - 8x15lb
+
+
 ### 2026-02-23
 
 I think I may have torched my knee, so taking a break from squats. still put in a nice deadlift pb.
