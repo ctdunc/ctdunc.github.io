@@ -12,6 +12,7 @@ out & let me know why you're reading this, I'd love to know.
 
 - [maxima (that i'm proud of)](#maxima-that-im-proud-of)
 - [log](#log)
+  - [March 2026](#march-2026)
   - [February 2026](#february-2026)
   - [January 2026](#january-2026)
 
@@ -21,13 +22,45 @@ out & let me know why you're reading this, I'd love to know.
 |movement     | weight| reps|
 |-------------|-------|-----|
 |hex deadlift |305lb  |1    |
-|deadlift     |245lb  |4    |
+|deadlift     |275lb  |1    |
 |barbell squat|245lb  |1    |
 |barbell bench|135lb  |3    |
 
 # log
+
+## March 2026
+
+### 2026-03-02
+
+- reverse hyper
+  - 10x70lb (x2)
+- trx w
+  - 10 x2
+- dumbell bench
+  - 12x35lb
+  - 10x45lb
+  - 8x50lb
+  - 6x50lb
+  - 7x35lb
+- machine row
+  - 12x35lb
+  - 10x50lb
+  - 8x60lb (x2)
+- dumbell shoulder press
+  - 10x20lb (x3)
+- lat pulldown
+  - 10x70lb
+  - 10x80lb (x2)
+- chest fly 
+  - 10x80lb
+  - 10x90lb
+  - 10x80lb
+- stretch
+
 ## February 2026
 
+- [2026-02-28](#2026-02-28)
+- [2026-02-25](#2026-02-25)
 - [2026-02-20](#2026-02-20)
 - [2026-02-18](#2026-02-18)
 - [2026-02-16](#2026-02-16)
@@ -37,6 +70,27 @@ out & let me know why you're reading this, I'd love to know.
 - [2026-02-06](#2026-02-06)
 - [2026-02-05](#2026-02-05)
 - [2026-02-02](#2026-02-02)
+
+
+### 2026-02-28
+
+back into squats, even though my knee is kinda buggin me.
+
+- reverse hyper 
+  - 10x70lb (x3)
+- squat
+  - 8x95lb
+  - 8x135lb
+  - 5x165lb
+  - 4x185lb (x3)
+- ham curl 
+  - 10x30lb (x3)
+- leg ex
+  - 12x40lb 
+- adductor 
+  - 10x110lb (x2)
+- stretch
+
 
 ### 2026-02-25
 
