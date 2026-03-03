@@ -30,6 +30,8 @@ out & let me know why you're reading this, I'd love to know.
 
 ## March 2026
 
+- [2026-03-02](#2026-03-02)
+
 ### 2026-03-02
 
 - reverse hyper
