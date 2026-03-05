@@ -22,7 +22,7 @@ out & let me know why you're reading this, I'd love to know.
 |movement     | weight| reps|
 |-------------|-------|-----|
 |hex deadlift |305lb  |1    |
-|deadlift     |275lb  |1    |
+|deadlift     |285lb  |1    |
 |barbell squat|245lb  |1    |
 |barbell bench|135lb  |3    |
 
@@ -30,7 +30,26 @@ out & let me know why you're reading this, I'd love to know.
 
 ## March 2026
 
+- [2026-03-02](#2026-03-04)
 - [2026-03-02](#2026-03-02)
+
+### 2026-03-04
+
+holy smokes deadlifts truly are the king of compound exercises
+
+- reverse hyper
+  - 12 (x3)
+- deadlift
+  - 6x135lb
+  - 4x185lb
+  - 3x225lb
+  - 3x255lb
+  - 3x275lb
+  - 1x285lb
+  - 3x225lb
+- machine lat pulldown 
+  - 10x35lb (x2)
+- Stretch
 
 ### 2026-03-02
 
