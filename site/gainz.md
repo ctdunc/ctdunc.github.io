@@ -30,8 +30,54 @@ out & let me know why you're reading this, I'd love to know.
 
 ## March 2026
 
-- [2026-03-02](#2026-03-04)
+- [2026-03-08](#2026-03-08)
+- [2026-03-06](#2026-03-06)
+- [2026-03-04](#2026-03-04)
 - [2026-03-02](#2026-03-02)
+
+### 2026-03-08
+
+making good strides with squat depth at weight. 225 well below 90 degrees is a big step up.
+
+- reverse hyper 
+  - 10x70lb (x3)
+- stretch 
+- squat
+  - 10x95lb
+  - 8x135lb
+  - 4x185lb
+  - 4x205lb
+  - 2x225lb (x2)
+- hamstring curls 
+  - 12x30lb
+  - 10x40lb
+  - 9x40lb
+- adductor/abductor
+  - 12x100lb/12x80lb (x3)
+
+### 2026-03-06
+
+- reverse hyper
+  - 12 (x3)
+- trx w
+  - 10 x2
+- bench
+  - 5x5x5
+  - 10x75lb
+  - 8x95lb
+  - 6x115lb
+  - 4x125lb
+  - 3x125lb
+- chest fly
+  - 10x80lb
+  - 10x90lb
+  - 12x100lb
+  - 9x100lb
+- lat pulldown
+  - 10x80lb
+  - 10x100lb (x2)
+- reverse fly 
+  - 12x70lb (x3)
 
 ### 2026-03-04
 
