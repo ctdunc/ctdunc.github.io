@@ -30,10 +30,29 @@ out & let me know why you're reading this, I'd love to know.
 
 ## March 2026
 
+- [2026-03-09](#2026-03-09)
 - [2026-03-08](#2026-03-08)
 - [2026-03-06](#2026-03-06)
 - [2026-03-04](#2026-03-04)
 - [2026-03-02](#2026-03-02)
+
+### 2026-03-09
+
+- stretch
+- bench
+  - 5x5x5
+  - 10x85lb
+  - 6x115lb
+  - 5x125lb
+  - 3x135lb
+  - 1x135lb
+- single arm machine row
+  - 10x35lb 
+  - 10x50lb (x2)
+- inclined dumbbell bench 
+  - 12x30lb
+  - 10x40lb (x3)
+- ski erg
 
 ### 2026-03-08
 
