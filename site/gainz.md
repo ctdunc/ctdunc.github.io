@@ -30,12 +30,64 @@ out & let me know why you're reading this, I'd love to know.
 
 ## March 2026
 
+- [2026-03-26](#2026-03-26)
+- [2026-03-25](#2026-03-25)
+- [2026-03-24](#2026-03-24)
 - [2026-03-12](#2026-03-12)
 - [2026-03-09](#2026-03-09)
 - [2026-03-08](#2026-03-08)
 - [2026-03-06](#2026-03-06)
 - [2026-03-04](#2026-03-04)
 - [2026-03-02](#2026-03-02)
+
+
+### 2026-03-26
+
+- reverse hyper 
+  - 12 (x3)
+- face pull
+  - 10x30lb
+  - 10x40lb (x2)
+- incline dumbell 
+  - 12x35lb
+  - 10x45lb
+  - 8x45lb
+- dips (assisted)
+  - 10 (x3)
+- reverse fly
+  - 12x70lb
+  - 10x80lb (x2)
+- machine lat pulldown (per arm)
+  - 10x25lb 
+  - 10x35lb (x2)
+- suitcase carry 
+- stretch
+
+### 2026-03-25
+
+- stretch 
+- squat
+  - 10x95lb (x2)
+  - 6x135lb 
+  - 6x165lb (x3)
+- mace bell hinge
+  - 10 (x2)
+- core
+
+### 2026-03-24
+
+took some time off due to personal circumstances. getting back in.
+
+- ghd
+  - 10x90lb (x3)
+- sled push/pull
+  - 40m x135lb (x3)
+- incline dumbbell bench 
+  - 12x35lb 
+  - 8x45lb (x2)
+  - 10x40lb
+- hammer grip row
+  - 12x55lb (x3)
 
 ### 2026-03-12
 
