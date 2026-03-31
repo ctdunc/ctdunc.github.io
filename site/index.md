@@ -37,8 +37,10 @@ noblog: 1
 <details open="true" box-="square">
 <summary>About Me</summary>
 <p>
-I am a Quantitative Analyst on the Fixed Income ETF Portfolio Management desk at Invesco.
-Before becoming a Quant, I did my Master's in Applied Mathematics at the
+I am a Trading Systems Engineer on the FICC/Options desk at DRW. 
+I like Math, Markets and Computers, not necessarily in that order.
+Before joining DRW, I was a Quant on the Fixed Income ETF Portfolio Management desk at Invesco.
+Before working at Invesco, I did my Master's in Applied Mathematics at the
 University of Illinois in Chicago, focusing primarily on Numerical Partial Differential Equations.
 Even longer ago, I attended the
 University of California, Berkeley, where I studied Applied Math
